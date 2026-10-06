@@ -90,3 +90,4 @@ One line each: the decision, why, and how to reverse it.
 - **Screenshot review signs in once per role** and captures every screen at 390 and 1280 px in light and dark (`pnpm screenshots`). Fixes from the review: "Tomar orden" moved to the top of Servicio on phones; the floor plan editor shows from tablet width up (phones get a note).
 - **E2E tests keep away from Mesa 12**: the QR studio test rotates its code, so other tests use tables whose codes never change.
 - **Printed QR codes are permanent addresses**: `<guest domain>/r/<slug>/t/<token>`. Never change `QR_TOKEN_SECRET` in production; moving domains is done with a path-preserving redirect from the old domain, which must stay registered while old codes are in use.
+- **Sales-summary cron runs daily (09:00 UTC, 5 am in Puerto Rico)** while the Vercel team is on Hobby, which allows only daily crons. Payments and refunds already refresh summaries as they happen; on Pro it can go back to every 30 minutes.
