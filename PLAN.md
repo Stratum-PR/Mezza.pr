@@ -134,10 +134,10 @@ UI flags: `splitBill` and `sharedTab` in `src/config/flags.ts`. Even/per-item sp
 
 ### Phase 2: Limits and rate limiting
 
-- [ ] Restaurant settings (migration) with defaults: max $300 per order, 20 per line, $1,500 per open tab, 20 people per table; editable in Ajustes; enforced in `place_order` for QR orders only
-- [ ] Staff "Ampliar límite" on a table raises its tab cap; staff-entered orders are never capped
-- [ ] Postgres `RateLimiter` implementation (`MEZZA_RATE_LIMIT=postgres`): per phone, per table and per IP (the platform's trusted IP header, not raw `x-forwarded-for`); e.g. 5 orders a minute per phone
-- [ ] Servicio flags: "Mesa nueva por QR" on an order that opened an idle table (one-tap void; the kitchen ticket says "Mesa nueva"), and "pagó y pidió de nuevo" when someone orders after paying
+- [x] Restaurant settings (migration `20261006170000_order_limits.sql`) with defaults: max $300 per order, 20 per line, $1,500 per open tab, 20 people per table; editable in Ajustes (owner, audited); enforced in `place_order` for QR orders only
+- [x] Staff "Ampliar límite" on a table raises its tab cap (Servicio shows tables at 80% of their cap); staff-entered orders are never capped
+- [x] Postgres `RateLimiter` implementation (`MEZZA_RATE_LIMIT=postgres`, now the default): per phone, per table and per IP (`src/lib/client-ip.ts`, platform headers only); 5 orders a minute per phone
+- [x] Servicio flags: "Mesa nueva por QR" on an order that opened an idle table (badge and a hint in Servicio; the kitchen board and ticket say "Mesa nueva"; voiding stays with managers), and "pagó y pidió de nuevo" when someone orders after paying (lights up with per-person payments in phase 4)
 
 ### Phase 3: Split engine
 

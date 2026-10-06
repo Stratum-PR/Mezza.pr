@@ -119,5 +119,11 @@ Client-side registries can't read server env vars; the page passes the implement
 
 ## rate limit
 
-- **Now:** `noop`. Call sites are on guest actions (place order, call server, bring check).
-- **Real implementation must:** a shared store (Upstash) keyed by table token and IP.
+- **Now:** `postgres` (default): fixed-window counters in `public.rate_limits` through
+  `rate_limit_hit`, shared by every app instance; fails closed. `noop` remains for special cases.
+- **Keys (per minute):** guest orders 5 per phone (device hash), 20 per table, 30 per IP; renames 10
+  per phone; service requests 10 per table, 30 per IP; signup 10 and demo requests 5 per IP per hour.
+  The IP comes from `src/lib/client-ip.ts` (platform headers only, never raw `x-forwarded-for`).
+- **Later:** `upstash_stub` if Postgres load from counters ever matters; same interface.
+- **Tests:** `supabase/tests/08_order_limits.test.sql` (windows, independent keys, bounded keys,
+  browsers can't call it).

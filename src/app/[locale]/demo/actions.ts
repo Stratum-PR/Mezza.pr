@@ -1,9 +1,9 @@
 "use server";
 
-import { headers } from "next/headers";
 import { z } from "zod";
 import { notifier } from "@/connectors/notifier";
 import { rateLimiter } from "@/connectors/rate-limit";
+import { clientIp } from "@/lib/client-ip";
 import { createAdminClient } from "@/lib/db/admin";
 
 export type DemoRequestState = {
@@ -38,7 +38,7 @@ export async function requestDemo(_: DemoRequestState, form: FormData): Promise<
       fields: [...new Set(parsed.error.issues.map((i) => String(i.path[0])))],
     };
   }
-  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
+  const ip = await clientIp();
   const allowed = await rateLimiter().limit(`demo-request:${ip}`, 5, 3600);
   if (!allowed.ok) return { status: "error", error: "rate_limited" };
 

@@ -17,8 +17,8 @@ select is(
        select 1 from information_schema.columns c
        where c.table_schema = 'public' and c.table_name = t.table_name and c.column_name = 'restaurant_id'
      )),
-  array['demo_requests', 'platform_admins', 'profiles', 'restaurants', 'webhook_events'],
-  'only the five non-tenant tables lack restaurant_id'
+  array['demo_requests', 'platform_admins', 'profiles', 'rate_limits', 'restaurants', 'webhook_events'],
+  'only the six non-tenant tables lack restaurant_id (rate_limits is shared by every app instance)'
 );
 
 select is(

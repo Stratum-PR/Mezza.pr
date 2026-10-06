@@ -437,7 +437,11 @@
         "validation": "Algo cambió en el menú. Revisa tu pedido y envíalo otra vez.",
         "network": "No hay conexión. Toca «Enviar a cocina» otra vez: no se duplicará.",
         "request": "No pudimos avisar a tu mesero. Inténtalo otra vez.",
-        "table_full": "La mesa ya tiene 20 personas. Pídele a tu mesero que tome tu orden."
+        "table_full": "La mesa ya tiene 20 personas. Pídele a tu mesero que tome tu orden.",
+        "limit_line": "Puedes pedir hasta {max} de un mismo plato en cada pedido.",
+        "limit_order": "Un pedido por QR puede ser de hasta {max}. Divídelo en dos o pídele a tu mesero.",
+        "limit_tab": "Tu mesa llegó a su límite de pedidos por QR. Pídele a tu mesero que lo amplíe.",
+        "rate_limited": "Vas muy rápido. Espera un minuto e inténtalo otra vez."
       },
       "payErrors": {
         "nothing_to_pay": "Todavía no hay nada que pagar.",
@@ -491,7 +495,8 @@
     "ivuMunicipal": "IVU municipal",
     "tip": "Propina",
     "total": "Total",
-    "note": "Nota"
+    "note": "Nota",
+    "newTable": "MESA NUEVA (QR)"
   },
   "auth": {
     "title": "Entra a Mezza",
@@ -887,7 +892,8 @@
       "soldOutLabel": "{name}: agotado",
       "available": "Disponible",
       "soldOutState": "Agotado",
-      "newOrder": "Nuevo pedido #{number} · Mesa {label}"
+      "newOrder": "Nuevo pedido #{number} · Mesa {label}",
+      "newTable": "Mesa nueva"
     },
     "service": {
       "title": "Servicio",
@@ -924,7 +930,13 @@
       "managerOnly": "Anular y reembolsar es para gerentes y dueños.",
       "done": "Hecho.",
       "showAll": "Ver todos ({n})",
-      "showLess": "Ver menos"
+      "showLess": "Ver menos",
+      "newTable": "Mesa nueva por QR",
+      "newTableHint": "Este pedido abrió una mesa que estaba libre. Confirma que hay alguien sentado.",
+      "afterPayment": "Pagó y pidió de nuevo",
+      "nearLimit": "Mesa {label} cerca de su límite por QR: {total} de {cap}",
+      "raiseLimit": "Ampliar límite",
+      "limitRaised": "Límite de la mesa ampliado a {cap}."
     },
     "tables": {
       "title": "Mesas",
@@ -1472,6 +1484,15 @@
       "lead": "Cómo se ve Mezza en este dispositivo: tema e idioma de la pantalla.",
       "theme": "Tema",
       "language": "Idioma"
+    },
+    "limits": {
+      "title": "Límites de pedidos por QR",
+      "lead": "Protegen a la cocina de pedidos falsos o enormes. Solo aplican a pedidos desde el QR: lo que toma el personal no tiene límite, y en Servicio puedes ampliar el límite de una mesa.",
+      "order": "Máximo por pedido ($)",
+      "line": "Máximo de un mismo plato por pedido",
+      "tab": "Máximo por mesa abierta ($)",
+      "people": "Máximo de personas por mesa",
+      "save": "Guardar límites"
     }
   },
   "theme": {

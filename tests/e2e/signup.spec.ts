@@ -18,7 +18,7 @@ test("a new owner signs up and walks through the six-step wizard", async ({ page
   // Step 2: menu upload (the importer keeps working in the background).
   await expect(page).toHaveURL(new RegExp(`/app/fonda-prueba-${stamp}/empezar`), { timeout: 30_000 });
   await expect(page.getByText(/días de prueba gratis/)).toBeVisible();
-  await page.getByLabel("Menú en PDF o foto").setInputFiles({
+  await page.getByLabel("Imagen del menú").setInputFiles({
     name: "menu.pdf",
     mimeType: "application/pdf",
     buffer: Buffer.from("%PDF-1.4\n%%EOF\n"),

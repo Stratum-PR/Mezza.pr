@@ -1,12 +1,12 @@
 "use server";
 
-import { headers } from "next/headers";
 import { z } from "zod";
 import { availableMethods, payments } from "@/connectors/payments";
 import type { OrderDraft, SubmitResult } from "@/connectors/orders";
 import { rateLimiter } from "@/connectors/rate-limit";
 import { isNotImplemented } from "@/connectors/shared";
 import { flags } from "@/config/flags";
+import { clientIp } from "@/lib/client-ip";
 import { createAdminClient } from "@/lib/db/admin";
 import { deviceHash, ensureDeviceHash } from "@/lib/guest/device";
 import { cleanName } from "@/lib/guest/names";
@@ -20,9 +20,10 @@ async function guest(slug: string, token: string): Promise<GuestTable> {
   return g;
 }
 
-async function limited(key: string, max: number): Promise<boolean> {
-  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
-  return !(await rateLimiter().limit(`${key}:${ip}`, max, 60)).ok;
+/** Shared rate limits, per minute: every [key, max] must allow the request. */
+async function allowed(...checks: [key: string, max: number][]): Promise<boolean> {
+  for (const [key, max] of checks) if (!(await rateLimiter().limit(key, max, 60)).ok) return false;
+  return true;
 }
 
 const draftSchema = z.object({
@@ -58,7 +59,14 @@ export async function guestPlaceOrder(
   if (!parsed.success) return { status: "rejected", reason: "validation" };
   const checked = cleanName(name);
   if (!checked.ok) return { status: "rejected", reason: "validation", detail: `name_${checked.reason}` };
-  if (await limited(`place-order:${g.table.id}`, 20))
+  const device = await ensureDeviceHash();
+  if (
+    !(await allowed(
+      [`order:phone:${device}`, 5],
+      [`order:table:${g.table.id}`, 20],
+      [`order:ip:${await clientIp()}`, 30],
+    ))
+  )
     return { status: "rejected", reason: "validation", detail: "rate_limited" };
 
   const { data, error } = await createAdminClient().rpc("place_guest_order", {
@@ -67,12 +75,22 @@ export async function guestPlaceOrder(
     p_client_order_id: parsed.data.clientOrderId,
     p_lines: flags.sharedTab ? parsed.data.lines : parsed.data.lines.map((l) => ({ ...l, shared: false })),
     p_guest_language: parsed.data.guestLanguage,
-    p_device_hash: await ensureDeviceHash(),
+    p_device_hash: device,
     p_name: checked.name ?? undefined,
   });
   if (error || !data) return { status: "rejected", reason: "validation", detail: "server" };
-  const r = data as { status: string; order_id?: string; number?: number; reason?: string; detail?: string };
+  const r = data as {
+    status: string;
+    order_id?: string;
+    number?: number;
+    reason?: string;
+    detail?: string;
+    max?: number;
+  };
   if (r.status === "accepted") return { status: "accepted", orderId: r.order_id!, number: r.number! };
+  // The restaurant's QR limits: per line (a quantity), per order or per open tab (cents).
+  if (r.reason === "limit")
+    return { status: "rejected", reason: "validation", detail: `limit_${r.detail}`, limit: r.max };
   return {
     status: "rejected",
     reason: (["item_unavailable", "tab_closed", "invalid_table"].includes(String(r.reason))
@@ -100,7 +118,7 @@ export async function guestRename(
   const device = await deviceHash();
   const tab = await liveTab(g.table.id);
   if (!device || !tab) return { ok: false, error: "failed" };
-  if (await limited(`rename:${g.table.id}`, 10)) return { ok: false, error: "failed" };
+  if (!(await allowed([`rename:phone:${device}`, 10]))) return { ok: false, error: "failed" };
   const { data, error } = await createAdminClient().rpc("rename_participant", {
     p_tab_id: tab.id,
     p_device_hash: device,
@@ -118,7 +136,8 @@ export async function guestRequest(
 ): Promise<{ ok: boolean }> {
   const g = await guest(slug, token);
   if (!["call_server", "bring_check"].includes(kind)) return { ok: false };
-  if (await limited(`request:${g.table.id}`, 10)) return { ok: false };
+  if (!(await allowed([`request:table:${g.table.id}`, 10], [`request:ip:${await clientIp()}`, 30])))
+    return { ok: false };
   const tabId = await ensureTab(g.restaurant.id, g.table.id);
   const db = createAdminClient();
   const { data: open } = await db

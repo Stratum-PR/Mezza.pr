@@ -437,7 +437,11 @@
         "validation": "Something changed on the menu. Check your order and send it again.",
         "network": "No connection. Tap “Send to kitchen” again: it won't be duplicated.",
         "request": "We couldn't reach your server. Try again.",
-        "table_full": "This table already has 20 people. Ask your server to take your order."
+        "table_full": "This table already has 20 people. Ask your server to take your order.",
+        "limit_line": "You can order up to {max} of the same dish in each order.",
+        "limit_order": "A QR order can be up to {max}. Split it in two or ask your server.",
+        "limit_tab": "Your table reached its QR ordering limit. Ask your server to raise it.",
+        "rate_limited": "That's a lot at once. Wait a minute and try again."
       },
       "payErrors": {
         "nothing_to_pay": "There's nothing to pay yet.",
@@ -491,7 +495,8 @@
     "ivuMunicipal": "Municipal IVU",
     "tip": "Tip",
     "total": "Total",
-    "note": "Note"
+    "note": "Note",
+    "newTable": "NEW TABLE (QR)"
   },
   "auth": {
     "title": "Log in to Mezza",
@@ -887,7 +892,8 @@
       "soldOutLabel": "{name}: sold out",
       "available": "Available",
       "soldOutState": "Sold out",
-      "newOrder": "New order #{number} · Table {label}"
+      "newOrder": "New order #{number} · Table {label}",
+      "newTable": "New table"
     },
     "service": {
       "title": "Service",
@@ -924,7 +930,13 @@
       "managerOnly": "Voids and refunds are for managers and owners.",
       "done": "Done.",
       "showAll": "Show all ({n})",
-      "showLess": "Show fewer"
+      "showLess": "Show fewer",
+      "newTable": "New table by QR",
+      "newTableHint": "This order opened a table that was free. Check that someone is seated.",
+      "afterPayment": "Paid, then ordered again",
+      "nearLimit": "Table {label} is near its QR limit: {total} of {cap}",
+      "raiseLimit": "Raise limit",
+      "limitRaised": "Table limit raised to {cap}."
     },
     "tables": {
       "title": "Tables",
@@ -1472,6 +1484,15 @@
       "lead": "How Mezza looks on this device: theme and screen language.",
       "theme": "Theme",
       "language": "Language"
+    },
+    "limits": {
+      "title": "QR ordering limits",
+      "lead": "They protect the kitchen from fake or huge orders. They only apply to QR orders: what staff take has no limit, and you can raise one table's limit from Servicio.",
+      "order": "Maximum per order ($)",
+      "line": "Maximum of one dish per order",
+      "tab": "Maximum per open table ($)",
+      "people": "Maximum people per table",
+      "save": "Save limits"
     }
   },
   "theme": {

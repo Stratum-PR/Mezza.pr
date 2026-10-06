@@ -155,6 +155,53 @@ export async function saveIvu(slug: string, _: FormResult, form: FormData): Prom
   return error ? fail("failed") : done(slug, "ajustes", "saved");
 }
 
+const dollars = (min: number, max: number) =>
+  z
+    .string()
+    .trim()
+    .regex(/^\d{1,5}(\.\d{1,2})?$/)
+    .transform((v) => Math.round(Number(v) * 100))
+    .pipe(z.number().int().min(min).max(max));
+const limitsSchema = z.object({
+  order: dollars(500, 1_000_000),
+  line: z.coerce.number().int().min(1).max(99),
+  tab: dollars(500, 5_000_000),
+  people: z.coerce.number().int().min(2).max(40),
+});
+
+/** QR ordering limits (owner only, audited). Staff orders are never capped. */
+export async function saveLimits(slug: string, _: FormResult, form: FormData): Promise<FormResult> {
+  const ctx = await requireSection(slug, "settings");
+  if (!owner(ctx)) return fail("forbidden");
+  const parsed = limitsSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return fail("validation");
+  const r = ctx.restaurant;
+  const next = {
+    qr_max_order_cents: parsed.data.order,
+    qr_max_line_qty: parsed.data.line,
+    qr_max_tab_cents: parsed.data.tab,
+    max_people_per_table: parsed.data.people,
+  };
+  const db = await createClient();
+  const { error } = await db.from("restaurants").update(next).eq("id", r.id);
+  if (error) return fail("failed");
+  await db.from("audit_log").insert({
+    restaurant_id: r.id,
+    actor_id: ctx.userId,
+    action: "limit_change",
+    target_table: "restaurants",
+    target_id: r.id,
+    before: {
+      qr_max_order_cents: r.qr_max_order_cents,
+      qr_max_line_qty: r.qr_max_line_qty,
+      qr_max_tab_cents: r.qr_max_tab_cents,
+      max_people_per_table: r.max_people_per_table,
+    },
+    after: next,
+  });
+  return done(slug, "ajustes", "saved");
+}
+
 const printerSchema = z.object({
   id: z
     .uuid()

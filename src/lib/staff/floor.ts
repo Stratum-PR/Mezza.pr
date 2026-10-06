@@ -28,6 +28,10 @@ export interface FloorOrder {
   tabId: string;
   tableLabel: string;
   lines: FloorLine[];
+  /** A QR order that opened a table that was free ("Mesa nueva por QR"). */
+  openedTab: boolean;
+  /** Ordered by someone who already paid at the table ("Pagó y pidió de nuevo"). */
+  afterPayment: boolean;
 }
 
 export interface FloorTab {
@@ -39,6 +43,8 @@ export interface FloorTab {
   subtotalCents: Cents;
   totalWithIvuCents: Cents;
   posClosedAt: string | null;
+  /** The tab's QR ordering cap: the restaurant's, plus whatever staff added ("Ampliar límite"). */
+  qrCapCents: Cents;
 }
 
 export interface Floor {
@@ -61,6 +67,8 @@ export interface Floor {
   }[];
   cashToCollect: { id: string; tabId: string; tableLabel: string; totalCents: Cents; createdAt: string }[];
   posToClose: { tabId: string; tableLabel: string; posTotalCents: Cents }[];
+  /** Live tabs at 80% or more of their QR cap, so staff can raise it before guests get refused. */
+  nearLimit: { tabId: string; tableLabel: string; subtotalCents: Cents; capCents: Cents }[];
   orders: FloorOrder[];
   payments: {
     id: string;
@@ -78,7 +86,7 @@ export interface Floor {
  */
 export async function loadFloor(
   db: Db,
-  restaurant: { id: string; ivu_state_bps: number; ivu_municipal_bps: number },
+  restaurant: { id: string; ivu_state_bps: number; ivu_municipal_bps: number; qr_max_tab_cents: number },
 ): Promise<Floor> {
   const rid = restaurant.id;
   const rates = { stateBps: restaurant.ivu_state_bps, municipalBps: restaurant.ivu_municipal_bps };
@@ -92,7 +100,7 @@ export async function loadFloor(
       .order("sort_order"),
     db
       .from("tabs")
-      .select("id, table_id, status, opened_at, pos_closed_at")
+      .select("id, table_id, status, opened_at, pos_closed_at, qr_limit_extra_cents")
       .eq("restaurant_id", rid)
       .or(`status.neq.closed,pos_closed_at.is.null`)
       .gt("opened_at", new Date(Date.now() - 24 * 3600_000).toISOString()),
@@ -105,7 +113,7 @@ export async function loadFloor(
     db
       .from("orders")
       .select(
-        "id, number, status, source, created_at, tab_id, tabs(table_id), order_items(id, qty, name_snapshot_es, name_snapshot_en, unit_price_cents, modifiers_snapshot, note, voided_at)",
+        "id, number, status, source, created_at, tab_id, opened_tab, after_payment, tabs(table_id), order_items(id, qty, name_snapshot_es, name_snapshot_en, unit_price_cents, modifiers_snapshot, note, voided_at)",
       )
       .eq("restaurant_id", rid)
       .gt("created_at", since)
@@ -146,6 +154,8 @@ export async function loadFloor(
       lineCents: l.qty * l.unit_price_cents,
       voided: Boolean(l.voided_at),
     })),
+    openedTab: o.opened_tab,
+    afterPayment: o.after_payment,
   }));
 
   const liveTabIds = new Set((tabs.data ?? []).map((t) => t.id));
@@ -178,6 +188,7 @@ export async function loadFloor(
       subtotalCents: subtotal,
       totalWithIvuCents: subtotal + computeIvu(subtotal, rates).total,
       posClosedAt: t.pos_closed_at,
+      qrCapCents: restaurant.qr_max_tab_cents + t.qr_limit_extra_cents,
     };
   });
 
@@ -204,6 +215,14 @@ export async function loadFloor(
     posToClose: floorTabs
       .filter((t) => !t.posClosedAt && paidByTab.has(t.id))
       .map((t) => ({ tabId: t.id, tableLabel: t.tableLabel, posTotalCents: paidByTab.get(t.id) ?? 0 })),
+    nearLimit: floorTabs
+      .filter((t) => t.status !== "closed" && t.subtotalCents * 5 >= t.qrCapCents * 4)
+      .map((t) => ({
+        tabId: t.id,
+        tableLabel: t.tableLabel,
+        subtotalCents: t.subtotalCents,
+        capCents: t.qrCapCents,
+      })),
     orders: mappedOrders,
     payments: payRows.map((p) => ({
       id: p.id,

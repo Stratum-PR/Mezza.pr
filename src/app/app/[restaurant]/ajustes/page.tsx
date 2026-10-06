@@ -3,6 +3,7 @@ import { payments } from "@/connectors/payments";
 import {
   BrandForm,
   IvuForm,
+  LimitsForm,
   PrintersPanel,
   ProfileForm,
   SupportPanel,
@@ -112,6 +113,16 @@ export default async function SettingsPage({ params }: PageProps<"/app/[restaura
           slug={restaurant}
           stateBps={r.ivu_state_bps}
           municipalBps={r.ivu_municipal_bps}
+          canEdit={isOwner}
+        />
+        <LimitsForm
+          slug={restaurant}
+          values={{
+            orderCents: r.qr_max_order_cents,
+            lineQty: r.qr_max_line_qty,
+            tabCents: r.qr_max_tab_cents,
+            people: r.max_people_per_table,
+          }}
           canEdit={isOwner}
         />
         <Panel title={t("fiscal.title")}>

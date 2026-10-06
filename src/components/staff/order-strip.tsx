@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/cn";
 import type { FloorOrder } from "@/lib/staff/floor";
+import { OrderFlags } from "./order-flags";
 
 type Filter = "all" | "new" | "in_kitchen" | "ready" | "served";
 const FILTERS: Filter[] = ["all", "new", "in_kitchen", "ready", "served"];
@@ -80,6 +81,7 @@ export function OrderStrip({ orders, minutes }: { orders: FloorOrder[]; minutes:
                   <span className="text-sm font-bold text-ink-2">{t("table", { label: o.tableLabel })}</span>
                 </p>
                 <p className="mt-1 text-sm text-ink-2">{t("strip.dishes", { n: dishes })}</p>
+                <OrderFlags order={o} className="mt-1.5" />
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <span className="text-xs text-muted">{t("minutes", { n: minutes(o.createdAt) })}</span>
                   <span className={cn("rounded-full px-2 py-0.5 text-xs font-bold", PILL[status])}>

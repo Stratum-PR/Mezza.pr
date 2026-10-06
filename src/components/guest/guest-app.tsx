@@ -201,6 +201,13 @@ export function GuestApp({
       if (result.status === "rejected") store(keys.pending, null);
       if (result.status === "rejected" && result.detail === "table_full")
         return { ok: false as const, message: t("flow.errors.table_full") };
+      if (result.status === "rejected" && result.detail?.startsWith("limit_")) {
+        const max =
+          result.detail === "limit_line" ? String(result.limit ?? "") : formatCents(result.limit ?? 0, lang);
+        return { ok: false as const, message: t(`flow.errors.${result.detail}`, { max }) };
+      }
+      if (result.status === "rejected" && result.detail === "rate_limited")
+        return { ok: false as const, message: t("flow.errors.rate_limited") };
       if (result.status === "rejected" && result.detail?.startsWith("name_"))
         return { ok: false as const, message: t(`people.nameErrors.${result.detail.slice(5)}`) };
       const reason = result.status === "rejected" ? result.reason : "network";

@@ -39,6 +39,12 @@ describe("renderTicketText", () => {
     expect(text).toContain("- Avena");
     expect(text).toContain("Nota: Bien tostada");
     expect(text).not.toContain("Total");
+    expect(text).not.toContain("MESA NUEVA");
+  });
+
+  it("marks a QR order that opened a free table, in the ticket's language", () => {
+    expect(renderTicketText({ ...kitchen, newTable: true }, 32)).toContain("** MESA NUEVA (QR) **");
+    expect(renderTicketText({ ...kitchen, newTable: true, locale: "en" }, 24)).toContain("NEW TABLE (QR)");
   });
 
   it("prints a receipt with separate IVU lines and the footer", () => {

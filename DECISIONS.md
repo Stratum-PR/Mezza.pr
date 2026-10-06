@@ -111,3 +111,8 @@ One line each: the decision, why, and how to reverse it.
 - **A taken name on the first order doesn't block the order**: the person starts as "Invitado #n" and can rename. A blocked or malformed name stops the send with a clear message.
 - **Table cap of 20 people is fixed in `place_guest_order` for now**; it becomes a restaurant setting in pass 2 phase 2.
 - **Local dev on Windows**: newer `@swc/core` refuses a native-binding cache whose folder grants write access to other accounts (sandboxed tools create such folders). Set `SWC_NATIVE_BINDING_CACHE` in `.env.local` to a private folder, e.g. `C:Users<you>.cacheswc-native`.
+- **QR limits are checked inside `place_order`** (source `qr`), so every QR path is covered; refusals return `reason: "limit"` with the cap, and the phone says which limit and how much. The tab cap counts everything on the tab, staff orders included. Reverse: move the checks to `place_guest_order`.
+- **"Ampliar límite" adds one more restaurant tab cap** to that table per tap (audited), rather than asking staff for an amount, so it's one tap during service. Servicio lists tables at 80% of their cap. Reverse: an amount field.
+- **"Mesa nueva por QR" doesn't add a one-tap void for servers**: voids stay with managers and owners (existing policy); the flag and its hint ask staff to check the table. Reverse: let servers void flagged orders.
+- **The rate limiter fails closed** and is now the default (`MEZZA_RATE_LIMIT=postgres`); per-IP limits use only platform headers (Vercel), so locally every request is "local". Reverse: `MEZZA_RATE_LIMIT=noop`.
+- **QR limit changes are owner-only and audited** (`limit_change`), like IVU.

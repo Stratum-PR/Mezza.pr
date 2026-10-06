@@ -21,6 +21,7 @@ function toTicket(o: FloorOrder, restaurantName: string): Ticket {
     orderNumber: o.number,
     createdAt: o.createdAt,
     locale: "es",
+    newTable: o.openedTab,
     lines: o.lines
       .filter((l) => !l.voided)
       .map((l) => ({ qty: l.qty, name: l.nameEs, modifiers: l.options, note: l.note ?? undefined })),
@@ -183,6 +184,11 @@ export function KitchenBoard({
                             {t(`source.${o.source}`)}
                           </span>
                         </div>
+                        {o.openedTab && (
+                          <span className="mt-1 inline-block rounded-full bg-warn-bg px-2 py-0.5 text-xs font-bold text-warn">
+                            {t("kitchen.newTable")}
+                          </span>
+                        )}
                         <ul className="my-1.5 pl-1 text-[15px]">
                           {o.lines
                             .filter((l) => !l.voided)

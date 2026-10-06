@@ -88,6 +88,16 @@ export async function confirmCash(slug: string, paymentId: string): Promise<Staf
   return { ok: true };
 }
 
+/** "Ampliar límite": one more restaurant tab cap for this table's QR orders. Returns the new cap (number). */
+export async function raiseTabLimit(slug: string, tabId: string): Promise<StaffResult> {
+  if (!uuid.safeParse(tabId).success) return fail("invalid");
+  await requireSection(slug, "service");
+  const { data, error } = await (await createClient()).rpc("raise_tab_limit", { p_tab_id: tabId });
+  if (error) return fail(error.code === "42501" ? "forbidden" : "failed");
+  refresh(slug);
+  return { ok: true, number: data };
+}
+
 /** "Cerrado en el POS": the sale was entered on the fiscal terminal; the tab closes. */
 export async function closeOnPos(slug: string, tabId: string): Promise<StaffResult> {
   if (!uuid.safeParse(tabId).success) return fail("invalid");
