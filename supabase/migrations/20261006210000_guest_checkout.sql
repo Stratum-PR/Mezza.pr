@@ -19,7 +19,7 @@ begin
   if p_device_hash is null or length(p_device_hash) <> 64 then
     raise exception 'invalid device' using errcode = '22023';
   end if;
-  perform 1 from public.restaurants where id = (select restaurant_id from public.tabs where id = p_tab_id) for update;
+  perform 1 from public.restaurants where id = (select restaurant_id from public.tabs where id = p_tab_id) for no key update; -- not FOR UPDATE: it would block the foreign-key checks of payments/orders inserted by another transaction that holds the tab (deadlock)
   select * into v_tab from public.tabs where id = p_tab_id for update;
   if not found or v_tab.status = 'closed' then
     raise exception 'tab is closed' using errcode = '22023';

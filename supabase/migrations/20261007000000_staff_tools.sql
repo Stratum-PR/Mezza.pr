@@ -339,9 +339,11 @@ end;
 $$;
 
 -- ---------------------------------------------------------------------------
--- close_idle_tabs: settled tabs with orders and no activity (orders or payments) for 10 minutes close
--- on their own, so a paid table doesn't carry into the next party. Called by staff screens and guest
--- pages as they load; staff may only close their own restaurant's tabs. Returns how many closed.
+-- close_idle_tabs: housekeeping as staff screens and guest pages load. Pending payments nobody
+-- finished in 15 minutes are abandoned (what they held is owed again; the phone can pay again and the
+-- cash alert goes away), then settled tabs with orders and no activity (orders or payments) for 10
+-- minutes close on their own, so a paid table doesn't carry into the next party. Staff may only tidy
+-- their own restaurant. Returns how many tabs closed.
 -- ---------------------------------------------------------------------------
 create function public.close_idle_tabs(p_restaurant_id uuid)
 returns integer
@@ -357,6 +359,8 @@ begin
      and not public.has_role(p_restaurant_id, array['owner', 'manager', 'server', 'kitchen']::public.member_role[]) then
     raise exception 'not allowed' using errcode = '42501';
   end if;
+  update public.payments set status = 'failed'
+  where restaurant_id = p_restaurant_id and status = 'pending' and created_at < now() - interval '15 minutes';
   for v_tab in
     select t.id from public.tabs t
     where t.restaurant_id = p_restaurant_id and t.status <> 'closed'

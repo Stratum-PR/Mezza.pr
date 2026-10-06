@@ -160,6 +160,16 @@ select is(public.close_idle_tabs('00000000-0000-4000-8000-00000000cafe'), 1, 'on
 select is((select status::text from public.tabs where id = (select v from ids where k = 't2')), 'closed', 'the paid, quiet table');
 select isnt(pg_temp.tab('t3'), null, 'a quiet table that owes stays open');
 select isnt(pg_temp.tab('t4'), null, 'a table paid just now stays open');
+
+-- A pending payment left for 15 minutes is abandoned by the same housekeeping (the phone can pay again).
+select pg_temp.order('t5', 1, '00000000-0000-4000-8000-0000000000b1');
+select public.create_tab_payment(pg_temp.tab('t5'), 'balance', 'cash', 'st-t5-0001');
+reset role;
+update public.payments set created_at = now() - interval '16 minutes' where idempotency_key = 'st-t5-0001';
+set local role service_role;
+select public.close_idle_tabs('00000000-0000-4000-8000-00000000cafe');
+select is((select status::text from public.payments where idempotency_key = 'st-t5-0001'), 'failed', 'a lapsed pending payment is abandoned');
+select is(pg_temp.owed('t5'), 200, 'and what it held is owed again');
 reset role;
 set local role authenticated;
 select pg_temp.as_user('00000000-0000-4000-8000-000000000003');

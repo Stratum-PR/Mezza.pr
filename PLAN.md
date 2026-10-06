@@ -175,6 +175,6 @@ Faster E2E first (user request, 2026-10-06), so the rest of the phase runs on it
 - [x] Parallel E2E: `pnpm seed:e2e` copies Café Lucía per worker (`cafe-lucia-w{k}`, "Café Lucía (w{k})": menu, tables, photos, logins `dueno.w{k}@…`, same history; global setup runs it); tests reach their restaurant, logins and tables through helpers (`worker()`, `app()`, `email()`, `tableId()`, `atApp()`); each worker sends its own test IP for the per-IP rate limits. 4 workers by default (`E2E_WORKERS`). Full suite: 10 min → 1.7 min on a production build
 - [x] Trim or move to a pre-release run whatever the user agrees from the timing report: the screenshot review is on demand (`pnpm screenshots`, its own config); its phone-menu check moved to site.spec.ts
 
-- [ ] Multi-phone E2E: two phones paying at once, paying while someone orders, someone leaving early, an even plan with a late order, a void after a partial payment, a pending payment expiring, auto-close and the next party at the same table
-- [ ] Real phones over the LAN (`allowedDevOrigins`)
-- [ ] README, CONNECTORS.md (`TabSplitter`, Postgres `RateLimiter`), DECISIONS.md updated
+- [x] Multi-phone E2E (`tests/e2e/split-edge-cases.spec.ts`): two phones paying at once, paying while someone orders, someone leaving early, an even plan with a late order, a pending payment expiring, auto-close and the next party at the same table; a void after a partial payment is in staff-tools.spec.ts and the database tests. Found and fixed a deadlock (paying while someone orders or pays) and lapsed payments that kept "Pagar" disabled
+- [ ] Real phones over the LAN: prepared (`MEZZA_DEV_ORIGINS` → `allowedDevOrigins`, README "Testing on phones"); needs the user with two or three phones
+- [x] README, CONNECTORS.md (`TabSplitter`, Postgres `RateLimiter`), DECISIONS.md updated

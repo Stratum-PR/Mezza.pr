@@ -126,6 +126,15 @@ left out of `pnpm test:e2e`; run it before a release or after UI work. What ever
 how long it takes: [docs/E2E_TESTS.md](docs/E2E_TESTS.md); `npx playwright show-report` opens the
 latest run.
 
+## Testing on phones (same Wi-Fi)
+
+1. Put this computer's Wi-Fi address in `.env.local`: `MEZZA_DEV_ORIGINS=192.168.0.10` (find it with
+   `ipconfig`), and stop any other `next dev` running in this folder.
+2. `pnpm dev`, then open a table's guest link on each phone with the computer's address instead of
+   `localhost`, e.g. `http://192.168.0.10:3000/r/cafe-lucia/t/<token>` (`pnpm seed` prints Mesa 4's).
+3. Staff use the computer: staff sign-in talks to the local Supabase at `127.0.0.1`, which phones
+   can't reach. Guest pages work from the phones (everything goes through the server).
+
 ## What's real and what's a stub
 
 Real in pass 1: QR ordering, the kitchen display, servers' screens, cash payments confirmed by staff,
