@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { Resvg } from "@resvg/resvg-js";
-import { login } from "./helpers";
+import { app, email, login, worker } from "./helpers";
 
 test.describe("QR studio", () => {
   test.describe.configure({ mode: "serial" });
@@ -8,7 +8,7 @@ test.describe("QR studio", () => {
 
   test("the QR PDF downloads", async ({ page }) => {
     test.setTimeout(90_000);
-    await login(page, "gerente@cafelucia.example", "/app/cafe-lucia/qr");
+    await login(page, email("gerente"), `${app()}/qr`);
     await page.waitForLoadState("networkidle");
     await expect(page.getByRole("img", { name: "QR · Mesa 1" })).toBeVisible();
     await page.screenshot({ path: "docs/screenshots/app-qr-studio.desktop.light.png", fullPage: true });
@@ -20,7 +20,7 @@ test.describe("QR studio", () => {
       const download = page.waitForEvent("download");
       await page.getByRole("link", { name: new RegExp(title) }).click();
       const file = await download;
-      expect(file.suggestedFilename()).toMatch(/^cafe-lucia-qr-(sheet|tent)\.pdf$/);
+      expect(file.suggestedFilename()).toMatch(new RegExp(`^${worker().slug}-qr-(sheet|tent)\\.pdf$`));
       const body = (await (await file.createReadStream())!.toArray()).map((c) => Buffer.from(c));
       const pdf = Buffer.concat(body);
       expect(pdf.subarray(0, 5).toString()).toBe("%PDF-");
@@ -29,7 +29,7 @@ test.describe("QR studio", () => {
   });
 
   test("a light code on a dark background is flagged", async ({ page }) => {
-    await login(page, "gerente@cafelucia.example", "/app/cafe-lucia/qr");
+    await login(page, email("gerente"), `${app()}/qr`);
     await page.waitForLoadState("networkidle");
     await page.getByRole("button", { name: "Minimal" }).click();
     await page.locator('input[type="color"]').first().fill("#ffffff"); // code
@@ -38,7 +38,7 @@ test.describe("QR studio", () => {
   });
 
   test("changing a table's code needs confirmation and bumps its version", async ({ page }) => {
-    await login(page, "gerente@cafelucia.example", "/app/cafe-lucia/qr");
+    await login(page, email("gerente"), `${app()}/qr`);
     await page.waitForLoadState("networkidle");
     const row = page.getByRole("listitem").filter({ hasText: "Mesa 12" });
     const before = Number((await row.getByText(/Versión \d+/).textContent())!.match(/\d+/)![0]);
@@ -52,7 +52,7 @@ test.describe("QR studio", () => {
   });
   test("an owner's own logo replaces the initials in the preview and the PDF", async ({ page }) => {
     test.setTimeout(90_000);
-    await login(page, "dueno@cafelucia.example", "/app/cafe-lucia/qr");
+    await login(page, email("dueno"), `${app()}/qr`);
     const preview = page.getByRole("img", { name: "QR · Mesa 1" });
     // Start from initials (an earlier run may have left a logo).
     await page.getByRole("radio", { name: "Iniciales" }).click();

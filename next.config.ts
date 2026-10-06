@@ -19,6 +19,11 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Phones on the same Wi-Fi testing `pnpm dev` (README): MEZZA_DEV_ORIGINS=192.168.0.10,other-host
+  allowedDevOrigins: (process.env.MEZZA_DEV_ORIGINS ?? "")
+    .split(",")
+    .map((h) => h.trim())
+    .filter(Boolean),
   experimental: { serverActions: { bodySizeLimit: "16mb" } },
 };
 

@@ -48,7 +48,7 @@ export default async function TablesPage({ params }: PageProps<"/app/[restaurant
               y: table.pos_y === null ? null : Number(table.pos_y),
               state: stateOf(tab),
               total: tab ? formatCents(tab.totalWithIvuCents, locale) : undefined,
-              href: tab ? `/app/${restaurant}/servicio` : undefined,
+              href: tab ? `/app/${restaurant}/mesas/${table.id}` : undefined,
             };
           })}
         />
@@ -81,7 +81,7 @@ export default async function TablesPage({ params }: PageProps<"/app/[restaurant
             <li key={table.id}>
               {tab ? (
                 <Link
-                  href={`/app/${restaurant}/servicio`}
+                  href={`/app/${restaurant}/mesas/${table.id}`}
                   className={cls}
                   aria-label={`${t("table", { label: table.label })} · ${t(`tables.${state}`)}`}
                 >

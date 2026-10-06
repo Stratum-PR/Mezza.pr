@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
-import { guestUrl, login, resetTable } from "./helpers";
+import { app, email, guestUrl, login, resetTable, worker } from "./helpers";
 
 const DEFAULTS = {
   qr_max_order_cents: 30000,
@@ -15,7 +15,7 @@ async function restoreLimits() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   if (!/^http:\/\/(127\.0\.0\.1|localhost)/.test(url)) throw new Error("local Supabase only");
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  await fetch(`${url}/rest/v1/restaurants?slug=eq.cafe-lucia`, {
+  await fetch(`${url}/rest/v1/restaurants?slug=eq.${worker().slug}`, {
     method: "PATCH",
     headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify(DEFAULTS),
@@ -45,7 +45,7 @@ test.describe("QR ordering limits", () => {
 
     // The owner lowers the limits in Ajustes: $5 per order, $5 per open table.
     const owner = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
-    await login(owner, "dueno@cafelucia.example", "/app/cafe-lucia/ajustes");
+    await login(owner, email("dueno"), `${app()}/ajustes`);
     const limits = owner
       .locator("section")
       .filter({ has: owner.getByRole("heading", { name: "Límites de pedidos por QR" }) });
@@ -72,7 +72,7 @@ test.describe("QR ordering limits", () => {
 
     // Servicio: the order is flagged as a new table, and the table is near its $5 cap.
     const server = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
-    await login(server, "mesero@cafelucia.example", "/app/cafe-lucia/servicio");
+    await login(server, email("mesero"), `${app()}/servicio`);
     await expect(server.getByText("Mesa nueva por QR").first()).toBeVisible();
     const alert = server.getByRole("listitem").filter({ hasText: "Mesa 3 cerca de su límite por QR" });
     await expect(alert).toContainText("$4.00 de $5.00");

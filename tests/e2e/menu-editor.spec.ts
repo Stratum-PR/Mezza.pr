@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { guestUrl, login } from "./helpers";
+import { app, email, guestUrl, login } from "./helpers";
 
 async function setPrice(page: Page, dish: string, price: string) {
   await page.getByRole("button", { name: `Editar ${dish}` }).click();
@@ -16,7 +16,7 @@ test.describe("menu editor", () => {
 
   test("a manager changes a price and the preview and guest menu show it", async ({ page, browser }) => {
     test.setTimeout(90_000);
-    await login(page, "gerente@cafelucia.example", "/app/cafe-lucia/menu");
+    await login(page, email("gerente"), `${app()}/menu`);
     await page.waitForLoadState("networkidle");
     await page.screenshot({ path: "docs/screenshots/app-menu-editor.desktop.light.png", fullPage: true });
 
@@ -38,7 +38,7 @@ test.describe("menu editor", () => {
   });
 
   test("marking a dish sold out shows it in the preview", async ({ page }) => {
-    await login(page, "gerente@cafelucia.example", "/app/cafe-lucia/menu");
+    await login(page, email("gerente"), `${app()}/menu`);
     await page.waitForLoadState("networkidle");
     const preview = page.getByRole("complementary", { name: "Vista previa" });
     await preview.getByRole("button", { name: "Simple", exact: true }).click();
@@ -53,7 +53,7 @@ test.describe("menu editor", () => {
   });
 
   test("a bad price says how to fix it", async ({ page }) => {
-    await login(page, "gerente@cafelucia.example", "/app/cafe-lucia/menu");
+    await login(page, email("gerente"), `${app()}/menu`);
     await page.getByRole("button", { name: "Editar Malta" }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("Precio en dólares").fill("dos pesos");

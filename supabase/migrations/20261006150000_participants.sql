@@ -99,7 +99,7 @@ begin
   end if;
 
   -- Same lock place_order takes first, so the tab and the participant can't race another order.
-  perform 1 from public.restaurants r where r.id = p_restaurant_id for update;
+  perform 1 from public.restaurants r where r.id = p_restaurant_id for no key update; -- not FOR UPDATE: it would block the foreign-key checks of payments/orders inserted by another transaction that holds the tab (deadlock)
 
   -- A full table refuses a new phone before anything is created.
   select p.id into v_pid

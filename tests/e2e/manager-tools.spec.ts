@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { login } from "./helpers";
+import { app, email, login } from "./helpers";
 
 test.describe("manager tools in Servicio", () => {
   test.describe.configure({ mode: "serial" });
@@ -9,7 +9,7 @@ test.describe("manager tools in Servicio", () => {
     page,
   }) => {
     test.setTimeout(90_000);
-    await login(page, "gerente@cafelucia.example", "/app/cafe-lucia/servicio");
+    await login(page, email("gerente"), `${app()}/servicio`);
     await page.getByRole("link", { name: "Abrir Tomar orden" }).click();
     await expect(page).toHaveURL(/\/servicio\/orden$/);
     const ticket = page.getByRole("complementary", { name: "Orden de la mesa" });
@@ -22,7 +22,7 @@ test.describe("manager tools in Servicio", () => {
     const sent = page.getByText(/Pedido #(\d+) enviado a la cocina/);
     await expect(sent).toBeVisible({ timeout: 20_000 });
     const number = (await sent.textContent())!.match(/#(\d+)/)![1]!;
-    await page.goto("/app/cafe-lucia/servicio");
+    await page.goto(`${app()}/servicio`);
 
     // Void the Quesito: the reason is required.
     const order = page.getByRole("listitem").filter({ hasText: `#${number} · Mesa 10` });
@@ -48,7 +48,7 @@ test.describe("manager tools in Servicio", () => {
   });
 
   test("servers can't void or refund", async ({ page }) => {
-    await login(page, "mesero@cafelucia.example", "/app/cafe-lucia/servicio");
+    await login(page, email("mesero"), `${app()}/servicio`);
     await expect(page.getByText("Anular y reembolsar es para gerentes y dueños.")).toBeVisible();
     await expect(page.getByRole("button", { name: /^Anular / })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Reembolsar" })).toHaveCount(0);

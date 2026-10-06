@@ -979,7 +979,8 @@
       "raiseLimit": "Raise limit",
       "limitRaised": "Table limit raised to {cap}.",
       "cashCancel": "Cancel",
-      "cashCancelled": "Payment cancelled; what it covered is owed again."
+      "cashCancelled": "Payment cancelled; what it covered is owed again.",
+      "voidRefund": "Voided. Give {amount} in cash back to whoever paid it."
     },
     "tables": {
       "title": "Tables",
@@ -999,7 +1000,8 @@
       "validation": "Check the order: something changed on the menu.",
       "item_unavailable": "A dish in the order sold out.",
       "tab_closed": "That table is paying and takes no new orders.",
-      "invalid": "Something doesn't add up. Reload the page."
+      "invalid": "Something doesn't add up. Reload the page.",
+      "pending": "A payment in progress covers that dish. Confirm or cancel it first."
     },
     "strip": {
       "title": "Today's orders",
@@ -1085,6 +1087,79 @@
       "cancel": "Cancel",
       "void": "Void",
       "refund": "Refund"
+    },
+    "tableDetail": {
+      "back": "Back to Tables",
+      "title": "Table {label}",
+      "free": "This table is free. It will show here when someone orders.",
+      "subtotal": "Ordered",
+      "collected": "Collected",
+      "inProgress": "In progress",
+      "left": "Left to collect",
+      "people": "People and what they ordered",
+      "tableLines": "For the table",
+      "noPeople": "Nobody has ordered from their phone yet.",
+      "owes": "{total} left",
+      "paid": "Paid",
+      "processing": "Payment in progress",
+      "sharedOf": "share of {total}",
+      "locked": "Has a payment",
+      "moveLabel": "Move {name} to",
+      "moveChoose": "Move to…",
+      "toTable": "The table",
+      "reshare": "Share among…",
+      "reshareTitle": "Who shares {name}?",
+      "reshareSave": "Save",
+      "cancel": "Cancel",
+      "voidLine": "Void",
+      "writeOffPerson": "Write off {name}'s",
+      "writeOffTable": "Write off the table's",
+      "writeOffBalance": "Write off everything left",
+      "writeOffTitle": "Write off {amount}",
+      "writeOffConfirm": "Write off",
+      "writeOffDone": "Written off: {amount}.",
+      "charge": "Charge",
+      "chargeTitle": "Split the check",
+      "chargePerson": "One person's",
+      "chargeBalance": "Everything left",
+      "chargePlan": "Equal shares",
+      "planCount": "How many ways?",
+      "planStart": "Split {n} ways",
+      "planParts": "Shares you're charging",
+      "planActive": "Split {parts} ways. Shares left: {left}, {share} each.",
+      "planCancel": "Cancel the split",
+      "plusIvu": "{amount} + IVU",
+      "continue": "Continue to payment",
+      "payments": "Payments at this table",
+      "noPayments": "No payments yet.",
+      "byStaff": "Staff",
+      "forWhom": "for {name}",
+      "planShare": "{parts} of the equal shares",
+      "collect": "Collect",
+      "refund": "Refund",
+      "refundedAmount": "Refunded {amount}",
+      "writeOffs": "Written off",
+      "writeOffLine": "{who}: {amount} · {reason}",
+      "freeHint": "You can free it when nothing is left to collect and no payment is in progress.",
+      "freed": "Table freed.",
+      "voided": "Voided.",
+      "voidedRefund": "Voided. Give {amount} in cash back to whoever paid it.",
+      "open": "View table",
+      "freeTable": "Free the table"
+    },
+    "tableErrors": {
+      "has_payments": "That dish already has a payment; it can't change.",
+      "pending": "A payment in progress covers that dish. Confirm or cancel it first.",
+      "not_settled": "There's still money to collect or a payment in progress.",
+      "nothing": "There's nothing left to write off.",
+      "reason": "Write the reason (3 letters or more).",
+      "forbidden": "Only managers and owners can do that.",
+      "invalid": "Something doesn't add up. Reload the page.",
+      "failed": "That didn't work. Try again.",
+      "nothing_to_pay": "There's nothing left to collect.",
+      "no_plan": "The split changed. Reload the page.",
+      "plan_exists": "There's already a split with a different number of shares.",
+      "plan_started": "A share was already collected; the split can't be cancelled."
     }
   },
   "home": {
@@ -1246,6 +1321,13 @@
       "en": "English",
       "orders": "Orders",
       "share": "Share"
+    },
+    "adjustments": {
+      "title": "Adjustments in this period",
+      "voids": "Voids: {count} · {amount}",
+      "writeOffs": "Written off: {count} · {amount}",
+      "refunds": "Refunds: {amount}",
+      "note": "None of these count as sales. Write-offs aren't money collected either."
     }
   },
   "exports": {

@@ -91,6 +91,10 @@ begin
   insert into public.refunds (restaurant_id, payment_id, amount_cents, reason) values (p_rid, tests.id(p_rid, 'payment'), 100, 'Fixture');
   insert into public.payment_allocations (restaurant_id, payment_id, order_item_id, cents)
     values (p_rid, tests.id(p_rid, 'payment'), tests.id(p_rid, 'line'), 500);
+  insert into public.write_offs (id, restaurant_id, tab_id, scope, cents, reason)
+    values (tests.id(p_rid, 'writeoff'), p_rid, tests.id(p_rid, 'tab'), 'table', 250, 'Fixture');
+  insert into public.write_off_allocations (restaurant_id, write_off_id, order_item_id, cents)
+    values (p_rid, tests.id(p_rid, 'writeoff'), tests.id(p_rid, 'line2'), 250);
   insert into public.split_plans (id, restaurant_id, tab_id, parts) values (tests.id(p_rid, 'plan'), p_rid, tests.id(p_rid, 'tab'), 2);
   insert into public.split_plan_units (restaurant_id, plan_id, order_item_id)
     values (p_rid, tests.id(p_rid, 'plan'), tests.id(p_rid, 'line2'));

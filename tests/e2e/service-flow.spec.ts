@@ -1,16 +1,14 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { guestUrl, login, resetTable } from "./helpers";
+import { app, email, guestUrl, login, resetTable } from "./helpers";
 
 /** Today's taxable sales in this month's IVU summary, and the "Ventas de hoy" tile on Inicio. */
 async function todaysSales(owner: Page) {
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Puerto_Rico" }).format(new Date());
   const csv = await (
-    await owner.request.get(
-      `/app/cafe-lucia/exportar/descargar?kind=ivu_monthly_csv&month=${today.slice(0, 7)}`,
-    )
+    await owner.request.get(`${app()}/exportar/descargar?kind=ivu_monthly_csv&month=${today.slice(0, 7)}`)
   ).text();
   const row = csv.split(/\r?\n/).find((l) => l.startsWith(`${today},`));
-  await owner.goto("/app/cafe-lucia");
+  await owner.goto(`${app()}`);
   const tile = await owner.getByText("Ventas de hoy").locator("..").textContent();
   return {
     ivu: Number(row?.split(",")[1] ?? 0),
@@ -31,7 +29,7 @@ test("Mesa 4 orders, the kitchen serves it, the guest pays cash and the table cl
   test.skip(info.project.name !== "desktop", "multi-device flow runs once");
   test.setTimeout(240_000);
   await resetTable(4);
-  const owner = await staff(browser, "dueno@cafelucia.example", "/app/cafe-lucia");
+  const owner = await staff(browser, email("dueno"), `${app()}`);
   const before = await todaysSales(owner);
 
   // Guest phone at Mesa 4.
@@ -54,7 +52,7 @@ test("Mesa 4 orders, the kitchen serves it, the guest pays cash and the table cl
   await expect(guest.getByText("Recibido")).toBeVisible();
 
   // The kitchen sees it and moves it along.
-  const kitchen = await staff(browser, "cocina@cafelucia.example", "/app/cafe-lucia/cocina");
+  const kitchen = await staff(browser, email("cocina"), `${app()}/cocina`);
   const card = kitchen.getByRole("listitem").filter({ hasText: `#${number} · Mesa 4` });
   await expect(card).toBeVisible({ timeout: 20_000 });
   await expect(card.getByText("QR", { exact: true })).toBeVisible();
@@ -73,7 +71,7 @@ test("Mesa 4 orders, the kitchen serves it, the guest pays cash and the table cl
   await expect(guest.getByText("Listo", { exact: true })).toBeVisible({ timeout: 20_000 });
 
   // The server marks it served.
-  const server = await staff(browser, "mesero@cafelucia.example", "/app/cafe-lucia/servicio");
+  const server = await staff(browser, email("mesero"), `${app()}/servicio`);
   const readyAlert = server.getByRole("listitem").filter({ hasText: `Pedido #${number} listo · Mesa 4` });
   await expect(readyAlert).toBeVisible({ timeout: 20_000 });
   await readyAlert.getByRole("button", { name: "Servido" }).click();
@@ -115,7 +113,7 @@ test("Mesa 4 orders, the kitchen serves it, the guest pays cash and the table cl
   await expect(pos).toBeHidden({ timeout: 20_000 });
 
   // Mesas shows Mesa 4 free again.
-  await server.goto("/app/cafe-lucia/mesas");
+  await server.goto(`${app()}/mesas`);
   await expect(server.getByRole("listitem").filter({ hasText: /^4/ }).getByText("Libre")).toBeVisible();
   await server.screenshot({ path: "docs/screenshots/app-tables.desktop.light.png", fullPage: true });
 });

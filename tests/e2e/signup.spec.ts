@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import sharp from "sharp";
 
 test("a new owner signs up and walks through the six-step wizard", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "signup flow runs once");
@@ -18,10 +19,13 @@ test("a new owner signs up and walks through the six-step wizard", async ({ page
   // Step 2: menu upload (the importer keeps working in the background).
   await expect(page).toHaveURL(new RegExp(`/app/fonda-prueba-${stamp}/empezar`), { timeout: 30_000 });
   await expect(page.getByText(/días de prueba gratis/)).toBeVisible();
+  // A real (tiny) image: PDFs only pass in demo mode, and production builds check the picture.
   await page.getByLabel("Imagen del menú").setInputFiles({
-    name: "menu.pdf",
-    mimeType: "application/pdf",
-    buffer: Buffer.from("%PDF-1.4\n%%EOF\n"),
+    name: "menu.png",
+    mimeType: "image/png",
+    buffer: await sharp({ create: { width: 60, height: 90, channels: 3, background: "#f3e9d2" } })
+      .png()
+      .toBuffer(),
   });
   await page.getByRole("button", { name: "Subir menú y continuar" }).click();
 
@@ -40,7 +44,9 @@ test("a new owner signs up and walks through the six-step wizard", async ({ page
   if (await connect.count()) {
     await expect(page.getByText("Paga con tu mesero")).toBeVisible();
     await connect.first().click();
-    await expect(page.getByText("Esta conexión estará disponible pronto", { exact: false })).toBeVisible();
+    await expect(
+      page.getByText("Esta conexión estará disponible próximamente", { exact: false }),
+    ).toBeVisible();
   } else {
     await expect(page.getByText("Conectado").first()).toBeVisible();
   }

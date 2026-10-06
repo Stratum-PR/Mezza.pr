@@ -68,6 +68,8 @@ export async function guestStatus(
   device?: string | null,
 ): Promise<GuestStatus> {
   const db = createAdminClient();
+  // A paid table quiet for 10 minutes closes, so the next party starts fresh.
+  await db.rpc("close_idle_tabs", { p_restaurant_id: g.restaurant.id });
   const tabQuery = db.from("tabs").select("id, status").eq("table_id", g.table.id);
   const { data: tab } = tabId
     ? await tabQuery.eq("id", tabId).maybeSingle()

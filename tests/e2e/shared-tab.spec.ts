@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { guestUrl, login, resetTable } from "./helpers";
+import { app, email, guestUrl, login, resetTable } from "./helpers";
 
 /** A separate phone: its own cookies, so its own device and its own person at the table. */
 async function phone(browser: Browser): Promise<Page> {
@@ -70,7 +70,7 @@ test.describe("people at a table (shared tab)", () => {
 
     // A server takes an order at Mesa 10 for Ana.
     const staff = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
-    await login(staff, "mesero@cafelucia.example", "/app/cafe-lucia/servicio/orden");
+    await login(staff, email("mesero"), `${app()}/servicio/orden`);
     await staff.getByRole("button", { name: "10", exact: true }).click();
     await staff.getByRole("group", { name: "Para" }).getByRole("button", { name: "Ana · #1" }).click();
     await staff.getByRole("button", { name: "Añadir Malta" }).click();

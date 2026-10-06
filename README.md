@@ -113,12 +113,27 @@ database tier: about 15% of the local history (roughly 500 orders over 90 days),
 pnpm typecheck && pnpm lint && pnpm test   # types, lint, unit tests
 pnpm test:db                               # pgTAP database tests (needs the local stack)
 pnpm db:check                              # same database tests on in-process PGlite (no Docker)
-pnpm test:e2e                              # Playwright smoke tests; starts the dev server if needed
-pnpm screenshots                           # every screen, 390 and 1280 px, light and dark
+pnpm test:e2e                              # Playwright tests on the dev server (2 workers); single files too
+pnpm test:e2e:prod                         # the full suite on a production build, 4 workers (~2 min)
+pnpm seed:e2e                              # one Café Lucía copy per test worker (the E2E setup runs it)
+pnpm screenshots                           # on demand: every screen, 390 and 1280 px, light and dark
 ```
 
-End-to-end tests run serially against the seeded Café Lucía data and tidy up after themselves
-(`resetTable` in `tests/e2e/helpers.ts` only ever touches the local stack).
+End-to-end tests run in parallel, each worker on its own copy of Café Lucía (worker 0 uses Café Lucía
+itself, worker k `cafe-lucia-w{k}` with logins `dueno.w{k}@cafelucia.example` …), and tidy up after themselves
+(`resetTable` in `tests/e2e/helpers.ts` only ever touches the local stack). The screenshot review is
+left out of `pnpm test:e2e`; run it before a release or after UI work. What every test checks and
+how long it takes: [docs/E2E_TESTS.md](docs/E2E_TESTS.md); `npx playwright show-report` opens the
+latest run.
+
+## Testing on phones (same Wi-Fi)
+
+1. Put this computer's Wi-Fi address in `.env.local`: `MEZZA_DEV_ORIGINS=192.168.0.10` (find it with
+   `ipconfig`), and stop any other `next dev` running in this folder.
+2. `pnpm dev`, then open a table's guest link on each phone with the computer's address instead of
+   `localhost`, e.g. `http://192.168.0.10:3000/r/cafe-lucia/t/<token>` (`pnpm seed` prints Mesa 4's).
+3. Staff use the computer: staff sign-in talks to the local Supabase at `127.0.0.1`, which phones
+   can't reach. Guest pages work from the phones (everything goes through the server).
 
 ## What's real and what's a stub
 
