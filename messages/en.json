@@ -480,7 +480,8 @@
       "invalid": "Check the email and password: something is missing or in the wrong format.",
       "credentials": "The email or password doesn't match. Try again or ask for a login link.",
       "rateLimited": "Too many attempts. Wait a minute and try again.",
-      "link": "The link expired or was already used. Ask for a new one."
+      "link": "The link expired or was already used. Ask for a new one.",
+      "unconfirmed": "You haven't confirmed your email yet. Open the link we sent when you created the account (check spam too)."
     },
     "signOut": "Log out",
     "pickRestaurant": "Choose a restaurant",

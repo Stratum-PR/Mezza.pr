@@ -7,7 +7,7 @@ import { createClient } from "@/lib/db/server";
 
 export type AuthFormState = {
   status: "idle" | "error" | "sent";
-  message?: "invalid" | "credentials" | "rateLimited";
+  message?: "invalid" | "credentials" | "rateLimited" | "unconfirmed";
 };
 
 /** Only same-site staff paths are allowed as a post-login destination. */
@@ -29,7 +29,12 @@ export async function signInWithPassword(_: AuthFormState, form: FormData): Prom
     email: parsed.data.email,
     password: parsed.data.password,
   });
-  if (error) return { status: "error", message: error.status === 429 ? "rateLimited" : "credentials" };
+  if (error) {
+    if (error.status === 429) return { status: "error", message: "rateLimited" };
+    // Signed up but never clicked the confirmation email: say so instead of "wrong password".
+    if (error.code === "email_not_confirmed") return { status: "error", message: "unconfirmed" };
+    return { status: "error", message: "credentials" };
+  }
   redirect(await safeNext(parsed.data.next));
 }
 
