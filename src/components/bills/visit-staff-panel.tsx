@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { staffVisitsRead, staffVisitChange } from "@/lib/bills/actions";
+import { staffVisitsRead, staffVisitChange, staffBillReceipt } from "@/lib/bills/actions";
+import { printerDriver } from "@/connectors/printing";
 import { allocateBill, type UnitAssignment } from "@/lib/bills/allocation";
 import type { VisitState } from "@/lib/bills/types";
 import { dollarsToCents, formatCents } from "@/lib/money";
@@ -30,6 +31,24 @@ export function VisitStaffPanel({ slug, canManage }: { slug: string; canManage: 
   const paymentAttempt = useRef<{ payload: string; key: string } | null>(null);
   const table = tables.find((t) => t.id === tableId),
     v = table?.visit;
+  const context = `${tableId}:${v?.id ?? "closed"}`;
+  const [formContext, setFormContext] = useState(context);
+  // A new party at the same table must not inherit the previous party's form.
+  if (formContext !== context) {
+    setFormContext(context);
+    setMode("even");
+    setPeople([]);
+    setAssignments([]);
+    setAck(false);
+    setCovered([]);
+    setPayer("");
+    setTender("");
+    setTip("0");
+    setPersonName("");
+    setTicket("");
+    setNotice("");
+    setError("");
+  }
   const read = useCallback(async () => {
     if (busy.current) return;
     const r = await staffVisitsRead(slug);
@@ -300,6 +319,33 @@ export function VisitStaffPanel({ slug, canManage }: { slug: string; canManage: 
               </div>
             ))}
           <h3 className="font-bold">Cargos aceptados</h3>
+          {[...new Set(v.portions.flatMap((p) => (p.paymentId ? [p.paymentId] : [])))].map((paymentId) => (
+            <button
+              key={paymentId}
+              className={btn}
+              disabled={pending}
+              onClick={() =>
+                startTransition(async () => {
+                  try {
+                    const receipt = await staffBillReceipt(slug, paymentId);
+                    if (!receipt.ok) {
+                      setError(receipt.error);
+                      return;
+                    }
+                    const result = await printerDriver("browser").print(
+                      { id: "browser", widthChars: 42 },
+                      receipt.data,
+                    );
+                    if (!result.ok) setError(result.error);
+                  } catch {
+                    setError("connection_failed");
+                  }
+                })
+              }
+            >
+              Imprimir recibo · {v.portions.find((p) => p.paymentId === paymentId)?.payerName}
+            </button>
+          ))}
           {v.lines.map((l) => (
             <p key={l.id}>
               {l.qty} × {l.name} · {formatCents(l.qty * l.unitCents)}

@@ -11,6 +11,8 @@ import { createAdminClient } from "@/lib/db/admin";
 import { resolveTable } from "@/lib/guest/resolve";
 import { loadMenu } from "@/lib/menu/load";
 import { allocateBill } from "./allocation";
+import { formatCents } from "@/lib/money";
+import type { Ticket } from "@/lib/tickets";
 import { billsDb, workflow } from "./db";
 import { splitWorkflowEnabled } from "./feature";
 import type { BillResult, GuestVisit, VisitState, VisitReceipt } from "./types";
@@ -390,6 +392,69 @@ export async function staffVisitChange(
     return failure(e);
   }
 }
+/** Staff can hand a printed receipt to a payer without a phone. No guest bearer token is exposed. */
+export async function staffBillReceipt(slug: string, paymentId: string): Promise<BillResult<Ticket>> {
+  const ctx = await requireSection(slug, "service");
+  try {
+    uuid.parse(paymentId);
+    await rate(`staff-receipts:${ctx.userId}`, 60);
+    const db = createAdminClient();
+    const { data: payment, error } = await db
+      .from("payments")
+      .select("*")
+      .eq("id", paymentId)
+      .eq("restaurant_id", ctx.restaurant.id)
+      .single();
+    if (error || !payment?.paid_at || !["paid", "refunded"].includes(payment.status))
+      throw new Error("forbidden");
+    const visit = await workflow<VisitState>({
+      p_op: "snapshot",
+      p_tab: payment.tab_id,
+      p_actor: ctx.userId,
+    });
+    const portions = visit.portions.filter((p) => p.paymentId === paymentId);
+    if (!portions.length) throw new Error("forbidden");
+    const { data: table } = await db.from("dining_tables").select("label").eq("id", visit.tableId).single();
+    const { data: refunds, error: refundError } = await db
+      .from("refunds")
+      .select("amount_cents")
+      .eq("payment_id", paymentId)
+      .eq("restaurant_id", ctx.restaurant.id);
+    if (refundError) throw refundError;
+    return {
+      ok: true,
+      data: {
+        kind: "receipt",
+        restaurantName: ctx.restaurant.name,
+        tableLabel: table?.label ?? "",
+        orderNumber: 0,
+        createdAt: payment.paid_at,
+        locale: "es",
+        lines: portions.flatMap((p) =>
+          p.lines
+            .filter((l) => l.cents > 0)
+            .map((l) => ({
+              qty: 1,
+              name: `${p.label} · ${l.name} · ${formatCents(l.cents)}`,
+              modifiers: [],
+            })),
+        ),
+        totals: {
+          subtotalCents: payment.amount_cents,
+          ivuStateCents: payment.ivu_state_cents,
+          ivuMunicipalCents: payment.ivu_municipal_cents,
+          tipCents: payment.tip_cents,
+          totalCents:
+            payment.amount_cents + payment.ivu_state_cents + payment.ivu_municipal_cents + payment.tip_cents,
+        },
+        footer: `Recibo de pago (no fiscal) · Efectivo · ${payment.id}\nReembolsado: ${formatCents((refunds ?? []).reduce((n, r) => n + r.amount_cents, 0))}`,
+      },
+    };
+  } catch (e) {
+    return failure(e);
+  }
+}
+
 export async function guestVisitRecover(
   slug: string,
   token: string,

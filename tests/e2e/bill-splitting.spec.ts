@@ -30,6 +30,9 @@ test("two phones, staff review, exact even split, one payer and next-party isola
   for (const page of [employee, a, b]) page.on("pageerror", (e) => errors.push(e.message));
   await a.goto(url);
   await expect(a.getByText("El personal debe abrir la visita", { exact: false })).toBeVisible();
+  await a.getByRole("button", { name: "en", exact: true }).click();
+  await expect(a.getByText("Staff must open a visit", { exact: false })).toBeVisible();
+  await a.getByRole("button", { name: "es", exact: true }).click();
   await employee.goto("/app/bill-browser/servicio");
   await employee.getByLabel("Mesa para dividir cuenta").selectOption("20000000-0000-4000-8000-000000000020");
   await employee.getByRole("button", { name: "Abrir visita", exact: true }).click();
@@ -70,12 +73,15 @@ test("two phones, staff review, exact even split, one payer and next-party isola
   await expect(employee.getByRole("button", { name: "Confirmar efectivo recibido" })).toBeDisabled();
   await employee.getByLabel("Efectivo entregado ($)").fill("25");
   await employee.getByRole("button", { name: "Confirmar efectivo recibido" }).click();
+  await expect(employee.getByRole("button", { name: /Imprimir recibo · Ana/ })).toBeVisible();
   await expect(a.getByRole("heading", { name: /Mi recibo/ })).toBeVisible({ timeout: 15000 });
   await expect(b.getByRole("heading", { name: /Mi recibo/ })).toHaveCount(0);
+  await expect(b.getByText("Pagó: Ana", { exact: false }).first()).toBeVisible({ timeout: 15000 });
   employee.once("dialog", (d) => d.accept());
   await employee.getByRole("button", { name: "Cerrar visita en POS" }).click();
   await expect(employee.getByRole("button", { name: "Abrir visita", exact: true })).toBeVisible();
   await employee.getByRole("button", { name: "Abrir visita", exact: true }).click();
+  await expect(employee.getByRole("checkbox", { name: /Avisé que los carritos/ })).not.toBeChecked();
   await expect(a.getByRole("button", { name: "Unirme", exact: true })).toBeVisible({ timeout: 15000 });
   await expect(a.getByText("Tus pedidos necesitan aceptación", { exact: false })).toHaveCount(0);
   await expect(a.getByRole("heading", { name: /Mi recibo/ })).toBeVisible();

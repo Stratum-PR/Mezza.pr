@@ -110,14 +110,14 @@ Current limits: 20 units per cart line, 100 units and $1,000 per saved cart, 500
 
 The permanent QR remains an invitation to any open visit. Someone with the saved link can deliberately join again using a new session. Expiry/closure prevents old session access and stale mutations; it does not prove physical presence. Staff review and rate limits protect kitchen dispatch. This accepted limitation remains explicit.
 
-Unit/property tests and PGlite migration/RPC tests pass. TypeScript, ESLint and the production build pass with synthetic environment values. Browser and real Supabase integration/concurrency verification are release gates. The cloud browser cannot access the workspace's loopback preview, the local browser test cannot launch because Chromium is not installed, and Docker is unavailable here. No production migration or flag change has been made.
+Unit/property tests and PGlite migration/RPC tests pass. TypeScript, ESLint and the production build pass with synthetic environment values. Chromium browser verification and isolated local Docker Supabase verification now pass. The latter exercises real Auth sessions, PostgREST execution grants, RLS, concurrent cart edits/submissions, staff lock races, cash idempotency, receipt privacy, rate limits and PostgreSQL row-lock waiting. The browser fixture still uses synthetic Auth/PostgREST and the local Supabase check uses API calls rather than two physical phones. A separate staging project and staging preview remain the release gate. No production migration or flag change has been made.
 
 ### Release sequence
 
 1. Merge the Original-menu prerequisite (PR #1) before merging this feature's stacked draft PR.
 2. Apply the staged migration to an isolated Supabase staging project and regenerate checked-in public database types. The workflow tables stay in `mezza_private`; never expose that schema through the Data API.
 3. Set `MEZZA_SPLIT_BILL=true` in staging only. Start with no legacy live visits. Staff must open a visit from Servicio before guests or staff take orders.
-4. Run the browser fixture locally: `pnpm exec playwright install chromium`, then `pnpm test:bills:browser`. It uses synthetic Auth/PostgREST responses and real PGlite RPCs; it is not proof of real Supabase Auth/REST/RLS integration.
+4. Run the browser fixture locally: `pnpm exec playwright install chromium`, then `pnpm test:bills:browser`. It uses synthetic Auth/PostgREST responses and real PGlite RPCs. Run `node --import tsx scripts/db-check/bill-supabase.ts` for real local Auth/REST/RLS and concurrency checks; it requires the isolated Docker Supabase stack. On Windows, the SWC native-binding cache may need a private directory outside workspace and Temp ancestors.
 5. Verify real two-phone/two-staff flows, Auth/REST grants, kitchen progress, concurrent acceptance versus freezing, duplicate cash confirmation, partial-payment closure refusal, refunds/write-offs, receipt privacy/expiry and next-party isolation. Check no legacy events endpoint exposes managed payment IDs.
 6. After review, apply the migration and enable the production flag in a separate authorized rollout. Do not disable the flag while managed visits remain live. To roll back, pause ordering, finish/resolved balances and close those visits before reverting the flag. Preserve the ledger tables and migration.
 

@@ -37,7 +37,8 @@ export function VisitGuestApp({
     previousPeople = useRef<string[] | null>(null),
     previousVisit = useRef<string | null>(null),
     submission = useRef<{ id: string; version: number } | null>(null);
-  const es = initialLang === "es";
+  const [lang, setLang] = useState(initialLang);
+  const es = lang === "es";
   const say = (spanish: string, english: string) => (es ? spanish : english);
   const consume = useCallback(
     (v: GuestVisit | null) => {
@@ -244,6 +245,12 @@ export function VisitGuestApp({
             : p.status === "written_off"
               ? say("Resuelto por gerente", "Resolved by manager")
               : say("Pendiente: paga al personal", "Due: pay staff")}
+          {p.status === "paid" && p.payerName && (
+            <span>
+              {" "}
+              · {say("Pagó", "Paid by")}: {p.payerName}
+            </span>
+          )}
         </div>
       ))}
     </section>
@@ -424,6 +431,7 @@ export function VisitGuestApp({
         menu={menu}
         messages={messages}
         initialLang={initialLang}
+        onLangChange={setLang}
         tableLabel={tableLabel}
         live={{
           storageKey: "",

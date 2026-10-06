@@ -44,6 +44,7 @@ export function GuestMenu({
   className,
   live,
   headerExtra,
+  onLangChange,
 }: {
   menu: MenuData;
   messages: Record<MenuLocale, MenuMessages>;
@@ -54,6 +55,7 @@ export function GuestMenu({
   live?: LiveMode;
   /** Extra control in the header, e.g. the light/dark toggle on the real guest page. */
   headerExtra?: ReactNode;
+  onLangChange?: (lang: MenuLocale) => void;
 }) {
   const [lang, setLang] = useState<MenuLocale>(initialLang);
   const [style, setStyle] = useState<MenuStyle>(menu.defaultStyle);
@@ -266,7 +268,10 @@ export function GuestMenu({
                   type="button"
                   lang={l}
                   aria-pressed={lang === l}
-                  onClick={() => setLang(l)}
+                  onClick={() => {
+                    setLang(l);
+                    onLangChange?.(l);
+                  }}
                   className={cn(
                     "min-h-8 min-w-9 rounded-[7px] px-2 text-xs font-bold uppercase",
                     lang === l ? "bg-sand text-navy" : "text-current",
