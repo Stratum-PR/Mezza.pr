@@ -1,11 +1,13 @@
 import "server-only";
 import { createAdminClient } from "@/lib/db/admin";
 import { computeIvu, type Cents } from "@/lib/money";
+import type { CheckPersonRef } from "./group-check";
 import type { GuestTable } from "./resolve";
 
 export type OrderStatus = "new" | "in_kitchen" | "ready" | "served" | "void";
 
 export interface GuestLine {
+  id: string;
   qty: number;
   nameEs: string;
   nameEn: string;
@@ -13,6 +15,9 @@ export interface GuestLine {
   optionsEn: string[];
   note: string | null;
   lineCents: Cents;
+  participantId: string | null;
+  shared: boolean;
+  shares: { participantId: string; cents: Cents }[];
 }
 
 export interface GuestStatus {
@@ -21,12 +26,20 @@ export interface GuestStatus {
   openRequests: ("call_server" | "bring_check")[];
   totals: { subtotalCents: Cents; ivuStateCents: Cents; ivuMunicipalCents: Cents };
   payment: { id: string; status: string; method: "card" | "ath" | "cash"; totalCents: Cents } | null;
+  /** People at the table, in join order. */
+  people: CheckPersonRef[];
+  /** This phone's participant, once it has ordered. */
+  me: string | null;
 }
 
 type Snapshot = { name_es?: string; name_en?: string }[];
 
 /** What the guest's phone shows for its table: the live tab's orders, requests, totals and payment. */
-export async function guestStatus(g: GuestTable, tabId?: string): Promise<GuestStatus> {
+export async function guestStatus(
+  g: GuestTable,
+  tabId?: string,
+  device?: string | null,
+): Promise<GuestStatus> {
   const db = createAdminClient();
   const tabQuery = db.from("tabs").select("id, status").eq("table_id", g.table.id);
   const { data: tab } = tabId
@@ -39,14 +52,16 @@ export async function guestStatus(g: GuestTable, tabId?: string): Promise<GuestS
       openRequests: [],
       totals: { subtotalCents: 0, ivuStateCents: 0, ivuMunicipalCents: 0 },
       payment: null,
+      people: [],
+      me: null,
     };
   }
 
-  const [{ data: orders }, { data: requests }, { data: payments }] = await Promise.all([
+  const [{ data: orders }, { data: requests }, { data: payments }, { data: people }] = await Promise.all([
     db
       .from("orders")
       .select(
-        "id, number, status, created_at, order_items(qty, name_snapshot_es, name_snapshot_en, unit_price_cents, modifiers_snapshot, note, voided_at)",
+        "id, number, status, created_at, order_items(id, qty, name_snapshot_es, name_snapshot_en, unit_price_cents, modifiers_snapshot, note, voided_at, participant_id, shared, created_at, order_item_shares(participant_id, cents))",
       )
       .eq("tab_id", tab.id)
       .order("created_at"),
@@ -57,6 +72,11 @@ export async function guestStatus(g: GuestTable, tabId?: string): Promise<GuestS
       .eq("tab_id", tab.id)
       .order("created_at", { ascending: false })
       .limit(1),
+    db
+      .from("tab_participants")
+      .select("id, guest_number, display_name, device_hash")
+      .eq("tab_id", tab.id)
+      .order("guest_number"),
   ]);
 
   const mapped = (orders ?? []).map((o) => ({
@@ -66,9 +86,11 @@ export async function guestStatus(g: GuestTable, tabId?: string): Promise<GuestS
     createdAt: o.created_at,
     lines: (o.order_items ?? [])
       .filter((l) => !l.voided_at)
+      .sort((a, b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id))
       .map((l) => {
         const mods = (l.modifiers_snapshot ?? []) as Snapshot;
         return {
+          id: l.id,
           qty: l.qty,
           nameEs: l.name_snapshot_es,
           nameEn: l.name_snapshot_en,
@@ -76,6 +98,12 @@ export async function guestStatus(g: GuestTable, tabId?: string): Promise<GuestS
           optionsEn: mods.map((m) => m.name_en ?? ""),
           note: l.note,
           lineCents: l.qty * l.unit_price_cents,
+          participantId: l.participant_id,
+          shared: l.shared,
+          shares: (l.order_item_shares ?? []).map((s) => ({
+            participantId: s.participant_id,
+            cents: s.cents,
+          })),
         };
       }),
   }));
@@ -102,5 +130,9 @@ export async function guestStatus(g: GuestTable, tabId?: string): Promise<GuestS
           totalCents: p.amount_cents + p.ivu_state_cents + p.ivu_municipal_cents + p.tip_cents,
         }
       : null,
+    people: (people ?? [])
+      .filter((p) => p.guest_number !== null)
+      .map((p) => ({ id: p.id, number: p.guest_number!, name: p.display_name })),
+    me: (device && people?.find((p) => p.device_hash === device)?.id) || null,
   };
 }

@@ -436,7 +436,8 @@
         "invalid_table": "Este código ya no es válido. Pídele a tu mesero el código nuevo de la mesa.",
         "validation": "Algo cambió en el menú. Revisa tu pedido y envíalo otra vez.",
         "network": "No hay conexión. Toca «Enviar a cocina» otra vez: no se duplicará.",
-        "request": "No pudimos avisar a tu mesero. Inténtalo otra vez."
+        "request": "No pudimos avisar a tu mesero. Inténtalo otra vez.",
+        "table_full": "La mesa ya tiene 20 personas. Pídele a tu mesero que tome tu orden."
       },
       "payErrors": {
         "nothing_to_pay": "Todavía no hay nada que pagar.",
@@ -456,7 +457,29 @@
     },
     "originalEmpty": "Todavía no se ha publicado una imagen del menú original.",
     "originalImageHint": "Menú impreso. Elige platos en la vista Simple o de la Casa para ordenar.",
-    "originalLoadError": "No se pudo cargar la imagen del menú original. Usa la vista Simple o de la Casa."
+    "originalLoadError": "No se pudo cargar la imagen del menú original. Usa la vista Simple o de la Casa.",
+    "people": {
+      "guest": "Invitado #{number}",
+      "you": "Tú",
+      "table": "De la mesa",
+      "nameLabel": "Tu nombre (opcional)",
+      "nameHint": "Para que la mesa sepa qué pediste. Si lo dejas en blanco serás «Invitado #{number}».",
+      "shared": "Para compartir",
+      "sharedHint": "Se divide entre quienes han pedido en la mesa.",
+      "sharedOf": "parte de {total}",
+      "groupTitle": "La cuenta de la mesa",
+      "groupHint": "Lo que pidió cada persona y su parte de los platos para compartir.",
+      "rename": "Cambiar mi nombre",
+      "renameSave": "Guardar",
+      "renamed": "Listo, tu nombre se actualizó.",
+      "nameErrors": {
+        "long": "Usa 24 letras o menos.",
+        "invalid": "Usa solo letras, números, espacios, apóstrofos, puntos o guiones.",
+        "blocked": "Ese nombre no está disponible. Prueba otro.",
+        "name_taken": "Alguien en la mesa ya usa ese nombre. Prueba otro.",
+        "failed": "No se pudo cambiar el nombre. Inténtalo otra vez."
+      }
+    }
   },
   "ticket": {
     "kitchen": "COCINA",
@@ -966,7 +989,13 @@
       "ivuState": "IVU estatal ({rate}%)",
       "ivuMunicipal": "IVU municipal ({rate}%)",
       "total": "Total",
-      "pickTable": "Elige la mesa antes de enviar."
+      "pickTable": "Elige la mesa antes de enviar.",
+      "forLabel": "Para",
+      "forTable": "Toda la mesa",
+      "forHint": "Quién pidió esta orden. Los platos para compartir se dividen entre quienes han pedido.",
+      "shared": "Para compartir",
+      "sharedItem": "Compartir {name}",
+      "guest": "Invitado #{number}"
     },
     "floor": {
       "mainArea": "Salón",

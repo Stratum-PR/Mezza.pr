@@ -16,6 +16,8 @@ type MenuMessages = Record<string, unknown>;
 export interface LiveMode {
   /** localStorage key for the cart, per table. */
   storageKey: string;
+  /** Offer "Para compartir" on dishes (a shared tab). */
+  sharing?: boolean;
   send: (
     cart: CartLine[],
     lang: MenuLocale,
@@ -26,6 +28,8 @@ export interface LiveMode {
     top?: ReactNode;
     screen?: ReactNode;
     footer?: ReactNode;
+    /** Shown in the order sheet above "Enviar a cocina", e.g. the guest's name. */
+    beforeSend?: ReactNode;
   };
 }
 
@@ -180,6 +184,22 @@ export function GuestMenu({
         l.key !== key ? [l] : l.qty + delta <= 0 ? [] : [{ ...l, qty: Math.min(99, l.qty + delta) }],
       ),
     );
+  }
+
+  /** Turns "Para compartir" on or off for a cart line, merging with an identical line. */
+  function toggleShared(key: string) {
+    setCart((c) => {
+      const line = c.find((l) => l.key === key);
+      if (!line) return c;
+      const base = key.replace(/|shared$/, "");
+      const next = { ...line, shared: !line.shared || undefined, key: line.shared ? base : `${base}|shared` };
+      const twin = c.find((l) => l.key === next.key);
+      return twin
+        ? c
+            .filter((l) => l !== line)
+            .map((l) => (l === twin ? { ...l, qty: Math.min(99, l.qty + line.qty) } : l))
+        : c.map((l) => (l === line ? next : l));
+    });
   }
 
   async function sendToKitchen() {
@@ -354,7 +374,16 @@ export function GuestMenu({
         {toast}
       </div>
 
-      {open && <ItemSheet item={open} lang={lang} t={t} onAdd={addLine} onClose={() => setOpen(null)} />}
+      {open && (
+        <ItemSheet
+          item={open}
+          lang={lang}
+          t={t}
+          onAdd={addLine}
+          onClose={() => setOpen(null)}
+          canShare={!!live?.sharing}
+        />
+      )}
 
       {showOrder && (
         <div
@@ -395,6 +424,17 @@ export function GuestMenu({
                         <b>{name}</b>
                         {opts && <small className="block text-muted">{opts}</small>}
                         {l.note && <small className="block text-muted">“{l.note}”</small>}
+                        {live?.sharing && (
+                          <label className="mt-1.5 inline-flex min-h-8 cursor-pointer items-center gap-1.5 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={!!l.shared}
+                              onChange={() => toggleShared(l.key)}
+                              className="size-4 accent-[var(--blue)]"
+                            />
+                            {t("people.shared")}
+                          </label>
+                        )}
                       </span>
                       <span className="flex shrink-0 flex-col items-end gap-1.5">
                         <span className="tabular font-bold">{formatCents(l.qty * l.unitCents, lang)}</span>
@@ -428,6 +468,7 @@ export function GuestMenu({
               <span>{formatCents(subtotal, lang)}</span>
             </div>
             <p className="mt-1 text-xs text-muted">{t("ivuNote")}</p>
+            {extra?.beforeSend}
             {sendError && (
               <p role="alert" className="mt-3 text-sm font-semibold text-bad">
                 {sendError}

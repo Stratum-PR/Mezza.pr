@@ -12,6 +12,9 @@ The build brief is `MEZZA_PASS1.md`; progress is in `PLAN.md`; every judgment ca
 
 - Node 20.9+ and pnpm 10
 - Docker Desktop, running (local Supabase)
+- Windows: if `pnpm dev` or `pnpm typecheck` fails with `ERR_SWC_NATIVE_CACHE`, add
+  `SWC_NATIVE_BINDING_CACHE=C:\Users\<you>\.cache\swc-native` to `.env.local` (and to the shell for
+  `pnpm typecheck`); newer `@swc/core` refuses cache folders other accounts can write to.
 
 ## Setup from a fresh clone
 

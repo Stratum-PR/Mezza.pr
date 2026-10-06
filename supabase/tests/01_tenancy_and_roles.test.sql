@@ -84,6 +84,8 @@ begin
     values (tests.id(p_rid, 'order2'), p_rid, tests.id(p_rid, 'tab'), 901, 'qr', 'fixture-order-0002');
   insert into public.order_items (id, restaurant_id, order_id, item_id, name_snapshot_es, name_snapshot_en, unit_price_cents, qty)
     values (tests.id(p_rid, 'line2'), p_rid, tests.id(p_rid, 'order2'), tests.id(p_rid, 'item'), 'Café con leche', 'Café con leche', 250, 1);
+  insert into public.order_item_shares (restaurant_id, order_item_id, participant_id, cents)
+    values (p_rid, tests.id(p_rid, 'line2'), tests.id(p_rid, 'participant'), 250);
   insert into public.payments (id, restaurant_id, tab_id, method, amount_cents, tip_cents, ivu_state_cents, ivu_municipal_cents, status, idempotency_key, paid_at)
     values (tests.id(p_rid, 'payment'), p_rid, tests.id(p_rid, 'tab'), 'cash', 500, 90, 53, 5, 'paid', 'fixture-pay-0001', now());
   insert into public.refunds (restaurant_id, payment_id, amount_cents, reason) values (p_rid, tests.id(p_rid, 'payment'), 100, 'Fixture');

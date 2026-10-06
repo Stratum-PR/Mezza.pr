@@ -6,8 +6,11 @@ import { availableMethods, payments } from "@/connectors/payments";
 import type { OrderDraft, SubmitResult } from "@/connectors/orders";
 import { rateLimiter } from "@/connectors/rate-limit";
 import { isNotImplemented } from "@/connectors/shared";
+import { flags } from "@/config/flags";
 import { createAdminClient } from "@/lib/db/admin";
-import { ensureTab, resolveTable, type GuestTable } from "@/lib/guest/resolve";
+import { deviceHash, ensureDeviceHash } from "@/lib/guest/device";
+import { cleanName } from "@/lib/guest/names";
+import { ensureTab, liveTab, resolveTable, type GuestTable } from "@/lib/guest/resolve";
 import { guestStatus as loadStatus, type GuestStatus } from "@/lib/guest/status";
 import { computeIvu, tipFromPercent, type Cents } from "@/lib/money";
 
@@ -32,28 +35,40 @@ const draftSchema = z.object({
         qty: z.number().int().min(1).max(99),
         modifierOptionIds: z.array(z.uuid()).max(20),
         note: z.string().max(200).optional(),
+        shared: z.boolean().optional(),
       }),
     )
     .min(1)
     .max(50),
 });
 
-/** "Enviar a cocina". The clientOrderId is the idempotency key, so a double tap makes one order. */
-export async function guestPlaceOrder(slug: string, token: string, draft: OrderDraft): Promise<SubmitResult> {
+/**
+ * "Enviar a cocina". The clientOrderId is the idempotency key, so a double tap makes one order.
+ * The phone's first order at the table makes it a participant, with the optional name it gives.
+ */
+export async function guestPlaceOrder(
+  slug: string,
+  token: string,
+  draft: OrderDraft,
+  name?: string | null,
+): Promise<SubmitResult> {
   const g = await resolveTable(slug, token);
   if (!g) return { status: "rejected", reason: "invalid_table" };
   const parsed = draftSchema.safeParse(draft);
   if (!parsed.success) return { status: "rejected", reason: "validation" };
+  const checked = cleanName(name);
+  if (!checked.ok) return { status: "rejected", reason: "validation", detail: `name_${checked.reason}` };
   if (await limited(`place-order:${g.table.id}`, 20))
     return { status: "rejected", reason: "validation", detail: "rate_limited" };
 
-  const { data, error } = await createAdminClient().rpc("place_order", {
+  const { data, error } = await createAdminClient().rpc("place_guest_order", {
     p_restaurant_id: g.restaurant.id,
     p_table_id: g.table.id,
     p_client_order_id: parsed.data.clientOrderId,
-    p_source: "qr",
-    p_lines: parsed.data.lines,
+    p_lines: flags.sharedTab ? parsed.data.lines : parsed.data.lines.map((l) => ({ ...l, shared: false })),
     p_guest_language: parsed.data.guestLanguage,
+    p_device_hash: await ensureDeviceHash(),
+    p_name: checked.name ?? undefined,
   });
   if (error || !data) return { status: "rejected", reason: "validation", detail: "server" };
   const r = data as { status: string; order_id?: string; number?: number; reason?: string; detail?: string };
@@ -70,7 +85,29 @@ export async function guestPlaceOrder(slug: string, token: string, draft: OrderD
 export async function guestStatus(slug: string, token: string, tabId?: string): Promise<GuestStatus | null> {
   const g = await resolveTable(slug, token);
   if (!g) return null;
-  return loadStatus(g, tabId && z.uuid().safeParse(tabId).success ? tabId : undefined);
+  return loadStatus(g, tabId && z.uuid().safeParse(tabId).success ? tabId : undefined, await deviceHash());
+}
+
+/** A guest renames themselves at the table (blank goes back to "Invitado #n"). */
+export async function guestRename(
+  slug: string,
+  token: string,
+  name: string,
+): Promise<{ ok: true } | { ok: false; error: "long" | "invalid" | "blocked" | "name_taken" | "failed" }> {
+  const g = await guest(slug, token);
+  const checked = cleanName(name);
+  if (!checked.ok) return { ok: false, error: checked.reason };
+  const device = await deviceHash();
+  const tab = await liveTab(g.table.id);
+  if (!device || !tab) return { ok: false, error: "failed" };
+  if (await limited(`rename:${g.table.id}`, 10)) return { ok: false, error: "failed" };
+  const { data, error } = await createAdminClient().rpc("rename_participant", {
+    p_tab_id: tab.id,
+    p_device_hash: device,
+    p_name: checked.name ?? "",
+  });
+  if (error) return { ok: false, error: "failed" };
+  return data === "name_taken" ? { ok: false, error: "name_taken" } : { ok: true };
 }
 
 /** "Llamar al mesero" / "Pedir la cuenta". One open request of each kind per tab. */

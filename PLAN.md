@@ -125,12 +125,12 @@ UI flags: `splitBill` and `sharedTab` in `src/config/flags.ts`. Even/per-item sp
 
 ### Phase 1: Participants
 
-- [ ] A participant is created on the phone's first order (not on scan), bound to the tab by an HttpOnly cookie holding a secret whose hash is stored server-side; a new tab means a new join
-- [ ] Optional name prompt on the first order; otherwise "Invitado #n" / "Guest #n" (n = join order at the table); rename later
-- [ ] Names unique per table (a duplicate gets its #n); staff-like names blocked (mesero, gerente, staff, …); the #n always shows next to the name
-- [ ] Orders and their items carry `participant_id`; staff-entered orders may pick a person or go to the table
-- [ ] "Para compartir" toggle on the dish sheet; a shared line is split at order time into locked shares among the people who have ordered at the table so far (`distribute()`); staff can edit the shares
-- [ ] Group check on the phone: everyone's items, by name, paid/unpaid
+- [x] A participant is created on the phone's first order (not on scan), bound to the tab by an HttpOnly device cookie whose hash is stored server-side; a new tab means a new join (migration `20261006150000_participants.sql`, `place_guest_order`)
+- [x] Optional name field on the first order; otherwise "Invitado #n" / "Guest #n" (n = join order at the table); rename from "Mi pedido"
+- [x] Names unique per table (a taken name is refused, or falls back to "Invitado #n" on the first order); staff-like names blocked (`src/lib/guest/names.ts`); the #n always shows next to the name
+- [x] Orders and their items carry `participant_id`; "Tomar orden" picks a person or the whole table
+- [x] "Para compartir" on the dish sheet and each cart line (guest and staff); a shared line is split at order time into locked shares among the people who have ordered so far (`order_item_shares`). Staff re-sharing is in the database (`set_item_shares`); its screen comes with the phase 5 table detail
+- [x] Group check on "Mi pedido": everyone's items and shares by person, plus the table's lines (`src/lib/guest/group-check.ts`); paid/unpaid per person arrives with per-person payments in phase 4
 
 ### Phase 2: Limits and rate limiting
 
@@ -158,7 +158,7 @@ UI flags: `splitBill` and `sharedTab` in `src/config/flags.ts`. Even/per-item sp
 
 ### Phase 5: Staff side
 
-- [ ] Servicio table detail: people, their items, paid, pending and the remaining balance
+- [ ] Servicio table detail: people, their items, paid, pending and the remaining balance; re-share a shared line (`set_item_shares`)
 - [ ] The cash dialog's "Dividir cuenta" tab: charge a person, the balance or one plan share; confirm pending cash
 - [ ] "Mover a otra persona" / "a la mesa" for unpaid lines only; paid lines can't change
 - [ ] Voids: an unpaid line lowers the balance; a paid line goes through the manager refund flow, refunding each payer from the allocations; lines held by a pending payment can't be voided until it resolves

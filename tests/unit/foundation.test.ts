@@ -26,8 +26,12 @@ describe("locale routing", () => {
 });
 
 describe("config", () => {
-  it("starts every feature flag off", () => {
-    expect(Object.values(flags).every((v) => v === false)).toBe(true);
+  it("keeps every feature flag off except those whose tests pass (CONNECTORS.md)", () => {
+    // sharedTab: pass 2 phase 1 (people at a table, locked shares). Add a flag here only with its tests.
+    const on = Object.entries(flags)
+      .filter(([, v]) => v)
+      .map(([k]) => k);
+    expect(on).toEqual(["sharedTab"]);
   });
 
   it("uses pricing model A with integer cents", () => {

@@ -6,7 +6,7 @@ export const flags = {
   cardPayments: false,
   athPayments: false,
   splitBill: false,
-  sharedTab: false,
+  sharedTab: true,
   pinSwitch: false,
   offlineMode: false,
   networkPrinting: false,

@@ -436,7 +436,8 @@
         "invalid_table": "This code is no longer valid. Ask your server for the table's new code.",
         "validation": "Something changed on the menu. Check your order and send it again.",
         "network": "No connection. Tap “Send to kitchen” again: it won't be duplicated.",
-        "request": "We couldn't reach your server. Try again."
+        "request": "We couldn't reach your server. Try again.",
+        "table_full": "This table already has 20 people. Ask your server to take your order."
       },
       "payErrors": {
         "nothing_to_pay": "There's nothing to pay yet.",
@@ -456,7 +457,29 @@
     },
     "originalEmpty": "No original menu image has been published.",
     "originalImageHint": "Printed menu. Choose dishes from the Simple or House view to order.",
-    "originalLoadError": "The original menu image could not be loaded. Use the Simple or House view."
+    "originalLoadError": "The original menu image could not be loaded. Use the Simple or House view.",
+    "people": {
+      "guest": "Guest #{number}",
+      "you": "You",
+      "table": "For the table",
+      "nameLabel": "Your name (optional)",
+      "nameHint": "So the table knows what you ordered. Leave it blank to be “Guest #{number}”.",
+      "shared": "To share",
+      "sharedHint": "Split among everyone at the table who has ordered.",
+      "sharedOf": "share of {total}",
+      "groupTitle": "The table's check",
+      "groupHint": "What each person ordered and their share of dishes to share.",
+      "rename": "Change my name",
+      "renameSave": "Save",
+      "renamed": "Done, your name was updated.",
+      "nameErrors": {
+        "long": "Use 24 letters or fewer.",
+        "invalid": "Use only letters, numbers, spaces, apostrophes, periods or hyphens.",
+        "blocked": "That name isn't available. Try another.",
+        "name_taken": "Someone at the table already uses that name. Try another.",
+        "failed": "Couldn't change your name. Try again."
+      }
+    }
   },
   "ticket": {
     "kitchen": "KITCHEN",
@@ -966,7 +989,13 @@
       "ivuState": "State IVU ({rate}%)",
       "ivuMunicipal": "Municipal IVU ({rate}%)",
       "total": "Total",
-      "pickTable": "Pick the table before sending."
+      "pickTable": "Pick the table before sending.",
+      "forLabel": "For",
+      "forTable": "Whole table",
+      "forHint": "Who this order is for. Dishes to share are split among everyone who has ordered.",
+      "shared": "To share",
+      "sharedItem": "Share {name}",
+      "guest": "Guest #{number}"
     },
     "floor": {
       "mainArea": "Main room",

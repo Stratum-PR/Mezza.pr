@@ -10,10 +10,25 @@ export default async function TakeOrderPage({ params }: PageProps<"/app/[restaur
   const { restaurant } = await params;
   const ctx = await requireSection(restaurant, "service");
   const db = await createClient();
-  const [menu, { data: tables }] = await Promise.all([
+  const [menu, { data: tables }, { data: tabs }] = await Promise.all([
     loadMenu(db, ctx.restaurant.id),
     db.from("dining_tables").select("id, label").eq("restaurant_id", ctx.restaurant.id).order("sort_order"),
+    db
+      .from("tabs")
+      .select("table_id, tab_participants(id, guest_number, display_name)")
+      .eq("restaurant_id", ctx.restaurant.id)
+      .neq("status", "closed"),
   ]);
+  // Who's at each table's live tab, in join order, for "Para".
+  const people = Object.fromEntries(
+    (tabs ?? []).map((tab) => [
+      tab.table_id,
+      (tab.tab_participants ?? [])
+        .filter((p) => p.guest_number !== null)
+        .sort((a, b) => a.guest_number! - b.guest_number!)
+        .map((p) => ({ id: p.id, number: p.guest_number!, name: p.display_name })),
+    ]),
+  );
   const t = await getTranslations("staff");
   const locale = (await getLocale()) === "en" ? "en" : "es";
   return (
@@ -30,6 +45,7 @@ export default async function TakeOrderPage({ params }: PageProps<"/app/[restaur
       <TakeOrder
         slug={restaurant}
         tables={tables ?? []}
+        people={people}
         menu={menu}
         locale={locale}
         rates={{ stateBps: ctx.restaurant.ivu_state_bps, municipalBps: ctx.restaurant.ivu_municipal_bps }}

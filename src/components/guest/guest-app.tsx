@@ -6,10 +6,12 @@ import {
   guestPaymentMethods,
   guestPlaceOrder,
   guestReceipt,
+  guestRename,
   guestRequest,
   guestStatus,
   type Receipt,
 } from "@/app/r/[restaurant]/t/[token]/actions";
+import { flags } from "@/config/flags";
 import { GuestMenu, type LiveMode } from "@/components/menu/guest-menu";
 import { ThemeCycle, type ThemeChoice } from "@/components/ui/theme-switch";
 import type { CartLine } from "@/components/menu/item-sheet";
@@ -17,6 +19,8 @@ import type { MenuT } from "@/components/menu/menu-styles";
 import type { MenuData, MenuLocale } from "@/components/menu/types";
 import { newClientOrderId, orderQueue } from "@/connectors/orders";
 import { realtimeChannel } from "@/connectors/realtime";
+import { groupCheck } from "@/lib/guest/group-check";
+import { participantLabel } from "@/lib/guest/names";
 import type { GuestStatus } from "@/lib/guest/status";
 import { cn } from "@/lib/cn";
 import { computeIvu, dollarsToCents, formatCents, tipFromPercent } from "@/lib/money";
@@ -87,6 +91,10 @@ export function GuestApp({
   const [payError, setPayError] = useState<string | null>(null);
   const [requestError, setRequestError] = useState(false);
   const payKey = useRef<string | null>(null);
+  // The name goes with the phone's first order; the server ignores it once the phone is at the table.
+  const [name, setName] = useState("");
+  const [renameValue, setRenameValue] = useState("");
+  const [renameMessage, setRenameMessage] = useState<{ ok: boolean; key: string } | null>(null);
   const keys = useMemo(
     () => ({
       cart: `mezza-cart:${tableId}`,
@@ -162,8 +170,8 @@ export function GuestApp({
   }, [realtimeImpl, slug, token, restaurantId, refresh]);
 
   const queue = useMemo(
-    () => orderQueue(queueImpl, (draft) => guestPlaceOrder(slug, token, draft)),
-    [queueImpl, slug, token],
+    () => orderQueue(queueImpl, (draft) => guestPlaceOrder(slug, token, draft, name)),
+    [queueImpl, slug, token, name],
   );
 
   async function send(cart: CartLine[], lang: MenuLocale, t: MenuT) {
@@ -182,6 +190,7 @@ export function GuestApp({
           qty: l.qty,
           modifierOptionIds: l.optionIds,
           note: l.note,
+          shared: l.shared,
         })),
       });
       if (result.status === "accepted") {
@@ -190,6 +199,10 @@ export function GuestApp({
         return { ok: true as const, message: t("flow.sent", { number: result.number }) };
       }
       if (result.status === "rejected") store(keys.pending, null);
+      if (result.status === "rejected" && result.detail === "table_full")
+        return { ok: false as const, message: t("flow.errors.table_full") };
+      if (result.status === "rejected" && result.detail?.startsWith("name_"))
+        return { ok: false as const, message: t(`people.nameErrors.${result.detail.slice(5)}`) };
       const reason = result.status === "rejected" ? result.reason : "network";
       return { ok: false as const, message: t(`flow.errors.${reason}`) };
     } catch {
@@ -238,11 +251,30 @@ export function GuestApp({
     }
   }
 
+  async function rename() {
+    const r = await guestRename(slug, token, renameValue).catch(() => ({
+      ok: false as const,
+      error: "failed" as const,
+    }));
+    setRenameMessage(
+      r.ok ? { ok: true, key: "people.renamed" } : { ok: false, key: `people.nameErrors.${r.error}` },
+    );
+    if (r.ok) {
+      setRenameValue("");
+      void refresh();
+    }
+  }
+
   const live: LiveMode = {
     storageKey: keys.cart,
+    sharing: flags.sharedTab,
     send,
     render: ({ lang, t, say }) => {
       const lineName = (l: { nameEs: string; nameEn: string }) => (lang === "es" ? l.nameEs : l.nameEn);
+      const label = (p: { name: string | null; number: number }) =>
+        participantLabel(p, (number) => t("people.guest", { number }));
+      const people = status?.people ?? [];
+      const groups = flags.sharedTab && people.length > 0 ? groupCheck(people, status?.orders ?? []) : [];
       const requests = (
         <div className="mb-3 grid grid-cols-2 gap-2">
           {(["call_server", "bring_check"] as const).map((kind) => {
@@ -320,6 +352,86 @@ export function GuestApp({
                 </li>
               ))}
             </ul>
+            {groups.length > 0 && (
+              <section aria-labelledby="group-title" className="grid gap-2">
+                <h3 id="group-title" className="text-lg font-extrabold">
+                  {t("people.groupTitle")}
+                </h3>
+                <p className="text-sm text-muted">{t("people.groupHint")}</p>
+                <ul className="grid gap-2">
+                  {groups.map((g) => {
+                    const mine = !!g.person && g.person.id === status?.me;
+                    return (
+                      <li
+                        key={g.person?.id ?? "table"}
+                        className={cn(
+                          "rounded-card border p-3",
+                          mine ? "border-blue bg-soft" : "border-line",
+                        )}
+                      >
+                        <div className="tabular mb-1 flex items-baseline justify-between gap-2">
+                          <b>
+                            {g.person ? label(g.person) : t("people.table")}
+                            {mine && <span className="text-muted"> ({t("people.you")})</span>}
+                          </b>
+                          <span className="font-bold">{formatCents(g.subtotalCents, lang)}</span>
+                        </div>
+                        <ul className="tabular text-sm">
+                          {g.entries.map((e) => (
+                            <li key={e.lineId} className="flex justify-between gap-2">
+                              <span>
+                                {e.qty}× {lineName(e)}
+                                {e.sharedOfCents !== null && (
+                                  <span className="text-muted">
+                                    {" "}
+                                    · {t("people.sharedOf", { total: formatCents(e.sharedOfCents, lang) })}
+                                  </span>
+                                )}
+                              </span>
+                              <span>{formatCents(e.cents, lang)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {status?.me && (
+                  <form
+                    className="grid gap-1.5"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      void rename();
+                    }}
+                  >
+                    <label htmlFor="rename" className="text-sm font-bold">
+                      {t("people.rename")}
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        id="rename"
+                        value={renameValue}
+                        maxLength={24}
+                        autoComplete="given-name"
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        className="min-h-11 min-w-0 flex-1 rounded-btn border-[1.5px] border-line bg-bg px-3 text-base"
+                      />
+                      <button type="submit" className="min-h-11 rounded-btn bg-soft px-4 font-bold">
+                        {t("people.renameSave")}
+                      </button>
+                    </div>
+                    {renameMessage && (
+                      <p
+                        role={renameMessage.ok ? "status" : "alert"}
+                        className={cn("text-sm font-semibold", renameMessage.ok ? "text-ok" : "text-bad")}
+                      >
+                        {t(renameMessage.key)}
+                      </p>
+                    )}
+                  </form>
+                )}
+              </section>
+            )}
             <div className="grid grid-cols-2 gap-2">
               <button type="button" className={soft} onClick={() => setScreen("menu")}>
                 {t("flow.orderMore")}
@@ -511,9 +623,27 @@ export function GuestApp({
         );
       }
 
+      const beforeSend =
+        flags.sharedTab && !status?.me ? (
+          <label className="mt-3 grid gap-1 text-sm font-bold">
+            {t("people.nameLabel")}
+            <input
+              value={name}
+              maxLength={24}
+              autoComplete="given-name"
+              onChange={(e) => setName(e.target.value)}
+              className="min-h-11 rounded-btn border-[1.5px] border-line bg-bg px-3 text-base font-normal"
+            />
+            <small className="font-normal text-muted">
+              {t("people.nameHint", { number: people.length + 1 })}
+            </small>
+          </label>
+        ) : undefined;
+
       return {
         top: screen === "menu" ? requests : undefined,
         screen: content,
+        beforeSend,
         footer:
           screen === "menu" && (orderedCount > 0 || receipt) ? (
             <button

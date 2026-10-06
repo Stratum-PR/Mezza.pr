@@ -7,7 +7,9 @@ import { DishPhoto, DishTags, type MenuT } from "@/components/menu/menu-styles";
 import { pick, type MenuData, type MenuItem } from "@/components/menu/types";
 import { Button } from "@/components/ui/button";
 import { newClientOrderId } from "@/connectors/orders";
+import { flags } from "@/config/flags";
 import { cn } from "@/lib/cn";
+import { participantLabel } from "@/lib/guest/names";
 import { computeIvu, formatCents } from "@/lib/money";
 import { staffPlaceOrder } from "@/lib/staff/actions";
 
@@ -18,12 +20,15 @@ import { staffPlaceOrder } from "@/lib/staff/actions";
 export function TakeOrder({
   slug,
   tables,
+  people,
   menu,
   locale,
   rates,
 }: {
   slug: string;
   tables: { id: string; label: string }[];
+  /** People at each table's live tab, by table id. */
+  people: Record<string, { id: string; number: number; name: string | null }[]>;
   menu: MenuData;
   locale: "es" | "en";
   rates: { stateBps: number; municipalBps: number };
@@ -32,6 +37,8 @@ export function TakeOrder({
   const ts = useTranslations("staff");
   const tm = useTranslations("menu") as unknown as MenuT;
   const [tableId, setTableId] = useState<string | null>(null);
+  const [forId, setForId] = useState<string | null>(null); // null: the whole table
+  const tablePeople = (tableId && people[tableId]) || [];
   const [section, setSection] = useState<string | null>(null);
   const [ticket, setTicket] = useState<CartLine[]>([]);
   const [sheet, setSheet] = useState<MenuItem | null>(null);
@@ -85,6 +92,22 @@ export function TakeOrder({
     });
   }
 
+  /** "Para compartir" on a ticket line, merging with an identical line. */
+  function toggleShared(key: string) {
+    setTicket((c) => {
+      const line = c.find((l) => l.key === key);
+      if (!line) return c;
+      const base = key.replace(/\|shared$/, "");
+      const next = { ...line, shared: !line.shared || undefined, key: line.shared ? base : `${base}|shared` };
+      const twin = c.find((l) => l.key === next.key);
+      return twin
+        ? c
+            .filter((l) => l !== line)
+            .map((l) => (l === twin ? { ...l, qty: Math.min(99, l.qty + line.qty) } : l))
+        : c.map((l) => (l === line ? next : l));
+    });
+  }
+
   function send() {
     if (!tableId || ticket.length === 0) return;
     orderId.current ??= newClientOrderId(); // reused on retries: one order per send
@@ -94,7 +117,14 @@ export function TakeOrder({
         slug,
         tableId,
         id,
-        ticket.map((l) => ({ itemId: l.itemId, qty: l.qty, modifierOptionIds: l.optionIds, note: l.note })),
+        ticket.map((l) => ({
+          itemId: l.itemId,
+          qty: l.qty,
+          modifierOptionIds: l.optionIds,
+          note: l.note,
+          shared: l.shared,
+        })),
+        forId,
       );
       if (r.ok) {
         orderId.current = null;
@@ -215,7 +245,10 @@ export function TakeOrder({
                 key={tb.id}
                 type="button"
                 aria-pressed={tableId === tb.id}
-                onClick={() => setTableId(tb.id)}
+                onClick={() => {
+                  setTableId(tb.id);
+                  setForId(null);
+                }}
                 className={cn(
                   "min-h-11 min-w-11 rounded-[8px] border px-2 font-bold",
                   tableId === tb.id ? "border-accent bg-accent text-accent-ink" : "border-line",
@@ -226,6 +259,28 @@ export function TakeOrder({
             ))}
           </div>
         </div>
+        {flags.sharedTab && tablePeople.length > 0 && (
+          <div>
+            <p className="mb-1 text-sm font-bold">{t("forLabel")}</p>
+            <p className="mb-1.5 text-xs text-muted">{t("forHint")}</p>
+            <div role="group" aria-label={t("forLabel")} className="flex flex-wrap gap-1.5">
+              {[null, ...tablePeople].map((p) => (
+                <button
+                  key={p?.id ?? "table"}
+                  type="button"
+                  aria-pressed={forId === (p?.id ?? null)}
+                  onClick={() => setForId(p?.id ?? null)}
+                  className={cn(
+                    "min-h-11 rounded-[8px] border px-3 text-sm font-bold",
+                    forId === (p?.id ?? null) ? "border-accent bg-accent text-accent-ink" : "border-line",
+                  )}
+                >
+                  {p ? participantLabel(p, (number) => t("guest", { number })) : t("forTable")}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="border-t border-line pt-3">
           {ticket.length === 0 ? (
             <p className="text-sm text-muted">{ts("service.ticketEmpty")}</p>
@@ -245,6 +300,18 @@ export function TakeOrder({
                       <span className="tabular text-muted">
                         {l.qty} × {money(l.unitCents)}
                       </span>
+                      {flags.sharedTab && (
+                        <label className="mt-1 flex min-h-8 cursor-pointer items-center gap-1.5">
+                          <input
+                            type="checkbox"
+                            checked={!!l.shared}
+                            onChange={() => toggleShared(l.key)}
+                            aria-label={t("sharedItem", { name })}
+                            className="size-4 accent-[var(--blue)]"
+                          />
+                          {t("shared")}
+                        </label>
+                      )}
                     </span>
                     <span className="flex shrink-0 items-center gap-1">
                       <button
@@ -293,7 +360,16 @@ export function TakeOrder({
         >
           {message?.text}
         </p>
-        {sheet && <ItemSheet item={sheet} lang={locale} t={tm} onAdd={add} onClose={() => setSheet(null)} />}
+        {sheet && (
+          <ItemSheet
+            item={sheet}
+            lang={locale}
+            t={tm}
+            onAdd={add}
+            onClose={() => setSheet(null)}
+            canShare={flags.sharedTab}
+          />
+        )}
       </aside>
     </div>
   );
