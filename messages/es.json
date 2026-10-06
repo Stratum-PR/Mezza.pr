@@ -979,7 +979,8 @@
       "raiseLimit": "Ampliar límite",
       "limitRaised": "Límite de la mesa ampliado a {cap}.",
       "cashCancel": "Cancelar",
-      "cashCancelled": "Pago cancelado; lo que cubría queda pendiente."
+      "cashCancelled": "Pago cancelado; lo que cubría queda pendiente.",
+      "voidRefund": "Anulado. Devuelve {amount} en efectivo a quien lo pagó."
     },
     "tables": {
       "title": "Mesas",
@@ -999,7 +1000,8 @@
       "validation": "Revisa la orden: algo cambió en el menú.",
       "item_unavailable": "Un plato de la orden se agotó.",
       "tab_closed": "Esa mesa está pagando y no admite pedidos nuevos.",
-      "invalid": "Algo no cuadra. Recarga la página."
+      "invalid": "Algo no cuadra. Recarga la página.",
+      "pending": "Hay un pago en proceso con ese plato. Confírmalo o cancélalo primero."
     },
     "strip": {
       "title": "Órdenes de hoy",
@@ -1085,6 +1087,79 @@
       "cancel": "Cancelar",
       "void": "Anular",
       "refund": "Reembolsar"
+    },
+    "tableDetail": {
+      "back": "Volver a Mesas",
+      "title": "Mesa {label}",
+      "free": "Esta mesa está libre. Cuando alguien pida, aparecerá aquí.",
+      "subtotal": "Consumo",
+      "collected": "Cobrado",
+      "inProgress": "En proceso",
+      "left": "Falta por cobrar",
+      "people": "Personas y lo que pidieron",
+      "tableLines": "De la mesa",
+      "noPeople": "Nadie ha pedido desde su teléfono todavía.",
+      "owes": "Falta {total}",
+      "paid": "Pagado",
+      "processing": "Pago en proceso",
+      "sharedOf": "parte de {total}",
+      "locked": "Con pago",
+      "moveLabel": "Mover {name} a",
+      "moveChoose": "Mover a…",
+      "toTable": "La mesa",
+      "reshare": "Compartir entre…",
+      "reshareTitle": "¿Quiénes comparten {name}?",
+      "reshareSave": "Guardar",
+      "cancel": "Cancelar",
+      "voidLine": "Anular",
+      "writeOffPerson": "Perdonar lo de {name}",
+      "writeOffTable": "Perdonar lo de la mesa",
+      "writeOffBalance": "Perdonar todo lo que falta",
+      "writeOffTitle": "Perdonar {amount}",
+      "writeOffConfirm": "Perdonar",
+      "writeOffDone": "Perdonado: {amount}.",
+      "charge": "Cobrar",
+      "chargeTitle": "Dividir cuenta",
+      "chargePerson": "Lo de una persona",
+      "chargeBalance": "Todo lo que falta",
+      "chargePlan": "Partes iguales",
+      "planCount": "¿En cuántas partes?",
+      "planStart": "Dividir en {n}",
+      "planParts": "Partes que cobras",
+      "planActive": "Dividida en {parts}. Partes que quedan: {left}, de {share} cada una.",
+      "planCancel": "Cancelar la división",
+      "plusIvu": "{amount} + IVU",
+      "continue": "Continuar al cobro",
+      "payments": "Pagos de la mesa",
+      "noPayments": "Todavía no hay pagos.",
+      "byStaff": "Personal",
+      "forWhom": "por {name}",
+      "planShare": "{parts} de las partes iguales",
+      "collect": "Cobrar",
+      "refund": "Reembolsar",
+      "refundedAmount": "Reembolsado {amount}",
+      "writeOffs": "Perdonado",
+      "writeOffLine": "{who}: {amount} · {reason}",
+      "freeHint": "Se puede liberar cuando no falta nada por cobrar ni hay pagos en proceso.",
+      "freed": "Mesa liberada.",
+      "voided": "Anulado.",
+      "voidedRefund": "Anulado. Devuelve {amount} en efectivo a quien lo pagó.",
+      "open": "Ver mesa",
+      "freeTable": "Mesa libre"
+    },
+    "tableErrors": {
+      "has_payments": "Ese plato ya tiene un pago; no se puede cambiar.",
+      "pending": "Hay un pago en proceso con ese plato. Confírmalo o cancélalo primero.",
+      "not_settled": "Todavía falta por cobrar o hay pagos en proceso.",
+      "nothing": "No queda nada por perdonar.",
+      "reason": "Escribe el motivo (3 letras o más).",
+      "forbidden": "Solo gerentes y dueños pueden hacer eso.",
+      "invalid": "Algo no cuadra. Recarga la página.",
+      "failed": "No se pudo. Inténtalo otra vez.",
+      "nothing_to_pay": "No queda nada por cobrar.",
+      "no_plan": "La división cambió. Recarga la página.",
+      "plan_exists": "Ya hay una división con otro número de partes.",
+      "plan_started": "Ya se cobró una parte; la división no se puede cancelar."
     }
   },
   "home": {
@@ -1246,6 +1321,13 @@
       "en": "Inglés",
       "orders": "Órdenes",
       "share": "Porcentaje"
+    },
+    "adjustments": {
+      "title": "Ajustes del periodo",
+      "voids": "Anulaciones: {count} · {amount}",
+      "writeOffs": "Cuentas perdonadas: {count} · {amount}",
+      "refunds": "Reembolsos: {amount}",
+      "note": "No cuentan como ventas. Las cuentas perdonadas tampoco son dinero cobrado."
     }
   },
   "exports": {

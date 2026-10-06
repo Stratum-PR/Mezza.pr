@@ -1,6 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { RangeBar } from "@/components/reports/range-bar";
-import { ReportsView } from "@/components/reports/reports-view";
+import { ReportsView, type Adjustments } from "@/components/reports/reports-view";
 import { requireSection } from "@/lib/auth/staff";
 import { createClient } from "@/lib/db/server";
 import { resolveRange } from "@/lib/reports/range";
@@ -17,9 +17,11 @@ export default async function ReportsPage({ params, searchParams }: PageProps<"/
   const locale = (await getLocale()) === "en" ? "en" : "es";
   const t = await getTranslations("reports");
 
-  const { data, error } = await (
-    await createClient()
-  ).rpc("report_summary", { p_restaurant_id: ctx.restaurant.id, p_from: range.from, p_to: range.to });
+  const db = await createClient();
+  const [{ data, error }, adjustments] = await Promise.all([
+    db.rpc("report_summary", { p_restaurant_id: ctx.restaurant.id, p_from: range.from, p_to: range.to }),
+    db.rpc("period_adjustments", { p_restaurant_id: ctx.restaurant.id, p_from: range.from, p_to: range.to }),
+  ]);
   if (error || !data) throw new Error(`report failed: ${error?.message ?? "no data"}`);
   const report = shapeReport(data as unknown as RawReport, range.from, range.to);
 
@@ -27,7 +29,11 @@ export default async function ReportsPage({ params, searchParams }: PageProps<"/
     <div>
       <h1 className="mb-3 text-[28px] font-extrabold tracking-[-0.02em]">{t("title")}</h1>
       <RangeBar base={`/app/${restaurant}/reportes`} range={range} locale={locale} />
-      <ReportsView report={report} locale={locale} />
+      <ReportsView
+        report={report}
+        locale={locale}
+        adjustments={(adjustments.data as unknown as Adjustments | null) ?? undefined}
+      />
     </div>
   );
 }

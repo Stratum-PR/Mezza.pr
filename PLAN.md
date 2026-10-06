@@ -158,13 +158,13 @@ UI flags: `splitBill` and `sharedTab` in `src/config/flags.ts`. Even/per-item sp
 
 ### Phase 5: Staff side
 
-- [ ] Servicio table detail: people, their items, paid, pending and the remaining balance; re-share a shared line (`set_item_shares`)
-- [ ] The cash dialog's "Dividir cuenta" tab: charge a person, the balance or one plan share; confirm pending cash
-- [ ] "Mover a otra persona" / "a la mesa" for unpaid lines only; paid lines can't change
-- [ ] Voids: an unpaid line lowers the balance; a paid line goes through the manager refund flow, refunding each payer from the allocations; lines held by a pending payment can't be voided until it resolves
-- [ ] Manager write-off with a reason for a balance nobody will pay; reports keep sales, collected, tips, refunds, voids and write-offs apart
-- [ ] The tab auto-closes at $0 after 10 minutes with no orders, or when staff marks the table free; closing ends every phone's session
-- [ ] Checked at 390/768/1280 px, light and dark
+- [x] Table detail at Mesas → a table (`/app/[slug]/mesas/[table]`; tiles link there): people, their items, owed / paid / in progress, the table's payments and write-offs; re-share a shared line (`set_item_shares`) (migration `20261007000000_staff_tools.sql`)
+- [x] "Cobrar" → "Dividir cuenta": charge a person, the balance or equal shares (start/cancel the split), then collect in the cash dialog; collect or cancel pending cash from the payments list
+- [x] "Mover a otra persona" / "a la mesa" for lines no money has touched (`move_order_item`); paid lines show "Con pago" and can't change
+- [x] Voids (`void_line`): an unpaid line lowers the balance; a paid line refunds each payer their part plus its IVU (`record_refund`), and staff are told how much to hand back; lines held by a pending payment can't be voided (old `void_order` path checks too)
+- [x] Manager write-off with a reason (a person's, the table's, or everything left; `write_off`); Reportes shows voids, write-offs and refunds apart from sales (`period_adjustments`)
+- [x] "Mesa libre" closes a settled table (`close_tab`); settled tables quiet for 10 minutes close on their own as staff screens and guest pages load (`close_idle_tabs`); the next order starts a new tab with new people; the "Cerrado en el POS" reminder stays separate
+- [x] Checked at 390/768/1280 px, light and dark (`tests/e2e/staff-tools.spec.ts`, no sideways scroll)
 
 ### Phase 6: Verification
 

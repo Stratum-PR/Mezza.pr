@@ -1068,6 +1068,80 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"write_off_allocations": {
+                  Row: {
+                    "cents": number,"id": string,"order_item_id": string,"restaurant_id": string,"share_id": string | null,"write_off_id": string
+                  }
+                  Insert: {
+                    "cents": number,"id"?: string,"order_item_id": string,"restaurant_id": string,"share_id"?: string | null,"write_off_id": string
+                  }
+                  Update: {
+                    "cents"?: number,"id"?: string,"order_item_id"?: string,"restaurant_id"?: string,"share_id"?: string | null,"write_off_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "write_off_allocations_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: false
+      referencedRelation: "order_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "write_off_allocations_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "write_off_allocations_share_id_fkey"
+      columns: ["share_id"]
+isOneToOne: false
+      referencedRelation: "order_item_shares"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "write_off_allocations_write_off_id_fkey"
+      columns: ["write_off_id"]
+isOneToOne: false
+      referencedRelation: "write_offs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"write_offs": {
+                  Row: {
+                    "cents": number,"created_at": string,"created_by": string | null,"id": string,"participant_id": string | null,"reason": string,"restaurant_id": string,"scope": string,"tab_id": string
+                  }
+                  Insert: {
+                    "cents": number,"created_at"?: string,"created_by"?: string | null,"id"?: string,"participant_id"?: string | null,"reason": string,"restaurant_id": string,"scope": string,"tab_id": string
+                  }
+                  Update: {
+                    "cents"?: number,"created_at"?: string,"created_by"?: string | null,"id"?: string,"participant_id"?: string | null,"reason"?: string,"restaurant_id"?: string,"scope"?: string,"tab_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "write_offs_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "write_offs_restaurant_id_participant_id_fkey"
+      columns: ["restaurant_id","participant_id"]
+isOneToOne: false
+      referencedRelation: "tab_participants"
+      referencedColumns: ["restaurant_id","id"]
+    },{
+      foreignKeyName: "write_offs_restaurant_id_tab_id_fkey"
+      columns: ["restaurant_id","tab_id"]
+isOneToOne: false
+      referencedRelation: "tab_totals"
+      referencedColumns: ["restaurant_id","tab_id"]
+    },{
+      foreignKeyName: "write_offs_restaurant_id_tab_id_fkey"
+      columns: ["restaurant_id","tab_id"]
+isOneToOne: false
+      referencedRelation: "tabs"
+      referencedColumns: ["restaurant_id","id"]
+    }
+                  ]
                 }
           }
           Views: {
@@ -1118,6 +1192,12 @@ isOneToOne: false
 "cancel_split_plan":
 { Args: { "p_tab_id": string }; Returns: Json
                            },
+"close_idle_tabs":
+{ Args: { "p_restaurant_id": string }; Returns: number
+                           },
+"close_tab":
+{ Args: { "p_tab_id": string }; Returns: undefined
+                           },
 "create_restaurant_with_owner":
 { Args: { "p_language"?: Database["public"]['Enums']["app_locale"],"p_name": string,"p_owner_id": string,"p_phone"?: string,"p_slug": string }; Returns: string
                            },
@@ -1135,6 +1215,12 @@ isOneToOne: false
                            },
 "ivu_cents":
 { Args: { "p_bps": number,"p_cents": number }; Returns: number
+                           },
+"move_order_item":
+{ Args: { "p_order_item_id": string,"p_participant_id"?: string }; Returns: undefined
+                           },
+"period_adjustments":
+{ Args: { "p_from": string,"p_restaurant_id": string,"p_to": string }; Returns: Json
                            },
 "place_guest_order":
 { Args: { "p_client_order_id": string,"p_device_hash": string,"p_guest_language": Database["public"]['Enums']["app_locale"],"p_lines": Json,"p_name"?: string,"p_restaurant_id": string,"p_table_id": string }; Returns: Json
@@ -1195,12 +1281,21 @@ isOneToOne: false
 "tab_checkout":
 { Args: { "p_tab_id": string }; Returns: Json
                            },
+"tab_settled":
+{ Args: { "p_tab_id": string }; Returns: boolean
+                           },
+"void_line":
+{ Args: { "p_order_id": string,"p_order_item_id"?: string,"p_reason": string }; Returns: Json
+                           },
 "void_order":
 { Args: { "p_order_id": string,"p_order_item_id"?: string,"p_reason": string }; Returns: undefined
+                           },
+"write_off":
+{ Args: { "p_participant_id"?: string,"p_reason": string,"p_scope": string,"p_tab_id": string }; Returns: Json
                            }
           }
           Enums: {
-            "app_locale": "es"|"en","audit_action": "void"|"refund"|"price_change"|"pin_reset"|"support_access"|"shares"|"limit_change","device_kind": "server"|"kitchen"|"register","export_kind": "ivu_monthly_pdf"|"ivu_monthly_csv"|"sales_csv"|"sales_xlsx"|"qr_pdf","fiscal_mode": "sit_beside"|"processor","member_role": "owner"|"manager"|"server"|"kitchen","menu_style": "house"|"original"|"simple","order_source": "qr"|"staff","order_status": "new"|"in_kitchen"|"ready"|"served"|"void","paper_texture": "none"|"linen"|"kraft"|"parchment","payment_method": "card"|"ath"|"cash","payment_provider": "stripe"|"ath","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","print_status": "queued"|"printed"|"failed","printer_protocol": "browser"|"epson_epos"|"star_webprnt","provider_status": "not_connected"|"pending"|"connected"|"unavailable","qr_dot_style": "square"|"rounded"|"dots","qr_eye_style": "square"|"rounded"|"circle","qr_font": "menu"|"modern","qr_logo_mode": "none"|"mono"|"upload","restaurant_status": "trial"|"active"|"paused"|"cancelled","service_request_kind": "call_server"|"bring_check","service_request_status": "open"|"handled","split_mode": "one"|"even"|"items","subscription_status": "trial"|"active"|"past_due"|"cancelled","tab_status": "open"|"paying"|"closed","ticket_kind": "kitchen"|"receipt","upload_status": "processing"|"review"|"published"|"failed"
+            "app_locale": "es"|"en","audit_action": "void"|"refund"|"price_change"|"pin_reset"|"support_access"|"shares"|"limit_change"|"move_line"|"write_off"|"close_tab","device_kind": "server"|"kitchen"|"register","export_kind": "ivu_monthly_pdf"|"ivu_monthly_csv"|"sales_csv"|"sales_xlsx"|"qr_pdf","fiscal_mode": "sit_beside"|"processor","member_role": "owner"|"manager"|"server"|"kitchen","menu_style": "house"|"original"|"simple","order_source": "qr"|"staff","order_status": "new"|"in_kitchen"|"ready"|"served"|"void","paper_texture": "none"|"linen"|"kraft"|"parchment","payment_method": "card"|"ath"|"cash","payment_provider": "stripe"|"ath","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","print_status": "queued"|"printed"|"failed","printer_protocol": "browser"|"epson_epos"|"star_webprnt","provider_status": "not_connected"|"pending"|"connected"|"unavailable","qr_dot_style": "square"|"rounded"|"dots","qr_eye_style": "square"|"rounded"|"circle","qr_font": "menu"|"modern","qr_logo_mode": "none"|"mono"|"upload","restaurant_status": "trial"|"active"|"paused"|"cancelled","service_request_kind": "call_server"|"bring_check","service_request_status": "open"|"handled","split_mode": "one"|"even"|"items","subscription_status": "trial"|"active"|"past_due"|"cancelled","tab_status": "open"|"paying"|"closed","ticket_kind": "kitchen"|"receipt","upload_status": "processing"|"review"|"published"|"failed"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1320,7 +1415,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "app_locale": ["es", "en"],"audit_action": ["void", "refund", "price_change", "pin_reset", "support_access", "shares", "limit_change"],"device_kind": ["server", "kitchen", "register"],"export_kind": ["ivu_monthly_pdf", "ivu_monthly_csv", "sales_csv", "sales_xlsx", "qr_pdf"],"fiscal_mode": ["sit_beside", "processor"],"member_role": ["owner", "manager", "server", "kitchen"],"menu_style": ["house", "original", "simple"],"order_source": ["qr", "staff"],"order_status": ["new", "in_kitchen", "ready", "served", "void"],"paper_texture": ["none", "linen", "kraft", "parchment"],"payment_method": ["card", "ath", "cash"],"payment_provider": ["stripe", "ath"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"print_status": ["queued", "printed", "failed"],"printer_protocol": ["browser", "epson_epos", "star_webprnt"],"provider_status": ["not_connected", "pending", "connected", "unavailable"],"qr_dot_style": ["square", "rounded", "dots"],"qr_eye_style": ["square", "rounded", "circle"],"qr_font": ["menu", "modern"],"qr_logo_mode": ["none", "mono", "upload"],"restaurant_status": ["trial", "active", "paused", "cancelled"],"service_request_kind": ["call_server", "bring_check"],"service_request_status": ["open", "handled"],"split_mode": ["one", "even", "items"],"subscription_status": ["trial", "active", "past_due", "cancelled"],"tab_status": ["open", "paying", "closed"],"ticket_kind": ["kitchen", "receipt"],"upload_status": ["processing", "review", "published", "failed"]
+            "app_locale": ["es", "en"],"audit_action": ["void", "refund", "price_change", "pin_reset", "support_access", "shares", "limit_change", "move_line", "write_off", "close_tab"],"device_kind": ["server", "kitchen", "register"],"export_kind": ["ivu_monthly_pdf", "ivu_monthly_csv", "sales_csv", "sales_xlsx", "qr_pdf"],"fiscal_mode": ["sit_beside", "processor"],"member_role": ["owner", "manager", "server", "kitchen"],"menu_style": ["house", "original", "simple"],"order_source": ["qr", "staff"],"order_status": ["new", "in_kitchen", "ready", "served", "void"],"paper_texture": ["none", "linen", "kraft", "parchment"],"payment_method": ["card", "ath", "cash"],"payment_provider": ["stripe", "ath"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"print_status": ["queued", "printed", "failed"],"printer_protocol": ["browser", "epson_epos", "star_webprnt"],"provider_status": ["not_connected", "pending", "connected", "unavailable"],"qr_dot_style": ["square", "rounded", "dots"],"qr_eye_style": ["square", "rounded", "circle"],"qr_font": ["menu", "modern"],"qr_logo_mode": ["none", "mono", "upload"],"restaurant_status": ["trial", "active", "paused", "cancelled"],"service_request_kind": ["call_server", "bring_check"],"service_request_status": ["open", "handled"],"split_mode": ["one", "even", "items"],"subscription_status": ["trial", "active", "past_due", "cancelled"],"tab_status": ["open", "paying", "closed"],"ticket_kind": ["kitchen", "receipt"],"upload_status": ["processing", "review", "published", "failed"]
           }
         }
 } as const

@@ -128,3 +128,10 @@ One line each: the decision, why, and how to reverse it.
 - **"Cerrado en el POS" waits until payments cover the whole table**; a partial payment no longer brings it up.
 - **A pending payment shows as "Pago en proceso"** in the table's check, not "Pagado", until staff confirm it.
 - **`splitBill` is on.** With it off, the phone offers only the whole balance (no locking).
+- **The table view lives under Mesas** (`/mesas/[table]`) rather than inside Servicio: Mesas already shows every table, and its tiles now open the table. Servicio keeps its alerts and order lists.
+- **"Dividir cuenta" is a step before the cash dialog**, not a tab inside it: staff choose what to charge (a person's, everything, equal shares), the server creates the payment, then the cash dialog collects exactly that payment. There's no "only the table's lines" option; those are in the balance, or written off.
+- **A void after payment refunds each payer their part plus that part's share of the payment's IVU**, capped at what's refundable, through `record_refund` (audited, manager-only). For cash, staff hand it back; the message says how much.
+- **Write-offs are their own records**, not payments: they cover charges so the table can close, but they're never sales or money collected, and Reportes lists them apart (with voids and refunds).
+- **Idle tables close as screens load**, not on a timer: Vercel Hobby runs crons daily only. "Idle" is a settled tab with no orders or payments for 10 minutes. The POS reminder ("Cerrado en el POS") is separate and still needs a tap.
+- **The Data API refuses DELETE/UPDATE without a WHERE clause** (Supabase's safeupdate), which pgTAP tests don't exercise: SQL called through the API must always filter. Found by the staff-tools E2E test (`write_off` used a scratch table).
+- **A person with no dishes shows no status** in the table view (not "Pagado"), e.g. after their only dish moved to someone else.

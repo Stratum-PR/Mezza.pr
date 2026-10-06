@@ -91,6 +91,8 @@ export async function loadFloor(
   const rid = restaurant.id;
   const rates = { stateBps: restaurant.ivu_state_bps, municipalBps: restaurant.ivu_municipal_bps };
   const since = new Date(Date.now() - 16 * 3600_000).toISOString(); // today's service
+  // Paid tables quiet for 10 minutes close on their own (close_idle_tabs), before the floor is read.
+  await db.rpc("close_idle_tabs", { p_restaurant_id: rid });
 
   const [tables, tabs, requests, orders, pays] = await Promise.all([
     db

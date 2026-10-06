@@ -194,27 +194,45 @@ export async function staffPlaceOrder(
   return { ok: true, id: r.order_id, number: r.number };
 }
 
-/** Void an order line (or the whole order). Managers and owners only; reason required; audited. */
+export type VoidResult =
+  | { ok: true; refunds: { paymentId: string; participantId: string | null; amountCents: number }[] }
+  | { ok: false; error: string };
+
+/**
+ * Void an order line (or the whole order). Managers and owners only; reason required; audited. A line
+ * someone already paid refunds each payer for their part (plus its IVU); staff hand the cash back.
+ * A line a pending payment holds waits until that payment is confirmed or cancelled.
+ */
 export async function voidLine(
   slug: string,
   orderId: string,
   lineId: string | null,
   reason: string,
-): Promise<StaffResult> {
-  if (!uuid.safeParse(orderId).success || (lineId && !uuid.safeParse(lineId).success)) return fail("invalid");
-  if (reason.trim().length < 3 || reason.length > 300) return fail("reason");
+): Promise<VoidResult> {
+  if (!uuid.safeParse(orderId).success || (lineId && !uuid.safeParse(lineId).success))
+    return { ok: false, error: "invalid" };
+  if (reason.trim().length < 3 || reason.length > 300) return { ok: false, error: "reason" };
   const ctx = await requireSection(slug, "service");
-  if (ctx.role !== "owner" && ctx.role !== "manager") return fail("forbidden");
-  const { error } = await (
+  if (ctx.role !== "owner" && ctx.role !== "manager") return { ok: false, error: "forbidden" };
+  const { data, error } = await (
     await createClient()
-  ).rpc("void_order", {
+  ).rpc("void_line", {
     p_order_id: orderId,
     p_reason: reason.trim(),
     p_order_item_id: lineId ?? undefined,
   });
-  if (error) return fail(error.code === "42501" ? "forbidden" : "failed");
+  if (error)
+    return {
+      ok: false,
+      error:
+        error.code === "42501" ? "forbidden" : /pending payment/.test(error.message) ? "pending" : "failed",
+    };
   refresh(slug);
-  return { ok: true };
+  const refunds = (
+    (data as { refunds?: { payment_id: string; participant_id: string | null; amount_cents: number }[] })
+      ?.refunds ?? []
+  ).map((r) => ({ paymentId: r.payment_id, participantId: r.participant_id, amountCents: r.amount_cents }));
+  return { ok: true, refunds };
 }
 
 /** Refund (cash in pass 1; mocks in demo). Managers and owners only; reason required; audited. */

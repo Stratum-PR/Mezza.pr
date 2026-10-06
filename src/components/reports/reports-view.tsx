@@ -24,7 +24,23 @@ const METHOD_COLOR = {
   cash: "var(--chart-cash)",
 } as const;
 
-export function ReportsView({ report, locale }: { report: Report; locale: Locale }) {
+/** Voids and write-offs in the period (period_adjustments): never sales; write-offs aren't collected money. */
+export interface Adjustments {
+  voidsCents: number;
+  voidsCount: number;
+  writeOffsCents: number;
+  writeOffsCount: number;
+}
+
+export function ReportsView({
+  report,
+  locale,
+  adjustments,
+}: {
+  report: Report;
+  locale: Locale;
+  adjustments?: Adjustments;
+}) {
   const t = useTranslations("reports");
   const tm = useTranslations("staff.methods");
   const money = (c: number) => formatCents(c, locale);
@@ -74,6 +90,33 @@ export function ReportsView({ report, locale }: { report: Report; locale: Locale
           sub={t("kpi.refunds", { amount: money(totals.refunds) })}
         />
       </div>
+
+      {adjustments && (
+        <section
+          aria-labelledby="adjustments-title"
+          className="mb-4 rounded-card border border-line bg-surface p-4 text-sm"
+        >
+          <h2 id="adjustments-title" className="mb-1.5 font-extrabold">
+            {t("adjustments.title")}
+          </h2>
+          <ul className="tabular flex flex-wrap gap-x-6 gap-y-1">
+            <li>
+              {t("adjustments.voids", {
+                count: adjustments.voidsCount,
+                amount: money(adjustments.voidsCents),
+              })}
+            </li>
+            <li>
+              {t("adjustments.writeOffs", {
+                count: adjustments.writeOffsCount,
+                amount: money(adjustments.writeOffsCents),
+              })}
+            </li>
+            <li>{t("adjustments.refunds", { amount: money(totals.refunds) })}</li>
+          </ul>
+          <p className="mt-1.5 text-xs text-muted">{t("adjustments.note")}</p>
+        </section>
+      )}
 
       {/* 1 */}
       <ChartCard

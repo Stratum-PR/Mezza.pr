@@ -100,7 +100,21 @@ export function ServiceScreen({
           onSubmit={({ reason, amount }) => {
             const a = ask;
             setAsk(null);
-            if (a.kind === "void") run(() => voidLine(slug, a.orderId, a.lineId, reason));
+            if (a.kind === "void")
+              start(async () => {
+                const r = await voidLine(slug, a.orderId, a.lineId, reason);
+                const refunded = r.ok ? r.refunds.reduce((n, x) => n + x.amountCents, 0) : 0;
+                setMessage(
+                  r.ok
+                    ? {
+                        ok: true,
+                        text: refunded
+                          ? t("service.voidRefund", { amount: formatCents(refunded, locale) })
+                          : t("service.done"),
+                      }
+                    : { ok: false, text: t(`errors.${r.error}`) },
+                );
+              });
             else
               run(
                 () => refundPayment(slug, a.paymentId, amount ?? "", reason),
