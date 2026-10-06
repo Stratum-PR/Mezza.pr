@@ -18,7 +18,8 @@ import { illustrationSvg } from "../../src/components/menu/illustrations";
 import { deriveQrToken, hashQrToken, tableUrl } from "../../src/lib/qr/token";
 import { generateHistory, type HistoryItem } from "./history";
 
-export const SEED_PASSWORD = "mezza-local-2026";
+import { SEED_PASSWORD } from "./password";
+export { SEED_PASSWORD };
 const CAFE = "c0ffee00-0000-4000-8000-000000000001";
 const BARRA = "ba220000-0000-4000-8000-000000000002";
 const root = join(__dirname, "..", "..");

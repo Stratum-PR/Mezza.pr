@@ -1,7 +1,7 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { guestUrl, login, resetTable } from "./helpers";
+import { app, email, guestUrl, login, resetTable, tableId } from "./helpers";
 
-const TABLE_ID = "c0ffee00-0005-4000-8000-000000000011";
+const TABLE_ID = () => tableId(11);
 
 async function phone(browser: Browser): Promise<Page> {
   const page = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
@@ -35,10 +35,10 @@ test.describe("staff tools for split bills (Mesas → a table)", () => {
     await order(ben, /^Jugo de china/); // $3.50
 
     const manager = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
-    await login(manager, "gerente@cafelucia.example", "/app/cafe-lucia/mesas");
+    await login(manager, email("gerente"), `${app()}/mesas`);
     await manager.getByRole("tab", { name: "Terraza" }).click();
     await manager.getByRole("link", { name: /^Mesa 11 ·/ }).click();
-    await expect(manager).toHaveURL(new RegExp(`/mesas/${TABLE_ID}$`));
+    await expect(manager).toHaveURL(new RegExp(`/mesas/${TABLE_ID()}$`));
     await expect(manager.getByRole("heading", { name: "Mesa 11" })).toBeVisible();
     const people = manager
       .locator("section")
@@ -117,7 +117,7 @@ test.describe("staff tools for split bills (Mesas → a table)", () => {
     });
 
     // Reports keep the write-off apart.
-    await manager.goto("/app/cafe-lucia/reportes");
+    await manager.goto(`${app()}/reportes`);
     await expect(manager.getByText(/Cuentas perdonadas: \d+ · \$\d/)).toBeVisible();
   });
 });

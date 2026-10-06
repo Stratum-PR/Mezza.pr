@@ -113,11 +113,14 @@ database tier: about 15% of the local history (roughly 500 orders over 90 days),
 pnpm typecheck && pnpm lint && pnpm test   # types, lint, unit tests
 pnpm test:db                               # pgTAP database tests (needs the local stack)
 pnpm db:check                              # same database tests on in-process PGlite (no Docker)
-pnpm test:e2e                              # Playwright smoke tests; starts the dev server if needed
+pnpm test:e2e                              # Playwright tests on the dev server (2 workers); single files too
+pnpm test:e2e:prod                         # the full suite on a production build, 4 workers (~2 min)
+pnpm seed:e2e                              # one Café Lucía copy per test worker (the E2E setup runs it)
 pnpm screenshots                           # on demand: every screen, 390 and 1280 px, light and dark
 ```
 
-End-to-end tests run serially against the seeded Café Lucía data and tidy up after themselves
+End-to-end tests run in parallel, each worker on its own copy of Café Lucía (worker 0 uses Café Lucía
+itself, worker k `cafe-lucia-w{k}` with logins `dueno.w{k}@cafelucia.example` …), and tidy up after themselves
 (`resetTable` in `tests/e2e/helpers.ts` only ever touches the local stack). The screenshot review is
 left out of `pnpm test:e2e`; run it before a release or after UI work. What every test checks and
 how long it takes: [docs/E2E_TESTS.md](docs/E2E_TESTS.md); `npx playwright show-report` opens the

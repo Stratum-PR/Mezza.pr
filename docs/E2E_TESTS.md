@@ -213,7 +213,9 @@ Measured 2026-10-06 on the local dev server, one worker: **80 tests, 9.7 minutes
 | ----------------------------------------------------- | ------- | ----- |
 | the kitchen reprints a ticket and the print is logged | desktop | 4.0 s |
 
-## Making the suite faster (phase 6)
+## Making the suite faster (phase 6, done)
+
+Result: **10.0 → 1.7 minutes** for the full suite (`pnpm test:e2e:prod`: production build, 4 workers), with the screenshot review on demand.
 
 1. **Screenshot review out of the default run** (−188.3 s): `pnpm screenshots` before releases.
 2. **Production build for full runs**: faster pages and the same build Vercel runs. Demo mocks are off in production builds, so the menu-import and signup tests upload a real small image instead of a fake PDF.

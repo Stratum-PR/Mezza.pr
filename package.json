@@ -13,11 +13,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:prod": "playwright test --config playwright.prod.config.ts",
     "test:db": "supabase test db",
     "screenshots": "playwright test --config playwright.screenshots.config.ts",
     "db:check": "tsx scripts/db-check/run.ts",
     "seed": "tsx scripts/seed/index.ts",
     "seed:cloud": "tsx scripts/seed/index.ts --cloud",
+    "seed:e2e": "tsx scripts/seed/e2e-workers.ts",
     "db:types": "supabase gen types typescript --local > src/lib/db/types.ts"
   },
   "dependencies": {

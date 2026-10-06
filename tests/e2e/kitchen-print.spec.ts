@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { login } from "./helpers";
+import { app, email, login } from "./helpers";
 
 test("the kitchen reprints a ticket and the print is logged", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "runs once");
@@ -18,7 +18,7 @@ test("the kitchen reprints a ticket and the print is logged", async ({ page }, i
       },
     });
   });
-  await login(page, "cocina@cafelucia.example", "/app/cafe-lucia/cocina");
+  await login(page, email("cocina"), `${app()}/cocina`);
   const reprint = page.getByRole("button", { name: /^Reimprimir #\d+/ }).first();
   await expect(reprint).toBeVisible({ timeout: 20_000 });
   const number = (await reprint.getAttribute("aria-label"))!.match(/#(\d+)/)![1];

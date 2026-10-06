@@ -1,5 +1,5 @@
 import { expect, test, type Browser, type Page } from "@playwright/test";
-import { guestUrl, login, resetTable } from "./helpers";
+import { app, email, guestUrl, login, resetTable } from "./helpers";
 
 async function phone(browser: Browser, table: number): Promise<Page> {
   const page = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage();
@@ -68,7 +68,7 @@ test.describe("guest checkout (split bill)", () => {
   }) => {
     test.setTimeout(300_000);
     const server = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
-    await login(server, "mesero@cafelucia.example", "/app/cafe-lucia/servicio");
+    await login(server, email("mesero"), `${app()}/servicio`);
 
     const ana = await phone(browser, 1);
     await order(ana, /^Malta/, "Ana"); // $2.00
@@ -125,7 +125,7 @@ test.describe("guest checkout (split bill)", () => {
   test("an even split: one phone splits in two, each pays a share", async ({ browser }) => {
     test.setTimeout(300_000);
     const server = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
-    await login(server, "mesero@cafelucia.example", "/app/cafe-lucia/servicio");
+    await login(server, email("mesero"), `${app()}/servicio`);
 
     const ana = await phone(browser, 2);
     await order(ana, /^Jugo de china/, "Ana"); // $3.50

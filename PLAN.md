@@ -171,8 +171,8 @@ UI flags: `splitBill` and `sharedTab` in `src/config/flags.ts`. Even/per-item sp
 Faster E2E first (user request, 2026-10-06), so the rest of the phase runs on it:
 
 - [x] Timing report: run the suite once with the JSON and HTML reporters; a guide to every test (what it checks, how long it takes, keep in every run / before releases only / cut) for the user to review before anything is trimmed ([docs/E2E_TESTS.md](docs/E2E_TESTS.md): 80 tests, 10 min; the screenshot review was 32%)
-- [ ] Full suite against a production build (`next build` + `next start`); `next dev` stays for single-file runs while building
-- [ ] Parallel E2E: seed one Café Lucía copy per worker (own logins, tables and menu); tests reach their restaurant, logins and tables through helpers instead of hardcoded `cafe-lucia` / emails / table ids; settings-changing tests stop sharing state
+- [x] Full suite against a production build (`pnpm test:e2e:prod`, `playwright.prod.config.ts`): mock payments switched to their stubs, demo-only tests skip themselves; `next dev` stays for single-file runs while building. Caught a stale assertion the dev server could never reach (signup's "disponible próximamente")
+- [x] Parallel E2E: `pnpm seed:e2e` copies Café Lucía per worker (`cafe-lucia-w{k}`, "Café Lucía (w{k})": menu, tables, photos, logins `dueno.w{k}@…`, same history; global setup runs it); tests reach their restaurant, logins and tables through helpers (`worker()`, `app()`, `email()`, `tableId()`, `atApp()`); each worker sends its own test IP for the per-IP rate limits. 4 workers by default (`E2E_WORKERS`). Full suite: 10 min → 1.7 min on a production build
 - [x] Trim or move to a pre-release run whatever the user agrees from the timing report: the screenshot review is on demand (`pnpm screenshots`, its own config); its phone-menu check moved to site.spec.ts
 
 - [ ] Multi-phone E2E: two phones paying at once, paying while someone orders, someone leaving early, an even plan with a late order, a void after a partial payment, a pending payment expiring, auto-close and the next party at the same table

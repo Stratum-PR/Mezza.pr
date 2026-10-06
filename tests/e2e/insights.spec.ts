@@ -1,10 +1,10 @@
 import { existsSync } from "node:fs";
 import { expect, test } from "@playwright/test";
-import { login } from "./helpers";
+import { app, atApp, email, login } from "./helpers";
 
 test.describe("owner insights", () => {
   test("Inicio shows today against last week, payments, IVU and alerts", async ({ page }, info) => {
-    await login(page, "dueno@cafelucia.example", "/app/cafe-lucia");
+    await login(page, email("dueno"), `${app()}`);
     await expect(page.getByRole("heading", { name: "Hoy", level: 1 })).toBeVisible();
     await expect(page.getByText("Ventas de hoy")).toBeVisible();
     await expect(page.getByText(/(más|menos) que el \w+ pasado a esta hora|Sin ventas el/)).toBeVisible();
@@ -18,8 +18,8 @@ test.describe("owner insights", () => {
   });
 
   test("Reportes has the ten metrics, each with a table view, and a date range", async ({ page }, info) => {
-    await login(page, "gerente@cafelucia.example", "/app/cafe-lucia/reportes");
-    await page.goto("/app/cafe-lucia/reportes?range=90d");
+    await login(page, email("gerente"), `${app()}/reportes`);
+    await page.goto(`${app()}/reportes?range=90d`);
     const titles = [
       "Ventas por hora y día",
       "Ventas diarias vs. la semana anterior",
@@ -68,28 +68,24 @@ test.describe("owner insights", () => {
 
   test("Exportar builds the IVU summary and sales files and keeps them", async ({ page }, info) => {
     test.skip(info.project.name !== "desktop", "one run is enough");
-    await login(page, "dueno@cafelucia.example", "/app/cafe-lucia/exportar");
+    await login(page, email("dueno"), `${app()}/exportar`);
     await expect(page.getByText("No es un formulario oficial").first()).toBeVisible();
 
-    const ivu = await page.request.get(
-      "/app/cafe-lucia/exportar/descargar?kind=ivu_monthly_csv&month=2026-09",
-    );
+    const ivu = await page.request.get(`${app()}/exportar/descargar?kind=ivu_monthly_csv&month=2026-09`);
     expect(ivu.status()).toBe(200);
     const csv = await ivu.text();
     expect(csv).toContain("Resumen de IVU para preparar la planilla en SURI");
     expect(csv).toMatch(/^Total,\d+\.\d\d,\d+\.\d\d,\d+\.\d\d,\d+\.\d\d,\d+\.\d\d$/m);
 
-    const pdf = await page.request.get(
-      "/app/cafe-lucia/exportar/descargar?kind=ivu_monthly_pdf&month=2026-09",
-    );
+    const pdf = await page.request.get(`${app()}/exportar/descargar?kind=ivu_monthly_pdf&month=2026-09`);
     expect(pdf.headers()["content-type"]).toBe("application/pdf");
     expect((await pdf.body()).subarray(0, 5).toString()).toBe("%PDF-");
 
-    const xlsx = await page.request.get("/app/cafe-lucia/exportar/descargar?kind=sales_xlsx&month=2026-09");
+    const xlsx = await page.request.get(`${app()}/exportar/descargar?kind=sales_xlsx&month=2026-09`);
     expect(xlsx.status()).toBe(200);
     expect((await xlsx.body()).subarray(0, 2).toString()).toBe("PK"); // a zip, as .xlsx files are
 
-    const sales = await page.request.get("/app/cafe-lucia/exportar/descargar?kind=sales_csv&month=2026-09");
+    const sales = await page.request.get(`${app()}/exportar/descargar?kind=sales_csv&month=2026-09`);
     const salesCsv = await sales.text();
     for (const section of ["Órdenes", "Platos", "Pagos", "Reembolsos"])
       expect(salesCsv).toMatch(new RegExp(`^${section}\\r?$`, "m"));
@@ -108,15 +104,12 @@ test.describe("owner insights", () => {
 
   test("servers get neither reports nor exports", async ({ page }, info) => {
     test.skip(info.project.name !== "desktop", "one run is enough");
-    await login(page, "mesero@cafelucia.example");
-    await page.goto("/app/cafe-lucia/reportes");
-    await expect(page).toHaveURL(/\/app\/cafe-lucia\/servicio$/);
-    const res = await page.request.get(
-      "/app/cafe-lucia/exportar/descargar?kind=ivu_monthly_csv&month=2026-09",
-      {
-        maxRedirects: 0,
-      },
-    );
+    await login(page, email("mesero"));
+    await page.goto(`${app()}/reportes`);
+    await expect(page).toHaveURL(atApp("/servicio"));
+    const res = await page.request.get(`${app()}/exportar/descargar?kind=ivu_monthly_csv&month=2026-09`, {
+      maxRedirects: 0,
+    });
     expect(res.status()).not.toBe(200);
   });
 });

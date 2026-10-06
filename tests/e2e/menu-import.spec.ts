@@ -1,14 +1,18 @@
 import { expect, test } from "@playwright/test";
 
-import { login } from "./helpers";
+import { app, atApp, email, login } from "./helpers";
 
 test("a fixture import is reviewed, flagged prices block publishing, and publishing succeeds", async ({
   page,
 }, info) => {
   test.skip(info.project.name !== "desktop", "import flow runs once");
+  test.skip(
+    process.env.E2E_BUILD === "production",
+    "the fixture importer is a demo mock, off in production builds",
+  );
   test.setTimeout(90_000);
 
-  await login(page, "gerente@cafelucia.example", "/app/cafe-lucia/menu/importar");
+  await login(page, email("gerente"), `${app()}/menu/importar`);
   await expect(page).toHaveURL(/\/menu\/importar$/);
   await page.waitForLoadState("networkidle");
 
@@ -44,6 +48,6 @@ test("a fixture import is reviewed, flagged prices block publishing, and publish
 
   await expect(publish).toBeEnabled();
   await publish.click();
-  await expect(page).toHaveURL(/\/app\/cafe-lucia\/menu\?importado=1$/, { timeout: 30_000 });
+  await expect(page).toHaveURL(atApp("/menu?importado=1"), { timeout: 30_000 });
   await expect(page.getByRole("button", { name: "Editar Avena" })).toBeVisible();
 });

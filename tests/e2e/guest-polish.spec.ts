@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { existsSync } from "node:fs";
-import { guestUrl, resetTable } from "./helpers";
+import { guestUrl, resetTable, tableId, worker } from "./helpers";
 
 test("quick add, cart quantities and section chips that follow the scroll", async ({ page }, info) => {
   test.skip(info.project.name !== "phone", "phone layout");
@@ -48,27 +48,27 @@ test("a receipt from an earlier visit doesn't come back", async ({ page }, info)
   await resetTable(8);
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY && existsSync(".env.local")) process.loadEnvFile(".env.local");
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  const tableId = "c0ffee00-0005-4000-8000-000000000008";
+  const mesa8 = tableId(8);
   // A payment from the seeded history (days ago) at Mesa 8, as if this phone had paid it.
   const [old] = (await (
     await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/payments?select=id,tabs!inner(table_id)&tabs.table_id=eq.${tableId}&status=eq.paid&order=paid_at.asc&limit=1`,
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/payments?select=id,tabs!inner(table_id)&tabs.table_id=eq.${mesa8}&status=eq.paid&order=paid_at.asc&limit=1`,
       { headers: { apikey: key, Authorization: `Bearer ${key}` } },
     )
   ).json()) as { id: string }[];
 
   await page.goto(guestUrl(8));
-  await page.evaluate(([k, v]) => localStorage.setItem(k!, v!), [`mezza-payment:${tableId}`, old!.id]);
+  await page.evaluate(([k, v]) => localStorage.setItem(k!, v!), [`mezza-payment:${mesa8}`, old!.id]);
   await page.reload();
   await page.waitForLoadState("networkidle");
   await expect(page.getByRole("button", { name: /^Mi pedido/ })).toHaveCount(0);
-  expect(await page.evaluate((k) => localStorage.getItem(k), `mezza-payment:${tableId}`)).toBeNull();
+  expect(await page.evaluate((k) => localStorage.getItem(k), `mezza-payment:${mesa8}`)).toBeNull();
 });
 
 test("a code printed under an old restaurant link still opens the table", async ({ page }, info) => {
   test.skip(info.project.name !== "phone", "phone layout");
   const current = guestUrl(5);
-  await page.goto(current.replace("/r/cafe-lucia/", "/r/nombre-viejo/"));
+  await page.goto(current.replace(`/r/${worker().slug}/`, "/r/nombre-viejo/"));
   await expect.poll(() => new URL(page.url()).pathname).toBe(current);
   await expect(page.getByText("Mesa 5")).toBeVisible();
 });

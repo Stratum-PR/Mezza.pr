@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { guestUrl, login } from "./helpers";
+import { app, email, guestUrl, login } from "./helpers";
 
 test.describe("staff interface pass", () => {
   test.beforeEach(({}, info) => test.skip(info.project.name !== "desktop", "tablet/desktop layout"));
 
   test("grouped side menu; theme and language in Ajustes", async ({ page }) => {
-    await login(page, "dueno@cafelucia.example", "/app/cafe-lucia");
+    await login(page, email("dueno"), `${app()}`);
     const nav = page.getByRole("navigation", { name: "Navegación del restaurante" });
     await expect(nav.locator("span[aria-hidden]").filter({ hasText: /./ })).toHaveText([
       "Operación",
@@ -14,7 +14,7 @@ test.describe("staff interface pass", () => {
       "Administración",
     ]);
     // Theme and language live in Ajustes → Preferencias.
-    await page.goto("/app/cafe-lucia/ajustes");
+    await page.goto(`${app()}/ajustes`);
     const prefs = page
       .locator("section")
       .filter({ has: page.getByRole("heading", { name: "Preferencias" }) });
@@ -38,7 +38,7 @@ test.describe("staff interface pass", () => {
   });
 
   test("Servicio shows today's orders by status", async ({ page }) => {
-    await login(page, "mesero@cafelucia.example", "/app/cafe-lucia/servicio");
+    await login(page, email("mesero"), `${app()}/servicio`);
     const strip = page.getByRole("region", { name: "Órdenes de hoy" });
     await expect(strip).toBeVisible();
     await strip.getByRole("tab", { name: /Servidas/ }).click();
@@ -47,7 +47,7 @@ test.describe("staff interface pass", () => {
   });
 
   test("Mesas is a floor plan the owner can rearrange", async ({ page }) => {
-    await login(page, "dueno@cafelucia.example", "/app/cafe-lucia/ajustes");
+    await login(page, email("dueno"), `${app()}/ajustes`);
     const editor = page
       .locator("section")
       .filter({ has: page.getByRole("heading", { name: "Plano de mesas" }) });
@@ -59,7 +59,7 @@ test.describe("staff interface pass", () => {
     await editor.getByRole("button", { name: "Guardar plano" }).click();
     await expect(editor.getByText("Guardado.")).toBeVisible({ timeout: 15_000 });
 
-    await page.goto("/app/cafe-lucia/mesas");
+    await page.goto(`${app()}/mesas`);
     await expect(page.getByRole("list", { name: /^Plano/ })).toBeVisible();
     await expect(page.getByRole("list", { name: "Leyenda" })).toContainText("Atención");
     await page.screenshot({ path: "docs/screenshots/app-tables.desktop.light.png", fullPage: true });
@@ -81,7 +81,7 @@ test.describe("navigation at every size", () => {
 
   test("phone: drawer menu and a bottom bar of main screens", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await login(page, "mesero@cafelucia.example", "/app/cafe-lucia/servicio");
+    await login(page, email("mesero"), `${app()}/servicio`);
     const quick = page.getByRole("navigation", { name: "Accesos rápidos" });
     await expect(quick.getByRole("link")).toHaveText(["Servicio", "Tomar orden", "Mesas"]);
     await page.screenshot({ path: "docs/screenshots/nav.phone.light.png" });
@@ -98,7 +98,7 @@ test.describe("navigation at every size", () => {
 
   test("tablet: icon rail, no top tab bar", async ({ page }) => {
     await page.setViewportSize({ width: 820, height: 1180 });
-    await login(page, "dueno@cafelucia.example", "/app/cafe-lucia");
+    await login(page, email("dueno"), `${app()}`);
     const nav = page.getByRole("navigation", { name: "Navegación del restaurante" });
     await expect(nav.getByRole("link", { name: "Reportes" })).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Accesos rápidos" })).toBeHidden();
@@ -110,7 +110,7 @@ test.describe("navigation at every size", () => {
 
 test("the sidebar never scrolls sideways", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "sizes are set here");
-  await login(page, "dueno@cafelucia.example", "/app/cafe-lucia");
+  await login(page, email("dueno"), `${app()}`);
   for (const width of [1280, 1024, 820]) {
     await page.setViewportSize({ width, height: 900 });
     const overflow = await page.locator("#app-drawer").evaluate((el) => el.scrollWidth - el.clientWidth);
