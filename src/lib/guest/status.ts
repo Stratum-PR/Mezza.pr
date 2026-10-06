@@ -28,11 +28,11 @@ type Snapshot = { name_es?: string; name_en?: string }[];
 /** What the guest's phone shows for its table: the live tab's orders, requests, totals and payment. */
 export async function guestStatus(g: GuestTable, tabId?: string): Promise<GuestStatus> {
   const db = createAdminClient();
-  const tabQuery = db.from("tabs").select("id, status").eq("table_id", g.table.id);
+  const tabQuery = db.from("tabs").select("*").eq("table_id", g.table.id);
   const { data: tab } = tabId
     ? await tabQuery.eq("id", tabId).maybeSingle()
     : await tabQuery.neq("status", "closed").maybeSingle();
-  if (!tab) {
+  if (!tab || ("staff_managed" in tab && tab.staff_managed === true)) {
     return {
       tab: null,
       orders: [],

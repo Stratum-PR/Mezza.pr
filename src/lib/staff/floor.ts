@@ -1,4 +1,5 @@
 import "server-only";
+import { splitWorkflowEnabled } from "@/lib/bills/feature";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/db/types";
 import { computeIvu, type Cents } from "@/lib/money";
@@ -202,7 +203,7 @@ export async function loadFloor(
       })),
     // Fiscal path A: a paid table stays on the list until someone taps "Cerrado en el POS".
     posToClose: floorTabs
-      .filter((t) => !t.posClosedAt && paidByTab.has(t.id))
+      .filter((t) => !splitWorkflowEnabled() && !t.posClosedAt && paidByTab.has(t.id))
       .map((t) => ({ tabId: t.id, tableLabel: t.tableLabel, posTotalCents: paidByTab.get(t.id) ?? 0 })),
     orders: mappedOrders,
     payments: payRows.map((p) => ({

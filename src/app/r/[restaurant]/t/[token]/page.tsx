@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { VisitGuestApp } from "@/components/bills/visit-guest-app";
+import { splitWorkflowEnabled } from "@/lib/bills/feature";
 import { GuestApp } from "@/components/guest/guest-app";
 import { readThemeChoice } from "@/components/shell/document";
 import { menuMessages } from "@/components/menu/menu-messages";
@@ -43,6 +45,17 @@ export default async function GuestTablePage({ params }: PageProps<"/r/[restaura
   const remembered = (await cookies()).get(LOCALE_COOKIE)?.value;
   const lang = isLocale(remembered) ? remembered : g.restaurant.defaultLanguage;
 
+  if (splitWorkflowEnabled())
+    return (
+      <VisitGuestApp
+        slug={g.restaurant.slug}
+        token={token}
+        tableLabel={g.table.label}
+        menu={menu}
+        messages={await menuMessages()}
+        initialLang={lang}
+      />
+    );
   return (
     <GuestApp
       slug={g.restaurant.slug}

@@ -1,4 +1,6 @@
 import { getTranslations } from "next-intl/server";
+import { VisitStaffPanel } from "@/components/bills/visit-staff-panel";
+import { splitWorkflowEnabled } from "@/lib/bills/feature";
 import { ServiceScreen } from "@/components/staff/service-screen";
 import { requireSection } from "@/lib/auth/staff";
 import { createClient } from "@/lib/db/server";
@@ -14,6 +16,9 @@ export default async function ServicePage({ params }: PageProps<"/app/[restauran
   return (
     <div>
       <h1 className="mb-1 text-[28px] font-extrabold tracking-[-0.02em]">{t("title")}</h1>
+      {splitWorkflowEnabled() && (
+        <VisitStaffPanel slug={restaurant} canManage={ctx.role === "owner" || ctx.role === "manager"} />
+      )}
       <ServiceScreen
         slug={restaurant}
         floor={floor}

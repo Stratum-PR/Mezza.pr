@@ -48,7 +48,7 @@ export async function resolveTable(_slug: string, token: string): Promise<GuestT
 export async function liveTab(tableId: string) {
   const { data } = await createAdminClient()
     .from("tabs")
-    .select("id, status, opened_at")
+    .select("*")
     .eq("table_id", tableId)
     .neq("status", "closed")
     .maybeSingle();
@@ -58,6 +58,8 @@ export async function liveTab(tableId: string) {
 /** Opens a tab for the table if none is live (service requests can come before the first order). */
 export async function ensureTab(restaurantId: string, tableId: string): Promise<string> {
   const existing = await liveTab(tableId);
+  if (existing && "staff_managed" in existing && existing.staff_managed === true)
+    throw new Error("use_visit_session");
   if (existing) return existing.id;
   const db = createAdminClient();
   const { data, error } = await db
