@@ -168,6 +168,13 @@ UI flags: `splitBill` and `sharedTab` in `src/config/flags.ts`. Even/per-item sp
 
 ### Phase 6: Verification
 
+Faster E2E first (user request, 2026-10-06), so the rest of the phase runs on it:
+
+- [ ] Timing report: run the suite once with the JSON and HTML reporters; a guide to every test (what it checks, how long it takes, keep in every run / before releases only / cut) for the user to review before anything is trimmed
+- [ ] Full suite against a production build (`next build` + `next start`); `next dev` stays for single-file runs while building
+- [ ] Parallel E2E: seed one Café Lucía copy per worker (own logins, tables and menu); tests reach their restaurant, logins and tables through helpers instead of hardcoded `cafe-lucia` / emails / table ids; settings-changing tests stop sharing state
+- [ ] Trim or move to a pre-release run whatever the user agrees from the timing report (e.g. the screenshot review)
+
 - [ ] Multi-phone E2E: two phones paying at once, paying while someone orders, someone leaving early, an even plan with a late order, a void after a partial payment, a pending payment expiring, auto-close and the next party at the same table
 - [ ] Real phones over the LAN (`allowedDevOrigins`)
 - [ ] README, CONNECTORS.md (`TabSplitter`, Postgres `RateLimiter`), DECISIONS.md updated
