@@ -2,7 +2,7 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
-  
+
   "graphql_public": {
           Tables: {
             [_ in never]: never
@@ -115,7 +115,7 @@ isOneToOne: false
                     "created_at"?: string,"email"?: string,"id"?: string,"locale"?: Database["public"]['Enums']["app_locale"],"message"?: string | null,"name"?: string,"phone"?: string | null,"restaurant_name"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
-                    
+
                   ]
                 },"devices": {
                   Row: {
@@ -610,7 +610,7 @@ isOneToOne: false
                     "created_at"?: string,"user_id"?: string
                   }
                   Relationships: [
-                    
+
                   ]
                 },"print_jobs": {
                   Row: {
@@ -673,7 +673,7 @@ isOneToOne: false
                     "created_at"?: string,"full_name"?: string | null,"phone"?: string | null,"preferred_language"?: Database["public"]['Enums']["app_locale"] | null,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
-                    
+
                   ]
                 },"qr_designs": {
                   Row: {
@@ -721,16 +721,16 @@ isOneToOne: false
                   ]
                 },"restaurants": {
                   Row: {
-                    "address": string | null,"brand_color": string | null,"cover_path": string | null,"created_at": string,"default_language": Database["public"]['Enums']["app_locale"],"default_menu_style": Database["public"]['Enums']["menu_style"],"fiscal_mode": Database["public"]['Enums']["fiscal_mode"],"id": string,"ivu_municipal_bps": number,"ivu_state_bps": number,"name": string,"next_order_number": number,"onboarding_step": number,"phone": string | null,"plan": string,"slug": string,"status": Database["public"]['Enums']["restaurant_status"],"timezone": string,"trial_ends_at": string | null,"updated_at": string
+                    "address": string | null,"brand_color": string | null,"cover_path": string | null,"created_at": string,"default_language": Database["public"]['Enums']["app_locale"],"default_menu_style": Database["public"]['Enums']["menu_style"],"fiscal_mode": Database["public"]['Enums']["fiscal_mode"],"guest_ordering_paused": boolean,"id": string,"ivu_municipal_bps": number,"ivu_state_bps": number,"name": string,"next_order_number": number,"onboarding_step": number,"phone": string | null,"plan": string,"slug": string,"status": Database["public"]['Enums']["restaurant_status"],"timezone": string,"trial_ends_at": string | null,"updated_at": string
                   }
                   Insert: {
-                    "address"?: string | null,"brand_color"?: string | null,"cover_path"?: string | null,"created_at"?: string,"default_language"?: Database["public"]['Enums']["app_locale"],"default_menu_style"?: Database["public"]['Enums']["menu_style"],"fiscal_mode"?: Database["public"]['Enums']["fiscal_mode"],"id"?: string,"ivu_municipal_bps"?: number,"ivu_state_bps"?: number,"name": string,"next_order_number"?: number,"onboarding_step"?: number,"phone"?: string | null,"plan"?: string,"slug": string,"status"?: Database["public"]['Enums']["restaurant_status"],"timezone"?: string,"trial_ends_at"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"brand_color"?: string | null,"cover_path"?: string | null,"created_at"?: string,"default_language"?: Database["public"]['Enums']["app_locale"],"default_menu_style"?: Database["public"]['Enums']["menu_style"],"fiscal_mode"?: Database["public"]['Enums']["fiscal_mode"],"guest_ordering_paused"?: boolean,"id"?: string,"ivu_municipal_bps"?: number,"ivu_state_bps"?: number,"name": string,"next_order_number"?: number,"onboarding_step"?: number,"phone"?: string | null,"plan"?: string,"slug": string,"status"?: Database["public"]['Enums']["restaurant_status"],"timezone"?: string,"trial_ends_at"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "address"?: string | null,"brand_color"?: string | null,"cover_path"?: string | null,"created_at"?: string,"default_language"?: Database["public"]['Enums']["app_locale"],"default_menu_style"?: Database["public"]['Enums']["menu_style"],"fiscal_mode"?: Database["public"]['Enums']["fiscal_mode"],"id"?: string,"ivu_municipal_bps"?: number,"ivu_state_bps"?: number,"name"?: string,"next_order_number"?: number,"onboarding_step"?: number,"phone"?: string | null,"plan"?: string,"slug"?: string,"status"?: Database["public"]['Enums']["restaurant_status"],"timezone"?: string,"trial_ends_at"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"brand_color"?: string | null,"cover_path"?: string | null,"created_at"?: string,"default_language"?: Database["public"]['Enums']["app_locale"],"default_menu_style"?: Database["public"]['Enums']["menu_style"],"fiscal_mode"?: Database["public"]['Enums']["fiscal_mode"],"guest_ordering_paused"?: boolean,"id"?: string,"ivu_municipal_bps"?: number,"ivu_state_bps"?: number,"name"?: string,"next_order_number"?: number,"onboarding_step"?: number,"phone"?: string | null,"plan"?: string,"slug"?: string,"status"?: Database["public"]['Enums']["restaurant_status"],"timezone"?: string,"trial_ends_at"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
-                    
+
                   ]
                 },"service_requests": {
                   Row: {
@@ -840,13 +840,13 @@ isOneToOne: false
                   ]
                 },"tabs": {
                   Row: {
-                    "closed_at": string | null,"created_at": string,"id": string,"opened_at": string,"party_size": number | null,"pos_closed_at": string | null,"pos_closed_by": string | null,"restaurant_id": string,"split_count": number | null,"split_mode": Database["public"]['Enums']["split_mode"],"status": Database["public"]['Enums']["tab_status"],"table_id": string,"updated_at": string
+                    "bill_municipal_bps": number | null,"bill_revision": number,"bill_state_bps": number | null,"closed_at": string | null,"created_at": string,"id": string,"opened_at": string,"party_size": number | null,"pos_closed_at": string | null,"pos_closed_by": string | null,"restaurant_id": string,"split_count": number | null,"split_mode": Database["public"]['Enums']["split_mode"],"staff_managed": boolean,"status": Database["public"]['Enums']["tab_status"],"table_id": string,"updated_at": string
                   }
                   Insert: {
-                    "closed_at"?: string | null,"created_at"?: string,"id"?: string,"opened_at"?: string,"party_size"?: number | null,"pos_closed_at"?: string | null,"pos_closed_by"?: string | null,"restaurant_id": string,"split_count"?: number | null,"split_mode"?: Database["public"]['Enums']["split_mode"],"status"?: Database["public"]['Enums']["tab_status"],"table_id": string,"updated_at"?: string
+                    "bill_municipal_bps"?: number | null,"bill_revision"?: number,"bill_state_bps"?: number | null,"closed_at"?: string | null,"created_at"?: string,"id"?: string,"opened_at"?: string,"party_size"?: number | null,"pos_closed_at"?: string | null,"pos_closed_by"?: string | null,"restaurant_id": string,"split_count"?: number | null,"split_mode"?: Database["public"]['Enums']["split_mode"],"staff_managed"?: boolean,"status"?: Database["public"]['Enums']["tab_status"],"table_id": string,"updated_at"?: string
                   }
                   Update: {
-                    "closed_at"?: string | null,"created_at"?: string,"id"?: string,"opened_at"?: string,"party_size"?: number | null,"pos_closed_at"?: string | null,"pos_closed_by"?: string | null,"restaurant_id"?: string,"split_count"?: number | null,"split_mode"?: Database["public"]['Enums']["split_mode"],"status"?: Database["public"]['Enums']["tab_status"],"table_id"?: string,"updated_at"?: string
+                    "bill_municipal_bps"?: number | null,"bill_revision"?: number,"bill_state_bps"?: number | null,"closed_at"?: string | null,"created_at"?: string,"id"?: string,"opened_at"?: string,"party_size"?: number | null,"pos_closed_at"?: string | null,"pos_closed_by"?: string | null,"restaurant_id"?: string,"split_count"?: number | null,"split_mode"?: Database["public"]['Enums']["split_mode"],"staff_managed"?: boolean,"status"?: Database["public"]['Enums']["tab_status"],"table_id"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -893,7 +893,7 @@ isOneToOne: false
                     "created_at"?: string,"event_id"?: string,"id"?: string,"payload"?: NonNullable<Json>,"processed_at"?: string | null,"provider"?: string,"updated_at"?: string
                   }
                   Relationships: [
-                    
+
                   ]
                 }
           }
@@ -945,11 +945,11 @@ isOneToOne: false
 "place_order":
 { Args: { "p_client_order_id": string,"p_created_by"?: string,"p_device_id"?: string,"p_guest_language"?: Database["public"]['Enums']["app_locale"],"p_lines": Json,"p_restaurant_id": string,"p_source": Database["public"]['Enums']["order_source"],"p_table_id": string }; Returns: Json
                            },
-"publish_original_menu_image":
-{ Args: { "p_upload_id": string,"p_width": number,"p_height": number,"p_reviewed_by": string }; Returns: string
-                           },
 "publish_menu_import":
 { Args: { "p_payload": Json,"p_reviewed_by"?: string,"p_upload_id": string }; Returns: Json
+                           },
+"publish_original_menu_image":
+{ Args: { "p_height": number,"p_reviewed_by": string,"p_upload_id": string,"p_width": number }; Returns: string
                            },
 "record_refund":
 { Args: { "p_amount_cents": number,"p_payment_id": string,"p_reason": string }; Returns: string
@@ -969,12 +969,30 @@ isOneToOne: false
 "storage_restaurant_id":
 { Args: { "p_name": string }; Returns: string
                            },
+"visit_claim_recovery":
+{ Args: { "p_receipt_hash": string,"p_secret_hash": string,"p_table": string,"p_ticket_hash": string }; Returns: Json
+                           },
+"visit_financial_summary":
+{ Args: { "p_actor": string,"p_from": string,"p_restaurant": string,"p_to": string }; Returns: Json
+                           },
+"visit_private_receipts":
+{ Args: { "p_hash": string,"p_table": string }; Returns: Json
+                           },
+"visit_rate_limit":
+{ Args: { "p_key": string,"p_max": number,"p_seconds": number }; Returns: boolean
+                           },
+"visit_snapshot":
+{ Args: { "p_tab": string }; Returns: Json
+                           },
+"visit_workflow":
+{ Args: { "p_actor"?: string,"p_data"?: Json,"p_op": string,"p_secret_hash"?: string,"p_tab"?: string,"p_table"?: string }; Returns: Json
+                           },
 "void_order":
 { Args: { "p_order_id": string,"p_order_item_id"?: string,"p_reason": string }; Returns: undefined
                            }
           }
           Enums: {
-            "app_locale": "es"|"en","audit_action": "void"|"refund"|"price_change"|"pin_reset"|"support_access","device_kind": "server"|"kitchen"|"register","export_kind": "ivu_monthly_pdf"|"ivu_monthly_csv"|"sales_csv"|"sales_xlsx"|"qr_pdf","fiscal_mode": "sit_beside"|"processor","member_role": "owner"|"manager"|"server"|"kitchen","menu_style": "house"|"original"|"simple","order_source": "qr"|"staff","order_status": "new"|"in_kitchen"|"ready"|"served"|"void","paper_texture": "none"|"linen"|"kraft"|"parchment","payment_method": "card"|"ath"|"cash","payment_provider": "stripe"|"ath","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","print_status": "queued"|"printed"|"failed","printer_protocol": "browser"|"epson_epos"|"star_webprnt","provider_status": "not_connected"|"pending"|"connected"|"unavailable","qr_dot_style": "square"|"rounded"|"dots","qr_eye_style": "square"|"rounded"|"circle","qr_font": "menu"|"modern","qr_logo_mode": "none"|"mono"|"upload","restaurant_status": "trial"|"active"|"paused"|"cancelled","service_request_kind": "call_server"|"bring_check","service_request_status": "open"|"handled","split_mode": "one"|"even"|"items","subscription_status": "trial"|"active"|"past_due"|"cancelled","tab_status": "open"|"paying"|"closed","ticket_kind": "kitchen"|"receipt","upload_status": "processing"|"review"|"published"|"failed"
+            "app_locale": "es"|"en","audit_action": "void"|"refund"|"price_change"|"pin_reset"|"support_access"|"bill_workflow","device_kind": "server"|"kitchen"|"register","export_kind": "ivu_monthly_pdf"|"ivu_monthly_csv"|"sales_csv"|"sales_xlsx"|"qr_pdf","fiscal_mode": "sit_beside"|"processor","member_role": "owner"|"manager"|"server"|"kitchen","menu_style": "house"|"original"|"simple","order_source": "qr"|"staff","order_status": "new"|"in_kitchen"|"ready"|"served"|"void","paper_texture": "none"|"linen"|"kraft"|"parchment","payment_method": "card"|"ath"|"cash","payment_provider": "stripe"|"ath","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","print_status": "queued"|"printed"|"failed","printer_protocol": "browser"|"epson_epos"|"star_webprnt","provider_status": "not_connected"|"pending"|"connected"|"unavailable","qr_dot_style": "square"|"rounded"|"dots","qr_eye_style": "square"|"rounded"|"circle","qr_font": "menu"|"modern","qr_logo_mode": "none"|"mono"|"upload","restaurant_status": "trial"|"active"|"paused"|"cancelled","service_request_kind": "call_server"|"bring_check","service_request_status": "open"|"handled","split_mode": "one"|"even"|"items","subscription_status": "trial"|"active"|"past_due"|"cancelled","tab_status": "open"|"paying"|"closed","ticket_kind": "kitchen"|"receipt","upload_status": "processing"|"review"|"published"|"failed"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1090,11 +1108,11 @@ export type CompositeTypes<
 export const Constants = {
   "graphql_public": {
           Enums: {
-            
+
           }
         },"public": {
           Enums: {
-            "app_locale": ["es", "en"],"audit_action": ["void", "refund", "price_change", "pin_reset", "support_access"],"device_kind": ["server", "kitchen", "register"],"export_kind": ["ivu_monthly_pdf", "ivu_monthly_csv", "sales_csv", "sales_xlsx", "qr_pdf"],"fiscal_mode": ["sit_beside", "processor"],"member_role": ["owner", "manager", "server", "kitchen"],"menu_style": ["house", "original", "simple"],"order_source": ["qr", "staff"],"order_status": ["new", "in_kitchen", "ready", "served", "void"],"paper_texture": ["none", "linen", "kraft", "parchment"],"payment_method": ["card", "ath", "cash"],"payment_provider": ["stripe", "ath"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"print_status": ["queued", "printed", "failed"],"printer_protocol": ["browser", "epson_epos", "star_webprnt"],"provider_status": ["not_connected", "pending", "connected", "unavailable"],"qr_dot_style": ["square", "rounded", "dots"],"qr_eye_style": ["square", "rounded", "circle"],"qr_font": ["menu", "modern"],"qr_logo_mode": ["none", "mono", "upload"],"restaurant_status": ["trial", "active", "paused", "cancelled"],"service_request_kind": ["call_server", "bring_check"],"service_request_status": ["open", "handled"],"split_mode": ["one", "even", "items"],"subscription_status": ["trial", "active", "past_due", "cancelled"],"tab_status": ["open", "paying", "closed"],"ticket_kind": ["kitchen", "receipt"],"upload_status": ["processing", "review", "published", "failed"]
+            "app_locale": ["es", "en"],"audit_action": ["void", "refund", "price_change", "pin_reset", "support_access", "bill_workflow"],"device_kind": ["server", "kitchen", "register"],"export_kind": ["ivu_monthly_pdf", "ivu_monthly_csv", "sales_csv", "sales_xlsx", "qr_pdf"],"fiscal_mode": ["sit_beside", "processor"],"member_role": ["owner", "manager", "server", "kitchen"],"menu_style": ["house", "original", "simple"],"order_source": ["qr", "staff"],"order_status": ["new", "in_kitchen", "ready", "served", "void"],"paper_texture": ["none", "linen", "kraft", "parchment"],"payment_method": ["card", "ath", "cash"],"payment_provider": ["stripe", "ath"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"print_status": ["queued", "printed", "failed"],"printer_protocol": ["browser", "epson_epos", "star_webprnt"],"provider_status": ["not_connected", "pending", "connected", "unavailable"],"qr_dot_style": ["square", "rounded", "dots"],"qr_eye_style": ["square", "rounded", "circle"],"qr_font": ["menu", "modern"],"qr_logo_mode": ["none", "mono", "upload"],"restaurant_status": ["trial", "active", "paused", "cancelled"],"service_request_kind": ["call_server", "bring_check"],"service_request_status": ["open", "handled"],"split_mode": ["one", "even", "items"],"subscription_status": ["trial", "active", "past_due", "cancelled"],"tab_status": ["open", "paying", "closed"],"ticket_kind": ["kitchen", "receipt"],"upload_status": ["processing", "review", "published", "failed"]
           }
         }
 } as const

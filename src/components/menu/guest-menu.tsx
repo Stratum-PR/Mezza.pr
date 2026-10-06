@@ -16,6 +16,7 @@ type MenuMessages = Record<string, unknown>;
 export interface LiveMode {
   /** localStorage key for the cart, per table. */
   storageKey: string;
+  controlled?: { cart: CartLine[]; change: (cart: CartLine[]) => void; disabled: boolean };
   send: (
     cart: CartLine[],
     lang: MenuLocale,
@@ -43,6 +44,7 @@ export function GuestMenu({
   className,
   live,
   headerExtra,
+  onLangChange,
 }: {
   menu: MenuData;
   messages: Record<MenuLocale, MenuMessages>;
@@ -53,11 +55,19 @@ export function GuestMenu({
   live?: LiveMode;
   /** Extra control in the header, e.g. the light/dark toggle on the real guest page. */
   headerExtra?: ReactNode;
+  onLangChange?: (lang: MenuLocale) => void;
 }) {
   const [lang, setLang] = useState<MenuLocale>(initialLang);
   const [style, setStyle] = useState<MenuStyle>(menu.defaultStyle);
   const [open, setOpen] = useState<MenuItem | null>(null);
-  const [cart, setCart] = useState<CartLine[]>([]);
+  const [localCart, setLocalCart] = useState<CartLine[]>([]);
+  const cart = live?.controlled?.cart ?? localCart;
+  function setCart(next: CartLine[] | ((prev: CartLine[]) => CartLine[])) {
+    if (live?.controlled) {
+      if (live.controlled.disabled) return;
+      live.controlled.change(typeof next === "function" ? next(cart) : next);
+    } else setLocalCart(next);
+  }
   const [showOrder, setShowOrder] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -96,13 +106,13 @@ export function GuestMenu({
   }, [activeSection]);
 
   // Live mode keeps the cart on the device, per table, so a reload or a lost connection keeps it.
-  const storageKey = live?.storageKey;
+  const storageKey = live?.controlled ? undefined : live?.storageKey;
   useEffect(() => {
     if (!storageKey) return;
     try {
       const saved = window.localStorage.getItem(storageKey);
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time restore from storage
-      if (saved) setCart(JSON.parse(saved) as CartLine[]);
+      if (saved) setLocalCart(JSON.parse(saved) as CartLine[]);
     } catch {
       // Storage unavailable (private mode): the cart just isn't kept.
     }
@@ -145,6 +155,7 @@ export function GuestMenu({
   } as React.CSSProperties;
 
   function addLine(line: CartLine) {
+    if (live?.controlled?.disabled) return;
     setCart((prev) => {
       const same = prev.find((l) => l.key === line.key);
       return same
@@ -157,6 +168,7 @@ export function GuestMenu({
 
   /** Dishes without required choices go straight into the cart; the rest open the sheet. */
   function quickAdd(item: MenuItem) {
+    if (live?.controlled?.disabled) return;
     if (item.modifierGroups.some((g) => g.min > 0)) {
       setOpen(item);
       return;
@@ -194,7 +206,7 @@ export function GuestMenu({
     try {
       const result = await live.send(cart, lang, t);
       if (result.ok) {
-        setCart([]);
+        if (!live.controlled) setCart([]);
         setShowOrder(false);
         say(result.message);
       } else {
@@ -256,7 +268,10 @@ export function GuestMenu({
                   type="button"
                   lang={l}
                   aria-pressed={lang === l}
-                  onClick={() => setLang(l)}
+                  onClick={() => {
+                    setLang(l);
+                    onLangChange?.(l);
+                  }}
                   className={cn(
                     "min-h-8 min-w-9 rounded-[7px] px-2 text-xs font-bold uppercase",
                     lang === l ? "bg-sand text-navy" : "text-current",
@@ -435,7 +450,7 @@ export function GuestMenu({
             )}
             <button
               type="button"
-              disabled={cart.length === 0 || sending}
+              disabled={cart.length === 0 || sending || live?.controlled?.disabled}
               onClick={sendToKitchen}
               className="mt-3 min-h-12 w-full rounded-btn bg-accent font-bold text-accent-ink shadow-btn disabled:opacity-50"
             >

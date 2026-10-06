@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/.pnpm-store/
+/.bill-local-demo.json
 /.pnp
 .pnp.*
 .yarn/*

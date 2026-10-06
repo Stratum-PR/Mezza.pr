@@ -1,5 +1,6 @@
 "use server";
 
+import { splitWorkflowEnabled } from "@/lib/bills/feature";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { availableMethods, payments } from "@/connectors/payments";
@@ -12,6 +13,7 @@ import { guestStatus as loadStatus, type GuestStatus } from "@/lib/guest/status"
 import { computeIvu, tipFromPercent, type Cents } from "@/lib/money";
 
 async function guest(slug: string, token: string): Promise<GuestTable> {
+  if (splitWorkflowEnabled()) throw new Error("use_visit_session");
   const g = await resolveTable(slug, token);
   if (!g) throw new Error("invalid_table");
   return g;
@@ -40,6 +42,8 @@ const draftSchema = z.object({
 
 /** "Enviar a cocina". The clientOrderId is the idempotency key, so a double tap makes one order. */
 export async function guestPlaceOrder(slug: string, token: string, draft: OrderDraft): Promise<SubmitResult> {
+  if (splitWorkflowEnabled())
+    return { status: "rejected", reason: "validation", detail: "use_visit_session" };
   const g = await resolveTable(slug, token);
   if (!g) return { status: "rejected", reason: "invalid_table" };
   const parsed = draftSchema.safeParse(draft);
@@ -68,6 +72,7 @@ export async function guestPlaceOrder(slug: string, token: string, draft: OrderD
 }
 
 export async function guestStatus(slug: string, token: string, tabId?: string): Promise<GuestStatus | null> {
+  if (splitWorkflowEnabled()) return null;
   const g = await resolveTable(slug, token);
   if (!g) return null;
   return loadStatus(g, tabId && z.uuid().safeParse(tabId).success ? tabId : undefined);
@@ -190,6 +195,7 @@ export interface Receipt {
 
 /** The payment receipt (not the fiscal receipt), only for a payment made at this table. */
 export async function guestReceipt(slug: string, token: string, paymentId: string): Promise<Receipt | null> {
+  if (splitWorkflowEnabled()) return null;
   const g = await resolveTable(slug, token);
   if (!g || !z.uuid().safeParse(paymentId).success) return null;
   const db = createAdminClient();
@@ -201,6 +207,8 @@ export async function guestReceipt(slug: string, token: string, paymentId: strin
     .eq("id", paymentId)
     .maybeSingle();
   if (!p || p.tabs?.table_id !== g.table.id) return null;
+  const { data: receiptTab } = await db.from("tabs").select("*").eq("id", p.tab_id).single();
+  if (!receiptTab || ("staff_managed" in receiptTab && receiptTab.staff_managed === true)) return null;
   const status = await loadStatus(g, p.tab_id);
   return {
     tabId: p.tab_id,

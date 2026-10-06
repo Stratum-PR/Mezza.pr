@@ -116,3 +116,12 @@ Not taking from the references (log in DECISIONS when built): "Bill & Print"/inv
 - [x] Screenshot review and fixes
 - [x] README, CONNECTORS.md, DECISIONS.md
 - [x] Final full test run
+
+## Next pass: bill splitting
+
+- [x] Agree the first-release scope and exception handling (2026-10-05): see `BILL_SPLITTING_PLAN.md` for the authoritative decisions, superseding earlier alternatives.
+- [x] Implement visit-bound guest participants and named personal carts.
+- [x] Implement shared rate limiting and staff order acceptance.
+- [x] Implement locked checkout, staff-managed even/item splits, and exact-cent allocations.
+- [x] Implement whole-portion cash settlement, protected receipts, corrections, and closure guards.
+- [ ] Verify concurrency, money invariants, staff permissions, and next-visit isolation against real Supabase before enabling `MEZZA_SPLIT_BILL`.

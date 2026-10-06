@@ -7,6 +7,7 @@ export const serverEnv = z
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
     QR_TOKEN_SECRET: z.string().min(32),
     CRON_SECRET: z.string().min(16),
+    MEZZA_SPLIT_BILL: z.enum(["true", "false"]).default("false"),
     MEZZA_DEMO_MODE: z.enum(["true", "false"]).default("false"),
   })
   .parse(process.env);

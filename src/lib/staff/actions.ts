@@ -1,5 +1,6 @@
 "use server";
 
+import { splitWorkflowEnabled } from "@/lib/bills/feature";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { payments } from "@/connectors/payments";
@@ -127,6 +128,15 @@ export async function staffPlaceOrder(
   if (!uuid.safeParse(tableId).success || !uuid.safeParse(clientOrderId).success || !parsed.success)
     return fail("validation");
   const ctx = await requireSection(slug, "service");
+  if (splitWorkflowEnabled()) {
+    const { data: live } = await createAdminClient()
+      .from("tabs")
+      .select("id")
+      .eq("table_id", tableId)
+      .eq("status", "open")
+      .maybeSingle();
+    if (!live) return fail("staff_open_visit_required");
+  }
   const { data, error } = await createAdminClient().rpc("place_order", {
     p_restaurant_id: ctx.restaurant.id,
     p_table_id: tableId,
