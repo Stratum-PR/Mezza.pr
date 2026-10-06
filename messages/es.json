@@ -1,0 +1,1446 @@
+{
+  "common": {
+    "brand": "Mezza",
+    "byStratum": "por Stratum PR",
+    "productOf": "Mezza · un producto de Stratum PR LLC · Puerto Rico",
+    "skipToContent": "Saltar al contenido",
+    "language": "Idioma",
+    "comingSoon": "Disponible pronto",
+    "comingSoonBody": "Esta función está en camino. Te avisaremos cuando esté lista.",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "loading": "Cargando…"
+  },
+  "site": {
+    "nav": {
+      "label": "Principal",
+      "product": "Producto",
+      "how": "Cómo funciona",
+      "pricing": "Precios",
+      "demo": "Demo",
+      "login": "Entrar",
+      "cta": "Empieza tu prueba gratis",
+      "openMenu": "Abrir menú",
+      "closeMenu": "Cerrar menú"
+    },
+    "hero": {
+      "title": "Tu menú, tu estilo. Ahora se ordena y se paga solo.",
+      "lead": "Tus clientes escanean el QR de la mesa, ven tu menú con tu estilo, ordenan y pagan desde el teléfono. Tú sigues cerrando cada venta en tu terminal fiscal.",
+      "primary": "Empieza tu prueba gratis",
+      "secondary": "Reserva una instalación guiada"
+    },
+    "footer": {
+      "product": "Producto",
+      "legal": "Legal",
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "dpa": "Procesamiento de datos",
+      "about": "Mezza es un producto de Stratum PR LLC, en Trujillo Alto, Puerto Rico.",
+      "copyright": "© {year} Stratum PR LLC. Todos los derechos reservados."
+    },
+    "demo": {
+      "title": "Prueba el menú de Café Lucía",
+      "lead": "Así ven tus clientes el menú cuando escanean el QR de la mesa. Cambia el estilo, el idioma y añade platos: es una demostración y ningún pedido llega a una cocina.",
+      "tryTitle": "Prueba esto",
+      "try1": "Cambia el estilo: De la casa (el diseño del café en el teléfono), Original (el menú impreso, tocable) o Simple.",
+      "try2": "En Original, toca Ver zonas tocables para ver dónde está cada plato.",
+      "try3": "El Flan de queso está agotado: aparece marcado y no se puede pedir.",
+      "try4": "Abre un plato, elige sus opciones y añádelo al pedido.",
+      "qrTitle": "Ábrelo en tu teléfono",
+      "qrBody": "Escanea el código con la cámara para ver el menú como lo vería un cliente.",
+      "qrLabel": "Código QR que abre la demo de Mezza",
+      "requestTitle": "Reserva una instalación guiada",
+      "requestLead": "Déjanos tus datos y te escribimos para coordinar una demostración o la instalación en tu restaurante.",
+      "form": {
+        "name": "Tu nombre",
+        "restaurantName": "Nombre del restaurante",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "message": "¿Algo que debamos saber?",
+        "submit": "Enviar solicitud",
+        "sent": "¡Gracias! Recibimos tu solicitud y te escribiremos pronto.",
+        "privacy": "Usamos estos datos solo para contestarte.",
+        "errors": {
+          "name": "Escribe tu nombre.",
+          "email": "Escribe un correo válido, por ejemplo nombre@restaurante.com.",
+          "phone": "El teléfono solo puede tener números, espacios y los signos + ( ) -.",
+          "rate_limited": "Recibimos varias solicitudes desde aquí. Inténtalo de nuevo en una hora.",
+          "failed": "No se pudo enviar. Inténtalo de nuevo o escríbenos a contact@stratumpr.com."
+        }
+      }
+    },
+    "home": {
+      "heroCard": {
+        "label": "Un pedido en Café Lucía",
+        "pause": "Pausar",
+        "play": "Reanudar",
+        "steps": [
+          {
+            "title": "Mesa 4 · enviado a cocina",
+            "body": "2 cafés con leche y una mallorca, desde el teléfono."
+          },
+          {
+            "title": "Listo",
+            "body": "La cocina lo marcó listo; el mesero lo lleva."
+          },
+          {
+            "title": "Pagado con ATH Móvil",
+            "body": "$11.01 con IVU y propina. Sin esperar la cuenta."
+          }
+        ]
+      },
+      "steps": {
+        "title": "Así de simple",
+        "lead": "Empiezas en una tarde, con el menú que ya tienes.",
+        "s1": {
+          "title": "Sube tu menú",
+          "body": "Una foto o el PDF de tu menú impreso. Mezza lo convierte en platos, precios y opciones, y tú lo revisas."
+        },
+        "s2": {
+          "title": "Imprime tus QR",
+          "body": "Códigos con tus colores para cada mesa, listos para recortar o doblar."
+        },
+        "s3": {
+          "title": "Tus clientes ordenan y pagan desde la mesa",
+          "body": "Escanean, piden, llaman al mesero y pagan con ATH Móvil, tarjeta o efectivo."
+        }
+      },
+      "signature": {
+        "title": "Tu menú impreso, ahora en el teléfono",
+        "lead": "Mezza conserva tu estilo: los colores, las letras y los adornos de tu menú. Tus clientes lo reconocen y lo pueden pedir con un toque.",
+        "before": "El menú que imprimiste",
+        "after": "El mismo menú, listo para pedir",
+        "replay": "Ver otra vez"
+      },
+      "pr": {
+        "title": "Hecho para Puerto Rico",
+        "ath": {
+          "title": "ATH Móvil",
+          "body": "El pago que tus clientes ya usan, junto a tarjeta y efectivo."
+        },
+        "ivu": {
+          "title": "IVU en cada recibo",
+          "body": "IVU estatal y municipal en líneas separadas, calculados al centavo."
+        },
+        "lang": {
+          "title": "Español e inglés",
+          "body": "Cada cliente ve el menú en su idioma, sin que tú traduzcas nada dos veces."
+        },
+        "offline": {
+          "title": "Sigue funcionando sin internet",
+          "body": "Pensado para los apagones: la cocina no se detiene si se cae la conexión."
+        }
+      },
+      "split": {
+        "title": "Divide la cuenta como quieran",
+        "lead": "Una sola cuenta para la mesa, partes iguales o cada quien lo suyo. Cada persona paga desde su teléfono.",
+        "one": "Una sola cuenta",
+        "even": "Partes iguales",
+        "items": "Cada quien lo suyo",
+        "example": "Ejemplo"
+      },
+      "owners": {
+        "title": "Para los dueños",
+        "lead": "Lo que vendiste hoy, lo que más se pide y el resumen de IVU para preparar la planilla en SURI, sin hojas de cálculo.",
+        "today": "Ventas de hoy",
+        "vsLastWeek": "+12% vs. el martes pasado",
+        "best": "Lo más pedido",
+        "ivu": "IVU del mes",
+        "ivuState": "Estatal",
+        "ivuMunicipal": "Municipal",
+        "example": "Datos de ejemplo"
+      },
+      "pricing": {
+        "title": "Un precio claro",
+        "month": "al mes",
+        "plusCard": "+ {percent}% de los pagos con tarjeta",
+        "athFree": "ATH Móvil y efectivo no pagan porcentaje.",
+        "trial": "30 días de prueba gratis. No pedimos tarjeta.",
+        "guided": "Instalación guiada",
+        "guidedBody": "Subimos tu menú, diseñamos tus QR y entrenamos a tu equipo. Pago único de {price}.",
+        "seePricing": "Ver precios"
+      },
+      "faq": {
+        "title": "Preguntas frecuentes",
+        "q1": "¿Qué equipo necesito?",
+        "a1": "Ninguno nuevo. Tus clientes usan su teléfono; tu equipo usa un teléfono o tablet, y la cocina una tablet. Puedes imprimir tickets desde el navegador.",
+        "q2": "¿Cuánto cuesta?",
+        "a2": "Una mensualidad fija más un porcentaje pequeño de los pagos con tarjeta. ATH Móvil y efectivo no pagan porcentaje. Los detalles están en Precios.",
+        "q3": "¿Y mi terminal fiscal?",
+        "a3": "Sigues cerrando cada venta en tu terminal fiscal como hoy. Mezza te dice el total a marcar y te recuerda cada mesa pendiente.",
+        "q4": "¿Puedo cancelar cuando quiera?",
+        "a4": "Sí. No hay contrato. Si cancelas, puedes descargar tus reportes y resúmenes de IVU."
+      },
+      "cta": {
+        "title": "Prueba Mezza 30 días gratis",
+        "lead": "Sube tu menú hoy y ten tus QR listos esta semana. Si prefieres, lo instalamos contigo."
+      }
+    },
+    "pricing": {
+      "title": "Precios",
+      "lead": "Un precio fijo al mes y un porcentaje pequeño solo en pagos con tarjeta. Sin contrato.",
+      "plan": "Plan Mezza",
+      "month": "al mes",
+      "plusCard": "+ {percent}% de los pagos con tarjeta",
+      "includes": "Incluye",
+      "features": [
+        "Menú con tu estilo, en español e inglés",
+        "Códigos QR para todas tus mesas",
+        "Pedidos desde la mesa, cocina y meseros",
+        "Pagos con ATH Móvil, tarjeta y efectivo",
+        "Reportes de ventas y resumen de IVU para SURI"
+      ],
+      "trial": "30 días gratis. No pedimos tarjeta.",
+      "start": "Empieza tu prueba gratis",
+      "guided": "Instalación guiada",
+      "guidedBody": "Subimos tu menú, diseñamos e imprimimos tus QR y entrenamos a tu equipo en tu restaurante.",
+      "guidedPrice": "Pago único de {price}",
+      "guidedCta": "Reserva una instalación guiada",
+      "exampleTitle": "Un ejemplo",
+      "exampleBody": "Si en un mes cobras {card} con tarjeta, {ath} con ATH Móvil y {cash} en efectivo, pagas {fee}: la mensualidad más {percent}% de lo cobrado con tarjeta.",
+      "faqTitle": "Preguntas sobre las tarifas",
+      "q1": "¿Qué cuenta como pago con tarjeta?",
+      "a1": "Los pagos que tus clientes hacen con tarjeta de crédito o débito desde su teléfono en Mezza. Lo que cobras en tu terminal de siempre no paga porcentaje.",
+      "q2": "¿Hay cargos por ATH Móvil o efectivo?",
+      "a2": "No. Mezza no cobra porcentaje por ATH Móvil ni por efectivo.",
+      "q3": "¿Qué pasa al terminar la prueba?",
+      "a3": "Te avisamos antes. Si decides seguir, eliges cómo pagar; si no, tu cuenta se pausa y puedes descargar tus reportes.",
+      "q4": "¿Los precios incluyen IVU?",
+      "a4": "Los precios de Mezza no incluyen IVU."
+    },
+    "how": {
+      "title": "Cómo funciona",
+      "lead": "De tu menú impreso a pedidos y pagos desde la mesa, en cuatro pasos.",
+      "steps": [
+        {
+          "title": "Importa tu menú",
+          "body": "Sube el PDF o una foto. Mezza lee platos, precios y opciones, y aprende tu estilo. Tú confirmas lo que no esté claro antes de publicar."
+        },
+        {
+          "title": "Imprime tus QR",
+          "body": "Diseña los códigos con tus colores y descarga hojas para recortar, tarjetas dobladas para las mesas o calcomanías."
+        },
+        {
+          "title": "Tus clientes ordenan y pagan",
+          "body": "Escanean, ven tu menú en su idioma, piden a la cocina, llaman al mesero y pagan con ATH Móvil, tarjeta o efectivo."
+        },
+        {
+          "title": "Cierra en tu terminal",
+          "body": "Mezza te dice el total de cada mesa para marcarlo en tu terminal fiscal, como haces hoy, y guarda tus reportes e IVU."
+        }
+      ]
+    },
+    "legal": {
+      "draft": "Borrador: requiere revisión legal",
+      "draftBody": "Este texto es un borrador y todavía no ha sido revisado por un abogado. No es la versión final.",
+      "updated": "Última actualización: {date}",
+      "back": "Volver al inicio",
+      "terms": {
+        "title": "Términos de uso",
+        "body": [
+          "Mezza es un servicio de Stratum PR LLC, con sede en Trujillo Alto, Puerto Rico, para que restaurantes muestren su menú, reciban pedidos y cobren desde la mesa.",
+          "El restaurante es responsable de su menú, sus precios, el IVU que cobra y de cerrar cada venta en su terminal fiscal. Mezza no emite recibos fiscales.",
+          "Puedes cancelar tu cuenta cuando quieras. Te daremos acceso para descargar tus reportes por un período razonable."
+        ]
+      },
+      "privacy": {
+        "title": "Política de privacidad",
+        "body": [
+          "Recopilamos los datos necesarios para operar el servicio: la cuenta del restaurante y su equipo, los pedidos y los pagos.",
+          "Los clientes que ordenan desde la mesa no necesitan cuenta. Si dejan su teléfono para recibir un recibo, solo lo usamos con su consentimiento.",
+          "No vendemos datos personales. Los pagos con tarjeta y ATH Móvil los procesan proveedores certificados."
+        ]
+      },
+      "data": {
+        "title": "Acuerdo de procesamiento de datos",
+        "body": [
+          "El restaurante es el responsable de los datos de sus clientes; Stratum PR LLC los procesa solo para prestar el servicio.",
+          "Los datos se guardan cifrados, separados por restaurante, y solo el personal autorizado puede verlos.",
+          "El acceso de soporte de Stratum requiere la aprobación del dueño, tiene fecha de vencimiento y queda registrado."
+        ]
+      }
+    }
+  },
+  "app": {
+    "nav": {
+      "label": "Navegación del restaurante",
+      "home": "Inicio",
+      "menu": "Menú",
+      "qr": "Códigos QR",
+      "service": "Servicio",
+      "tables": "Mesas",
+      "kitchen": "Cocina",
+      "reports": "Reportes",
+      "export": "Exportar",
+      "team": "Equipo",
+      "settings": "Ajustes",
+      "plan": "Plan",
+      "groups": {
+        "ops": "Operación",
+        "menu": "Menú",
+        "business": "Negocio",
+        "admin": "Administración"
+      },
+      "alerts": "{n, plural, one {# pendiente} other {# pendientes}}",
+      "orden": "Tomar orden",
+      "quick": "Accesos rápidos",
+      "open": "Abrir menú",
+      "close": "Cerrar menú",
+      "more": "Menú"
+    },
+    "placeholder": "Esta pantalla se construye en una próxima fase."
+  },
+  "guest": {
+    "table": "Mesa {label}",
+    "invalidTitle": "Este código ya no es válido",
+    "invalidBody": "Pídele a tu mesero el código actualizado de la mesa."
+  },
+  "admin": {
+    "title": "Administración Stratum",
+    "restaurants": "Restaurantes",
+    "health": "Alertas",
+    "support": "Acceso de soporte",
+    "flags": "Funciones",
+    "cols": {
+      "name": "Restaurante",
+      "status": "Estado",
+      "setup": "Configuración",
+      "trial": "Prueba",
+      "volume": "Ventas 30 días",
+      "lastOrder": "Última orden"
+    },
+    "statuses": {
+      "trial": "Prueba",
+      "active": "Activo",
+      "paused": "Pausado",
+      "cancelled": "Cancelado"
+    },
+    "planValue": "plan {plan}",
+    "setupDone": "Completa",
+    "setupStep": "Paso {step} de 6",
+    "days": "{n, plural, one {# día} other {# días}}",
+    "never": "Nunca",
+    "healthy": "Todo bien: ningún restaurante necesita atención.",
+    "healthFlags": {
+      "noOrders": "Sin órdenes en 3 días",
+      "failedPayments": "{n, plural, one {# pago fallido} other {# pagos fallidos}} (7 días)",
+      "failedPrints": "{n, plural, one {# impresión fallida} other {# impresiones fallidas}} (24 h)",
+      "staleDevices": "{n, plural, one {# dispositivo sin conexión} other {# dispositivos sin conexión}} (24 h)"
+    },
+    "supportLead": "Pide acceso temporal. Se activa solo cuando el dueño lo aprueba en Ajustes, y todo queda registrado.",
+    "supportForm": {
+      "restaurant": "Restaurante",
+      "reason": "Motivo",
+      "hours": "Duración",
+      "hoursValue": "{h, plural, one {# hora} other {# horas}}",
+      "send": "Pedir acceso",
+      "sent": "Solicitud enviada al dueño.",
+      "error": "No se pudo enviar. Revisa el motivo (mínimo 5 letras)."
+    },
+    "grant": {
+      "pending": "Pendiente",
+      "active": "Activo",
+      "expired": "Vencido"
+    },
+    "on": "Encendido",
+    "off": "Apagado",
+    "flagsNote": "Solo lectura. Se cambian en src/config/flags.ts cuando su conector pasa las pruebas."
+  },
+  "menu": {
+    "styleLabel": "Estilo del menú",
+    "styles": {
+      "house": "De la casa",
+      "original": "Original",
+      "simple": "Simple"
+    },
+    "sectionsLabel": "Secciones",
+    "languageLabel": "Idioma",
+    "soldOut": "Agotado",
+    "showZones": "Ver zonas tocables",
+    "hideZones": "Ocultar zonas",
+    "tapHint": "Toca un plato en el menú impreso para pedirlo.",
+    "required": "Obligatorio",
+    "optional": "Opcional",
+    "chooseExactly": "Elige {count}",
+    "chooseUpTo": "Elige hasta {count}",
+    "chooseRange": "Elige de {min} a {max}",
+    "quantity": "Cantidad",
+    "decrease": "Quitar uno",
+    "increase": "Añadir uno",
+    "note": "Nota para la cocina",
+    "notePlaceholder": "Ej.: sin cebolla",
+    "add": "Añadir al pedido · {price}",
+    "addMissing": "Elige las opciones obligatorias",
+    "viewOrder": "Ver pedido ({count}) · {price}",
+    "yourOrder": "Tu pedido",
+    "subtotal": "Subtotal",
+    "ivuNote": "El IVU se suma al pagar.",
+    "sendToKitchen": "Enviar a cocina",
+    "demoSent": "Pedido de demostración: no llega a ninguna cocina.",
+    "emptyOrder": "Tu pedido está vacío. Toca un plato para añadirlo.",
+    "remove": "Quitar {name}",
+    "close": "Cerrar",
+    "table": "Mesa {label}",
+    "added": "{name} añadido al pedido",
+    "flow": {
+      "callServer": "Llamar al mesero",
+      "bringCheck": "Pedir la cuenta",
+      "called": "Avisamos a tu mesero.",
+      "checkRequested": "Tu mesero te trae la cuenta.",
+      "requestOpen": "Avisado",
+      "sending": "Enviando…",
+      "sent": "Pedido #{number} enviado a la cocina.",
+      "myOrder": "Mi pedido",
+      "statusTitle": "Tu pedido en la mesa",
+      "orderNumber": "Pedido #{number}",
+      "status": {
+        "new": "Recibido",
+        "in_kitchen": "En la cocina",
+        "ready": "Listo",
+        "served": "Servido",
+        "void": "Anulado"
+      },
+      "orderMore": "Pedir más",
+      "pay": "Pagar la cuenta",
+      "empty": "Todavía no has pedido nada. Elige algo del menú.",
+      "payTitle": "Tu cuenta",
+      "subtotal": "Subtotal",
+      "tip": "Propina",
+      "tipNone": "Sin propina",
+      "tipCustom": "Otra",
+      "tipCustomLabel": "Propina en dólares",
+      "tipHint": "La propina se calcula sobre el subtotal antes del IVU.",
+      "ivuState": "IVU estatal",
+      "ivuMunicipal": "IVU municipal",
+      "total": "Total",
+      "methodTitle": "¿Cómo quieres pagar?",
+      "methods": {
+        "card": "Tarjeta",
+        "ath": "ATH Móvil",
+        "cash": "Efectivo"
+      },
+      "payWithServer": "Paga con tu mesero: elige efectivo y te viene a cobrar.",
+      "payButton": "Pagar {total}",
+      "paying": "Procesando el pago…",
+      "cashPending": "Tu mesero viene a cobrar {total} en efectivo.",
+      "cashWaiting": "Esperando a tu mesero…",
+      "receiptTitle": "Recibo de pago",
+      "receiptNote": "Recibo de pago: tu recibo fiscal lo emite el comercio.",
+      "paidWith": "Pagado con {method}",
+      "thanks": "¡Gracias por tu visita!",
+      "backToMenu": "Volver al menú",
+      "errors": {
+        "item_unavailable": "Un plato de tu pedido se agotó. Quítalo y envía de nuevo.",
+        "tab_closed": "Tu mesa está pagando la cuenta. Pídele a tu mesero si quieres algo más.",
+        "invalid_table": "Este código ya no es válido. Pídele a tu mesero el código nuevo de la mesa.",
+        "validation": "Algo cambió en el menú. Revisa tu pedido y envíalo otra vez.",
+        "network": "No hay conexión. Toca «Enviar a cocina» otra vez: no se duplicará.",
+        "request": "No pudimos avisar a tu mesero. Inténtalo otra vez."
+      },
+      "payErrors": {
+        "nothing_to_pay": "Todavía no hay nada que pagar.",
+        "unavailable": "Ese método no está disponible ahora. Elige otro.",
+        "coming_soon": "Ese método estará disponible pronto. Paga con tu mesero.",
+        "failed": "No se pudo procesar el pago. Inténtalo otra vez o paga con tu mesero."
+      }
+    },
+    "quickAdd": "Añadir {name}",
+    "keepOrdering": "Seguir pidiendo",
+    "decreaseItem": "Uno menos de {name}",
+    "increaseItem": "Uno más de {name}",
+    "tags": {
+      "vegetariano": "Vegetariano",
+      "sin_gluten": "Sin gluten",
+      "picante": "Picante"
+    }
+  },
+  "ticket": {
+    "kitchen": "COCINA",
+    "receipt": "RECIBO DE PAGO",
+    "table": "Mesa",
+    "order": "Orden",
+    "subtotal": "Subtotal",
+    "ivuState": "IVU estatal",
+    "ivuMunicipal": "IVU municipal",
+    "tip": "Propina",
+    "total": "Total",
+    "note": "Nota"
+  },
+  "auth": {
+    "title": "Entra a Mezza",
+    "lead": "Usa el correo y la contraseña de tu cuenta.",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "submit": "Entrar",
+    "or": "o",
+    "magicLink": "Envíame un enlace para entrar",
+    "magicSent": "Si tienes una cuenta, te enviamos un enlace. Revisa tu correo.",
+    "errors": {
+      "invalid": "Revisa el correo y la contraseña: falta algo o no tiene el formato correcto.",
+      "credentials": "El correo o la contraseña no coinciden. Inténtalo de nuevo o pide un enlace para entrar.",
+      "rateLimited": "Demasiados intentos. Espera un minuto y vuelve a intentarlo.",
+      "link": "El enlace venció o ya se usó. Pide uno nuevo."
+    },
+    "signOut": "Salir",
+    "pickRestaurant": "Elige un restaurante",
+    "noRestaurants": "Tu cuenta todavía no pertenece a ningún restaurante. Pídele al dueño que te invite.",
+    "signup": {
+      "title": "Crea tu cuenta",
+      "lead": "30 días gratis. No pedimos tarjeta.",
+      "fullName": "Tu nombre",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "passwordHint": "Al menos 8 caracteres.",
+      "restaurantName": "Nombre del restaurante",
+      "phone": "Teléfono del restaurante",
+      "terms": "Acepto los {terms} y la {privacy}.",
+      "termsLink": "términos de uso",
+      "privacyLink": "política de privacidad",
+      "submit": "Crear cuenta y empezar",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "login": "Entra aquí",
+      "confirmEmail": "Te enviamos un correo para confirmar tu cuenta. Ábrelo para seguir con la configuración.",
+      "errors": {
+        "invalid": "Revisa los campos marcados.",
+        "fullName": "Escribe tu nombre.",
+        "email": "Escribe un correo válido.",
+        "password": "La contraseña necesita al menos 8 caracteres.",
+        "restaurantName": "Escribe el nombre del restaurante.",
+        "phone": "Escribe un teléfono, por ejemplo 787-555-0142.",
+        "terms": "Acepta los términos para continuar.",
+        "email_taken": "Ya hay una cuenta con ese correo. Entra o pide un enlace para entrar.",
+        "weak_password": "Esa contraseña es muy fácil de adivinar. Usa una más larga.",
+        "rate_limited": "Demasiados intentos. Espera unos minutos.",
+        "failed": "No se pudo crear la cuenta. Inténtalo de nuevo."
+      }
+    },
+    "reset": {
+      "title": "Recupera tu contraseña",
+      "lead": "Escribe tu correo y te enviaremos un enlace para crear una nueva.",
+      "submit": "Enviar enlace",
+      "sent": "Si tienes una cuenta, te enviamos un enlace. Revisa tu correo.",
+      "invalid": "Escribe un correo válido.",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "newTitle": "Crea una contraseña nueva",
+      "newPassword": "Contraseña nueva",
+      "confirm": "Repite la contraseña",
+      "save": "Guardar contraseña",
+      "errors": {
+        "mismatch": "Las contraseñas no coinciden.",
+        "weak": "La contraseña necesita al menos 8 caracteres.",
+        "failed": "No se pudo guardar. Pide un enlace nuevo e inténtalo otra vez."
+      }
+    },
+    "noAccount": "¿No tienes cuenta?",
+    "createAccount": "Crea una gratis"
+  },
+  "editor": {
+    "title": "Menú",
+    "lead": "Edita secciones, platos, precios y opciones. La vista previa muestra lo que ven tus clientes.",
+    "tabsLabel": "Partes del menú",
+    "tabs": {
+      "dishes": "Platos",
+      "options": "Opciones"
+    },
+    "importMenu": "Importar menú",
+    "addSection": "Añadir sección",
+    "addItem": "Añadir plato",
+    "nameEs": "Nombre en español",
+    "nameEn": "Nombre en inglés",
+    "descriptionEs": "Descripción en español",
+    "descriptionEn": "Descripción en inglés",
+    "price": "Precio en dólares",
+    "priceHint": "Por ejemplo 3.50. Sin IVU.",
+    "section": "Sección",
+    "modifierGroups": "Opciones de este plato",
+    "noGroups": "Crea opciones en la pestaña Opciones para usarlas aquí.",
+    "photo": "Foto",
+    "photoHint": "JPG, PNG o WebP, hasta 5 MB.",
+    "uploadPhoto": "Subir foto",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar {name}",
+    "archive": "Quitar del menú",
+    "archiveConfirm": "¿Quitar «{name}» del menú? Los pedidos y reportes anteriores lo conservan.",
+    "available": "Disponible",
+    "soldOutSwitch": "{name}: agotado",
+    "moveUp": "Subir {name}",
+    "moveDown": "Bajar {name}",
+    "dragHint": "Arrastra las secciones para cambiar su orden, o usa las flechas.",
+    "saved": "Cambios guardados",
+    "preview": "Vista previa",
+    "emptySections": "Tu menú no tiene secciones todavía. Añade la primera, por ejemplo «Desayunos».",
+    "emptyItems": "Esta sección no tiene platos. Añade el primero.",
+    "groupNameEs": "Nombre del grupo en español",
+    "groupNameEn": "Nombre del grupo en inglés",
+    "min": "Mínimo a elegir",
+    "max": "Máximo a elegir",
+    "optionNameEs": "Opción en español",
+    "optionNameEn": "Opción en inglés",
+    "optionPrice": "Precio extra",
+    "addOption": "Añadir opción",
+    "removeOption": "Quitar opción {n}",
+    "addGroup": "Añadir grupo de opciones",
+    "deleteGroup": "Borrar grupo",
+    "deleteGroupConfirm": "¿Borrar el grupo «{name}»? Se quita de todos sus platos.",
+    "emptyGroups": "Todavía no hay opciones. Crea una, por ejemplo «Leche» con Entera y Avena.",
+    "usedBy": "{count, plural, =0 {Sin platos} one {En 1 plato} other {En # platos}}",
+    "groupSummary": "{min}–{max} · {count} opciones",
+    "errors": {
+      "invalid": "Revisa los campos: falta un dato o es demasiado largo.",
+      "price": "Escribe el precio en dólares, por ejemplo 3.50.",
+      "photo_type": "La foto debe ser JPG, PNG o WebP.",
+      "photo_size": "La foto pesa más de 5 MB. Usa una más liviana.",
+      "range": "El máximo debe ser igual o mayor que el mínimo, y no mayor que el número de opciones.",
+      "save_failed": "No se pudo guardar. Revisa tu conexión e inténtalo de nuevo."
+    },
+    "soldOut": "Agotado",
+    "tags": "Etiquetas",
+    "moreActions": "Más acciones para {name}"
+  },
+  "importer": {
+    "title": "Importar menú",
+    "lead": "Sube tu menú impreso en PDF o una foto. Mezza lo convierte en platos, precios y opciones, y tú revisas antes de publicar.",
+    "file": "Menú en PDF o foto",
+    "fileHint": "PDF, JPG o PNG, hasta 15 MB.",
+    "upload": "Subir y leer menú",
+    "back": "Volver al menú",
+    "processing": "Leyendo tu menú…",
+    "processingHint": "Tarda unos segundos. Puedes quedarte en esta página.",
+    "reviewTitle": "Revisa el menú importado",
+    "reviewLead": "Confirma los precios marcados, ajusta las zonas tocables sobre la página y publica.",
+    "sourcePage": "Página original",
+    "dishes": "Platos encontrados",
+    "flagged": "{count, plural, =0 {Todo listo para publicar} one {Falta confirmar 1 precio} other {Faltan confirmar # precios}}",
+    "missingPrice": "No se leyó el precio",
+    "lowConfidence": "Precio dudoso: compáralo con la página",
+    "confirm": "Confirmar precio",
+    "confirmed": "Confirmado",
+    "price": "Precio de {name}",
+    "selectZone": "Seleccionar zona de {name}",
+    "zoneHelp": "Arrastra una zona para moverla y su esquina para cambiar el tamaño. Con el teclado: flechas para mover, Mayús + flechas para cambiar el tamaño.",
+    "zone": "Zona tocable de {name}",
+    "resize": "Cambiar tamaño de la zona de {name}",
+    "theme": "Estilo detectado",
+    "themeFonts": "Letras: {display} y {body}",
+    "publish": "Publicar menú",
+    "publishBlocked": "Confirma todos los precios marcados para publicar.",
+    "publishNote": "Los platos que ya existen se actualizan; los que no están en esta importación salen del menú, pero los pedidos anteriores los conservan.",
+    "published": "Menú publicado.",
+    "errors": {
+      "file_type": "El archivo debe ser PDF, JPG o PNG.",
+      "file_size": "El archivo pesa más de 15 MB. Prueba con una foto más liviana.",
+      "coming_soon": "La importación con IA estará disponible pronto. Mientras tanto, añade los platos a mano.",
+      "failed": "No se pudo leer el menú. Inténtalo de nuevo o añade los platos a mano.",
+      "invalid": "Faltan datos en algún plato. Revisa nombres y precios.",
+      "publish": "No se pudo publicar. Inténtalo de nuevo."
+    }
+  },
+  "wizard": {
+    "title": "Configura {name}",
+    "lead": "Seis pasos y tus clientes pueden ordenar desde la mesa. Puedes salir y volver cuando quieras.",
+    "stepsLabel": "Pasos de la configuración",
+    "trial": "Te quedan {days, plural, one {# día} other {# días}} de prueba gratis.",
+    "steps": {
+      "1": "Cuenta",
+      "2": "Menú",
+      "3": "Mesas",
+      "4": "Pagos",
+      "5": "Equipo",
+      "6": "Imprimir"
+    },
+    "done": "Listo",
+    "current": "Paso actual",
+    "skip": "Omitir por ahora",
+    "continue": "Continuar",
+    "back": "Paso anterior",
+    "account": {
+      "title": "Tu cuenta está lista",
+      "body": "Creamos {name} con 30 días de prueba gratis."
+    },
+    "menu": {
+      "title": "Sube tu menú",
+      "body": "Una foto o el PDF de tu menú impreso. Mientras lo leemos, sigue con los próximos pasos; lo revisas después en Menú.",
+      "file": "Menú en PDF o foto",
+      "upload": "Subir menú y continuar",
+      "manual": "Prefiero añadir los platos a mano"
+    },
+    "tables": {
+      "title": "Tus mesas y el estilo de los QR",
+      "count": "¿Cuántas mesas tienes?",
+      "labels": "Nombres de las mesas (opcional)",
+      "labelsHint": "Sepáralos con comas, por ejemplo: 1, 2, 3, Barra, Terraza 1. Si lo dejas vacío, las numeramos.",
+      "preset": "Estilo de los códigos QR",
+      "presets": {
+        "house": "De la casa",
+        "bold": "Vino y oro",
+        "clean": "Minimal"
+      },
+      "save": "Crear mesas y continuar",
+      "existing": "Ya tienes {count, plural, one {# mesa} other {# mesas}}. Las nuevas se añaden a esas."
+    },
+    "payments": {
+      "title": "Cómo te pagan",
+      "body": "El efectivo siempre está disponible: tu cliente lo pide y tu mesero lo confirma. Conecta tarjeta o ATH Móvil para cobrar desde el teléfono.",
+      "cash": "Efectivo",
+      "card": "Tarjeta",
+      "ath": "ATH Móvil",
+      "connected": "Conectado",
+      "notConnected": "Sin conectar",
+      "connect": "Conectar",
+      "always": "Siempre disponible",
+      "payWithServer": "Mientras no conectes tarjeta ni ATH Móvil, tus clientes verán «Paga con tu mesero»."
+    },
+    "staff": {
+      "title": "Invita a tu equipo",
+      "body": "Cada persona entra con su propia cuenta. Les enviamos un correo para crear su contraseña.",
+      "email": "Correo electrónico",
+      "role": "Rol",
+      "roles": {
+        "manager": "Gerente",
+        "server": "Mesero",
+        "kitchen": "Cocina"
+      },
+      "invite": "Enviar invitación",
+      "invited": "Invitamos a {email}.",
+      "done": "Terminé de invitar"
+    },
+    "print": {
+      "title": "Imprime tus QR y abre",
+      "body": "Imprime los códigos de tus {count, plural, one {# mesa} other {# mesas}} y colócalos en las mesas. Puedes cambiar el diseño cuando quieras en Códigos QR.",
+      "studio": "Abrir Códigos QR",
+      "goLive": "Terminar y abrir el panel",
+      "download": "Descargar PDF de los QR"
+    },
+    "errors": {
+      "file_type": "El archivo debe ser PDF, JPG o PNG.",
+      "file_size": "El archivo pesa más de 15 MB.",
+      "tables_invalid": "Escribe un número de mesas entre 1 y 80.",
+      "labels_invalid": "Revisa los nombres: no se pueden repetir y cada uno puede tener hasta 20 caracteres.",
+      "invite_invalid": "Escribe un correo válido y elige un rol.",
+      "coming_soon": "Esta conexión estará disponible pronto. Mientras tanto, tus clientes pagan con su mesero.",
+      "failed": "No se pudo guardar. Inténtalo de nuevo."
+    }
+  },
+  "qr": {
+    "title": "Códigos QR",
+    "lead": "Diseña los códigos de tus mesas con tus colores e imprímelos listos para recortar, doblar o pegar.",
+    "design": "Diseño",
+    "presets": "Empieza con un estilo",
+    "presetNames": {
+      "house": "De la casa",
+      "bold": "Vino y oro",
+      "clean": "Minimal",
+      "custom": "Personalizado"
+    },
+    "colors": "Colores",
+    "fg": "Código",
+    "bg": "Fondo del código",
+    "frame": "Marco",
+    "frameInk": "Texto del marco",
+    "dots": "Puntos",
+    "dotStyles": {
+      "square": "Cuadrados",
+      "rounded": "Redondeados",
+      "dots": "Círculos"
+    },
+    "eyes": "Esquinas",
+    "eyeStyles": {
+      "square": "Cuadradas",
+      "rounded": "Redondeadas",
+      "circle": "Círculo"
+    },
+    "logo": "Logo en el centro",
+    "logoModes": {
+      "none": "Sin logo",
+      "mono": "Iniciales",
+      "upload": "Mi logo"
+    },
+    "logoFile": "Subir logo (PNG o JPG, hasta 2 MB)",
+    "message": "Mensaje del marco",
+    "messageEs": "En español",
+    "messageEn": "En inglés",
+    "font": "Letra",
+    "fonts": {
+      "menu": "La de mi menú",
+      "modern": "Moderna"
+    },
+    "save": "Guardar diseño",
+    "saved": "Diseño guardado",
+    "preview": "Vista previa · Mesa {label}",
+    "previewTable": "Mesa de la vista previa",
+    "checks": "Revisión",
+    "contrastOk": "Buen contraste ({ratio}:1).",
+    "contrastLow": "Poco contraste ({ratio}:1). Oscurece el código o aclara el fondo: algunos teléfonos no lo leerán.",
+    "inverted": "El código es más claro que su fondo. Muchos teléfonos no leen códigos invertidos: usa un código oscuro sobre fondo claro.",
+    "logoEc": "Con logo usamos la corrección de errores más alta para que el código se lea aunque el logo tape una parte.",
+    "testScan": "Antes de imprimir todas, prueba el código con dos o tres teléfonos distintos.",
+    "tables": "Mesas",
+    "selectAll": "Todas",
+    "select": "Elegir Mesa {label}",
+    "rotate": "Cambiar código",
+    "rotateConfirm": "¿Cambiar el código de la Mesa {label}? El código impreso dejará de funcionar y tendrás que imprimir uno nuevo.",
+    "rotated": "Nuevo código para la Mesa {label}. Imprímelo y reemplaza el anterior.",
+    "version": "Versión {n}",
+    "noTables": "Todavía no tienes mesas. Créalas en la configuración inicial.",
+    "download": "Descargar PDF",
+    "downloadFor": "{count, plural, one {Para # mesa} other {Para # mesas}}",
+    "formats": {
+      "sheet": {
+        "title": "Hoja para recortar",
+        "body": "Carta, seis tarjetas por hoja."
+      },
+      "tent": {
+        "title": "Tarjeta doblada",
+        "body": "4×6 pulgadas, se dobla en la mesa."
+      },
+      "sticker": {
+        "title": "Calcomanías",
+        "body": "3×3 pulgadas, una por página."
+      }
+    },
+    "errors": {
+      "invalid": "Revisa los campos del diseño.",
+      "logo_type": "El logo debe ser PNG o JPG.",
+      "logo_size": "El logo pesa más de 2 MB.",
+      "failed": "No se pudo guardar. Inténtalo de nuevo."
+    },
+    "logoSaved": "Logo subido. Revisa la vista previa y guarda el diseño.",
+    "logoCurrent": "Tu logo está cargado. Sube otro para reemplazarlo.",
+    "logoMissing": "Mientras no subas un logo, el código muestra tus iniciales."
+  },
+  "staff": {
+    "live": "Se actualiza solo",
+    "table": "Mesa {label}",
+    "orderNumber": "#{number}",
+    "minutes": "{n} min",
+    "source": {
+      "qr": "QR",
+      "staff": "Mesero"
+    },
+    "methods": {
+      "card": "Tarjeta",
+      "ath": "ATH Móvil",
+      "cash": "Efectivo"
+    },
+    "paymentStatus": {
+      "pending": "Pendiente",
+      "paid": "Pagado",
+      "refunded": "Reembolsado",
+      "partially_refunded": "Reembolso parcial",
+      "failed": "Falló"
+    },
+    "kitchen": {
+      "title": "Cocina",
+      "columns": {
+        "new": "Nuevo",
+        "in_kitchen": "En cocina",
+        "ready": "Listo"
+      },
+      "empty": "Sin pedidos",
+      "advance": {
+        "new": "Empezar",
+        "in_kitchen": "Marcar listo",
+        "ready": "Servido"
+      },
+      "sound": "Sonido de pedidos",
+      "soundHint": "Toca la pantalla una vez para que el navegador permita el sonido.",
+      "autoprint": "Imprimir automáticamente",
+      "reprint": "Reimprimir #{number}",
+      "printed": "Ticket #{number} enviado a la impresora.",
+      "printFailed": "No se pudo imprimir #{number}: {error}",
+      "soldOut": "Platos agotados",
+      "soldOutHint": "Marca lo que se acabó: los clientes lo ven al momento.",
+      "soldOutLabel": "{name}: agotado",
+      "available": "Disponible",
+      "soldOutState": "Agotado",
+      "newOrder": "Nuevo pedido #{number} · Mesa {label}"
+    },
+    "service": {
+      "title": "Servicio",
+      "alerts": "Avisos",
+      "noAlerts": "No hay avisos. Todo en orden.",
+      "callServer": "Mesa {label} llama al mesero",
+      "bringCheck": "Mesa {label} pide la cuenta",
+      "cash": "Mesa {label}: cobrar {total} en efectivo",
+      "ready": "Pedido #{number} listo · Mesa {label}",
+      "pos": "Mesa {label}: marca {total} en el POS",
+      "handled": "Atendido",
+      "cashReceived": "Efectivo recibido",
+      "served": "Servido",
+      "posClosed": "Cerrado en el POS",
+      "takeOrder": "Tomar orden",
+      "chooseTable": "Mesa",
+      "chooseTableHint": "Elige la mesa para la orden.",
+      "ticketEmpty": "Toca platos para añadirlos a la orden.",
+      "send": "Enviar a cocina",
+      "sent": "Pedido #{number} enviado a la cocina.",
+      "remove": "Quitar uno de {name}",
+      "openOrders": "Pedidos de hoy",
+      "noOrders": "Todavía no hay pedidos hoy. Llegan solos cuando un cliente escanea el QR de su mesa; también puedes tomarlos en Tomar orden.",
+      "void": "Anular",
+      "voidLine": "Anular {name}",
+      "voidPrompt": "¿Por qué anulas «{name}»? (obligatorio)",
+      "voided": "Anulado",
+      "payments": "Pagos de hoy",
+      "noPayments": "Todavía no hay pagos hoy. Los pagos con tarjeta y ATH Móvil aparecen solos; el efectivo, cuando lo confirmas.",
+      "refund": "Reembolsar",
+      "refundAmount": "¿Cuánto reembolsas? (dólares, máximo {max})",
+      "refundReason": "Motivo del reembolso (obligatorio)",
+      "refunded": "Reembolso registrado.",
+      "managerOnly": "Anular y reembolsar es para gerentes y dueños.",
+      "done": "Hecho.",
+      "showAll": "Ver todos ({n})",
+      "showLess": "Ver menos"
+    },
+    "tables": {
+      "title": "Mesas",
+      "free": "Libre",
+      "open": "Ordenando",
+      "paying": "Pagando",
+      "attention": "Necesita atención",
+      "legend": "Toca una mesa ocupada para verla en Servicio."
+    },
+    "errors": {
+      "failed": "No se pudo guardar. Inténtalo otra vez.",
+      "forbidden": "Tu rol no permite hacer esto.",
+      "reason": "Escribe un motivo de al menos 3 letras.",
+      "amount": "Escribe el monto en dólares, por ejemplo 2.50.",
+      "too_much": "El reembolso es mayor que lo que se pagó.",
+      "coming_soon": "Disponible pronto.",
+      "validation": "Revisa la orden: algo cambió en el menú.",
+      "item_unavailable": "Un plato de la orden se agotó.",
+      "tab_closed": "Esa mesa está pagando y no admite pedidos nuevos.",
+      "invalid": "Algo no cuadra. Recarga la página."
+    },
+    "strip": {
+      "title": "Órdenes de hoy",
+      "filter": "Filtrar por estado",
+      "all": "Todas",
+      "new": "Nuevas",
+      "in_kitchen": "En cocina",
+      "ready": "Listas",
+      "served": "Servidas",
+      "empty": "No hay órdenes con este estado ahora mismo.",
+      "dishes": "{n, plural, one {# plato} other {# platos}}"
+    },
+    "cash": {
+      "title": "Cobrar en efectivo",
+      "doneTitle": "Pago recibido",
+      "table": "Mesa {label}",
+      "close": "Cerrar",
+      "due": "Total a cobrar",
+      "exact": "Exacto",
+      "received": "Recibido",
+      "change": "Cambio",
+      "short": "Falta",
+      "erase": "Borrar",
+      "confirm": "Confirmar cobro",
+      "methodLabel": "Forma de pago",
+      "method": "Efectivo",
+      "total": "Total",
+      "print": "Imprimir recibo",
+      "back": "Volver a Servicio"
+    },
+    "take": {
+      "lead": "Pantalla completa con fotos, categorías y el IVU de la cuenta. Ideal en tableta.",
+      "open": "Abrir Tomar orden",
+      "back": "Volver a Servicio",
+      "dishes": "Platos",
+      "sections": "Categorías",
+      "all": "Todo",
+      "add": "Añadir {name}",
+      "less": "Uno menos de {name}",
+      "ticket": "Orden de la mesa",
+      "subtotal": "Subtotal",
+      "ivuState": "IVU estatal ({rate}%)",
+      "ivuMunicipal": "IVU municipal ({rate}%)",
+      "total": "Total",
+      "pickTable": "Elige la mesa antes de enviar."
+    },
+    "floor": {
+      "mainArea": "Salón",
+      "areas": "Áreas",
+      "plan": "Plano: {area}",
+      "legend": "Leyenda",
+      "table": "Mesa {label}",
+      "seats": "{n} pers.",
+      "move": "Mesa {label}: arrastra o usa las flechas para moverla",
+      "states": {
+        "free": "Libre",
+        "open": "Ordenando",
+        "paying": "Pagando",
+        "attention": "Atención"
+      },
+      "editTitle": "Plano de mesas",
+      "editLead": "Arrastra cada mesa a su lugar, o selecciónala y muévela con las flechas (Mayús para pasos grandes). Escribe un área nueva para crear otra pestaña.",
+      "area": "Área",
+      "shape": "Forma",
+      "shapes": {
+        "square": "Cuadrada",
+        "round": "Redonda",
+        "long": "Larga"
+      },
+      "seatsLabel": "Asientos",
+      "save": "Guardar plano",
+      "phoneNote": "Abre Ajustes en una tableta o computadora para mover las mesas."
+    },
+    "reason": {
+      "label": "Motivo",
+      "hint": "Obligatorio. Queda registrado en el historial.",
+      "cancel": "Cancelar",
+      "void": "Anular",
+      "refund": "Reembolsar"
+    }
+  },
+  "home": {
+    "title": "Hoy",
+    "sales": "Ventas de hoy",
+    "up": "{pct} más que el {day} pasado a esta hora",
+    "down": "{pct} menos que el {day} pasado a esta hora",
+    "noComparison": "Sin ventas el {day} pasado a esta hora",
+    "openTables": "Mesas abiertas",
+    "openSub": "de {total} mesas · Ver mesas",
+    "tips": "Propinas",
+    "refunds": "Reembolsos: {amount}",
+    "chartTitle": "Hoy vs. el {day} pasado",
+    "chartNote": "Ventas acumuladas por hora. El {date} cerró en {amount}.",
+    "today": "Hoy",
+    "lastWeek": "El {day} pasado",
+    "noSalesYet": "Todavía no hay ventas hoy. Aparecen aquí en cuanto se confirma el primer pago.",
+    "methods": "Pagos por forma de pago",
+    "paymentsCount": "{n, plural, =0 {Sin pagos todavía} one {# pago} other {# pagos}}",
+    "ivu": "IVU de hoy",
+    "ivuState": "Estatal",
+    "ivuMunicipal": "Municipal",
+    "ivuTotal": "Total",
+    "reportsLink": "Ver reportes",
+    "exportLink": "Resumen de IVU",
+    "alerts": {
+      "title": "Atención",
+      "none": "Todo en orden. No hay nada pendiente.",
+      "call": "Mesa {label} llama al mesero",
+      "check": "Mesa {label} pide la cuenta",
+      "cash": "Mesa {label}: cobrar {amount} en efectivo",
+      "pos": "Mesa {label}: cerrar {amount} en el POS",
+      "printer": "Falló una impresión de {kind} a las {time}",
+      "kitchen": "cocina",
+      "receipt": "recibo",
+      "go": "Ir a Servicio"
+    }
+  },
+  "reports": {
+    "title": "Reportes",
+    "showTable": "Ver tabla",
+    "showChart": "Ver gráfica",
+    "empty": "Sin datos en este período. Prueba con un período más largo.",
+    "range": {
+      "label": "Período",
+      "7d": "7 días",
+      "30d": "30 días",
+      "90d": "90 días",
+      "month": "Este mes",
+      "lastMonth": "Mes pasado",
+      "from": "Desde",
+      "to": "Hasta",
+      "apply": "Ver",
+      "summary": "{from} – {to} · {days, plural, one {# día} other {# días}}"
+    },
+    "kpi": {
+      "sales": "Ventas",
+      "salesNote": "Antes de IVU y propinas",
+      "orders": "Órdenes",
+      "covers": "{n} comensales",
+      "perTable": "Promedio por mesa",
+      "perGuest": "{amount} por comensal",
+      "tip": "Propina promedio",
+      "refunds": "Reembolsos: {amount}"
+    },
+    "heat": {
+      "title": "Ventas por hora y día",
+      "note": "Promedio de ventas en cada hora, por día de la semana.",
+      "low": "Menos",
+      "high": "Más",
+      "day": "Día"
+    },
+    "daily": {
+      "title": "Ventas diarias vs. la semana anterior",
+      "note": "Cada día junto al mismo día de la semana anterior.",
+      "current": "Este período",
+      "lastWeek": "Semana anterior",
+      "date": "Fecha"
+    },
+    "tables": {
+      "title": "Comensales y promedio por mesa",
+      "note": "Cuentas pagadas en el período, por mesa.",
+      "table": "Mesa",
+      "label": "Mesa {label}",
+      "tabs": "Cuentas",
+      "covers": "Comensales",
+      "sales": "Ventas",
+      "perTable": "Por mesa",
+      "perGuest": "Por comensal",
+      "sub": "{covers} comensales · {perGuest} c/u"
+    },
+    "mix": {
+      "title": "Formas de pago y propinas",
+      "tipNote": "Propina promedio con tarjeta y ATH Móvil: {pct}. Las propinas en efectivo no pasan por Mezza.",
+      "method": "Forma de pago",
+      "amount": "Ventas",
+      "count": "Pagos",
+      "share": "Porcentaje",
+      "tip": "Propina",
+      "tipValue": "Propina {pct}",
+      "noTip": "Propina fuera de Mezza"
+    },
+    "ivu": {
+      "title": "IVU cobrado por mes",
+      "note": "Estatal y municipal, según los pagos confirmados.",
+      "state": "IVU estatal",
+      "municipal": "IVU municipal",
+      "month": "Mes",
+      "taxable": "Ventas tributables",
+      "total": "Total IVU"
+    },
+    "sellers": {
+      "title": "Más y menos vendidos",
+      "rankBy": "Ordenar por",
+      "byUnits": "Unidades",
+      "byRevenue": "Ventas",
+      "best": "Más vendidos",
+      "worst": "Menos vendidos",
+      "list": "Lista",
+      "dish": "Plato",
+      "units": "Unidades",
+      "revenue": "Ventas",
+      "unitsValue": "{n, plural, one {# ud.} other {# uds.}}"
+    },
+    "modifiers": {
+      "title": "Platos pedidos con extras",
+      "note": "Porcentaje de unidades pedidas con al menos un extra o modificador, en platos que los ofrecen.",
+      "dish": "Plato",
+      "units": "Unidades",
+      "rate": "Con extras"
+    },
+    "soldOut": {
+      "title": "Agotados y ventas perdidas (estimado)",
+      "note": "Es un estimado: las unidades que el plato vende en promedio a esa hora y día de la semana (últimas 4 semanas), por las horas que estuvo agotado.",
+      "dish": "Plato",
+      "times": "Veces",
+      "hours": "Horas agotado",
+      "lostUnits": "Unidades perdidas (est.)",
+      "lostRevenue": "Ventas perdidas (est.)",
+      "total": "Ventas perdidas estimadas: <b>{amount}</b>",
+      "lostValue": "~{amount}",
+      "hoursValue": "{n} h agotado",
+      "none": "Ningún plato se agotó en este período."
+    },
+    "qr": {
+      "title": "Uso del QR",
+      "note": "Órdenes y pagos hechos desde el teléfono del cliente.",
+      "orders": "Órdenes desde el teléfono",
+      "payments": "Pagos desde el teléfono (tarjeta y ATH Móvil)",
+      "ordersSub": "{qr} de {total} órdenes",
+      "metric": "Medida",
+      "value": "Valor"
+    },
+    "language": {
+      "title": "Idioma del menú",
+      "note": "En órdenes hechas por QR.",
+      "language": "Idioma",
+      "es": "Español",
+      "en": "Inglés",
+      "orders": "Órdenes",
+      "share": "Porcentaje"
+    }
+  },
+  "exports": {
+    "title": "Exportar",
+    "month": "Mes",
+    "pdf": "Descargar PDF",
+    "csv": "Descargar CSV",
+    "xlsx": "Descargar Excel",
+    "ivu": {
+      "title": "Resumen de IVU",
+      "description": "Ventas tributables, IVU estatal y municipal, y reembolsos del mes, por día y en total.",
+      "docTitle": "Resumen de IVU para preparar la planilla en SURI",
+      "disclaimer": "Este resumen te ayuda a preparar la planilla. No es un formulario oficial del Departamento de Hacienda ni sustituye la planilla en SURI.",
+      "restaurant": "Restaurante",
+      "period": "Período",
+      "generated": "Generado",
+      "date": "Fecha",
+      "taxable": "Ventas tributables",
+      "state": "IVU estatal ({rate})",
+      "municipal": "IVU municipal ({rate})",
+      "totalIvu": "Total IVU",
+      "refunds": "Reembolsos",
+      "total": "Total",
+      "page": "Página"
+    },
+    "sales": {
+      "title": "Ventas",
+      "description": "Órdenes, platos, pagos, reembolsos y propinas del mes, con fechas y el personal de cada uno. El Excel trae una hoja por tipo.",
+      "docTitle": "Ventas de {restaurant} · {period}",
+      "sheets": {
+        "orders": "Órdenes",
+        "lines": "Platos",
+        "payments": "Pagos",
+        "refunds": "Reembolsos"
+      },
+      "cols": {
+        "orders": ["Orden", "Fecha", "Hora", "Mesa", "Origen", "Idioma", "Estado", "Tomada por", "Subtotal"],
+        "lines": [
+          "Orden",
+          "Fecha",
+          "Hora",
+          "Plato",
+          "Cantidad",
+          "Precio",
+          "Total",
+          "Extras",
+          "Nota",
+          "Anulado",
+          "Motivo",
+          "Anulado por"
+        ],
+        "payments": [
+          "Fecha",
+          "Hora",
+          "Mesa",
+          "Forma de pago",
+          "Subtotal",
+          "IVU estatal",
+          "IVU municipal",
+          "Propina",
+          "Total",
+          "Estado",
+          "Referencia",
+          "Confirmado por"
+        ],
+        "refunds": ["Fecha", "Hora", "Forma de pago", "Fecha del pago", "Monto", "Motivo", "Aprobado por"]
+      },
+      "source": {
+        "qr": "QR",
+        "staff": "Personal"
+      },
+      "method": {
+        "card": "Tarjeta",
+        "ath": "ATH Móvil",
+        "cash": "Efectivo"
+      },
+      "status": {
+        "new": "Nueva",
+        "in_kitchen": "En cocina",
+        "ready": "Lista",
+        "served": "Servida",
+        "void": "Anulada",
+        "paid": "Pagado",
+        "partially_refunded": "Reembolso parcial",
+        "refunded": "Reembolsado"
+      },
+      "yes": "Sí"
+    },
+    "past": {
+      "title": "Exportaciones anteriores",
+      "none": "Todavía no has exportado nada. Cada PDF y hoja de cálculo que descargues queda guardado aquí.",
+      "download": "Descargar"
+    },
+    "kinds": {
+      "ivu_monthly_pdf": "Resumen de IVU (PDF)",
+      "ivu_monthly_csv": "Resumen de IVU (CSV)",
+      "sales_csv": "Ventas (CSV)",
+      "sales_xlsx": "Ventas (Excel)",
+      "qr_pdf": "Códigos QR (PDF)"
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "managerNote": "Como gerente puedes editar impresoras. El resto lo cambia el dueño.",
+    "soon": "Próximamente",
+    "done": {
+      "saved": "Guardado.",
+      "approved": "Acceso aprobado.",
+      "ended": "Acceso terminado."
+    },
+    "errors": {
+      "validation": "Revisa los campos marcados.",
+      "forbidden": "No tienes permiso para este cambio.",
+      "failed": "No se pudo guardar. Inténtalo otra vez.",
+      "invite_failed": "No se pudo enviar la invitación. Revisa el correo.",
+      "slug_taken": "Ese enlace ya lo usa otro restaurante.",
+      "ip_required": "Las impresoras de red necesitan una dirección IP.",
+      "cover_type": "La portada debe ser PNG, JPG o WebP.",
+      "cover_size": "La portada debe pesar menos de 4 MB."
+    },
+    "roles": {
+      "owner": "Dueño",
+      "manager": "Gerente",
+      "server": "Mesero",
+      "kitchen": "Cocina"
+    },
+    "team": {
+      "title": "Equipo",
+      "lead": "Invita a tu equipo por correo y decide qué ve cada uno.",
+      "members": "Miembros",
+      "you": "tú",
+      "inactive": "Inactivo",
+      "roleFor": "Rol de {name}",
+      "deactivate": "Desactivar",
+      "reactivate": "Reactivar",
+      "invite": "Invitar",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "role": "Rol",
+      "send": "Enviar invitación",
+      "sending": "Enviando…",
+      "done": {
+        "invited": "Invitación enviada.",
+        "added": "Ya tenía cuenta: lo añadimos al equipo."
+      },
+      "errors": {
+        "validation": "Revisa los campos marcados.",
+        "forbidden": "No tienes permiso para este cambio.",
+        "failed": "No se pudo guardar. Inténtalo otra vez.",
+        "invite_failed": "No se pudo enviar la invitación. Revisa el correo.",
+        "slug_taken": "Ese enlace ya lo usa otro restaurante.",
+        "ip_required": "Las impresoras de red necesitan una dirección IP.",
+        "cover_type": "La portada debe ser PNG, JPG o WebP.",
+        "cover_size": "La portada debe pesar menos de 4 MB."
+      },
+      "pinTitle": "PIN para dispositivos compartidos",
+      "pinSoon": "Próximamente: cambiar de usuario con un PIN en la tableta de la cocina o de la caja."
+    },
+    "profile": {
+      "title": "Restaurante",
+      "name": "Nombre",
+      "slug": "Enlace",
+      "slugHint": "Aparece en las direcciones del panel: /app/tu-enlace.",
+      "timezone": "Zona horaria",
+      "language": "Idioma por defecto",
+      "menuStyle": "Estilo de menú por defecto",
+      "styles": {
+        "house": "De la casa",
+        "original": "Original",
+        "simple": "Simple"
+      },
+      "save": "Guardar",
+      "ownerOnly": "Solo el dueño puede cambiar estos datos."
+    },
+    "ivu": {
+      "title": "IVU",
+      "lead": "Porcentajes que se suman a cada cuenta. En Puerto Rico: 10.5% estatal y 1% municipal.",
+      "state": "IVU estatal (%)",
+      "municipal": "IVU municipal (%)",
+      "save": "Guardar tasas"
+    },
+    "brand": {
+      "title": "Marca",
+      "lead": "Así se ve el encabezado del menú en el teléfono de tus clientes.",
+      "useColor": "Usar el color de mi restaurante",
+      "color": "Color",
+      "preview": "Vista previa del encabezado",
+      "lowContrast": "Con ese color el texto no se leería bien, así que usaremos el azul de Mezza.",
+      "cover": "Foto de portada",
+      "coverHint": "PNG, JPG o WebP, hasta 4 MB. Se muestra arriba del menú.",
+      "removeCover": "Quitar la portada",
+      "logoFromQr": "El logo es el que subiste en Códigos QR.",
+      "noLogo": "Sube tu logo en Códigos QR y aparecerá aquí.",
+      "save": "Guardar marca"
+    },
+    "fiscal": {
+      "title": "Modo fiscal",
+      "sitBeside": "Al lado de tu POS",
+      "sitBesideNote": "Cada venta se cierra en tu terminal fiscal; Mezza te dice el total a marcar.",
+      "processor": "Procesador fiscal",
+      "processorNote": "Mezza emite el recibo fiscal directamente.",
+      "selected": "Activo"
+    },
+    "payments": {
+      "title": "Pagos",
+      "cash": "Efectivo",
+      "card": "Tarjeta",
+      "ath": "ATH Móvil",
+      "note": "Las tarjetas y ATH Móvil se conectan cuando estén disponibles en tu plan.",
+      "status": {
+        "connected": "Conectado",
+        "pending": "Pendiente",
+        "not_connected": "Sin conectar",
+        "unavailable": "No disponible"
+      }
+    },
+    "printers": {
+      "title": "Impresoras",
+      "new": "Añadir impresora",
+      "none": "Sin impresoras. La cocina imprime desde el navegador.",
+      "name": "Nombre",
+      "model": "Modelo",
+      "protocol": "Conexión",
+      "protocols": {
+        "browser": "Navegador",
+        "epson_epos": "Epson ePOS (red)",
+        "star_webprnt": "Star WebPRNT (red)"
+      },
+      "ip": "Dirección IP",
+      "ipHint": "Solo para impresoras de red.",
+      "role": "Uso",
+      "roles": {
+        "kitchen": "Cocina",
+        "receipt": "Recibos"
+      },
+      "width": "Ancho del papel",
+      "widthValue": "{n} caracteres",
+      "active": "Activa",
+      "inactive": "Inactiva",
+      "add": "Añadir",
+      "save": "Guardar",
+      "edit": "Editar",
+      "close": "Cerrar",
+      "test": "Imprimir prueba",
+      "testLine": "Prueba de impresión",
+      "testFooter": "Si lees esto, la impresora funciona.",
+      "testSent": "Prueba enviada a {name}.",
+      "testSoon": "{name}: la impresión por red llega pronto. Por ahora usa el navegador."
+    },
+    "support": {
+      "title": "Acceso de soporte",
+      "lead": "Stratum solo puede entrar a tu cuenta si apruebas su solicitud, y por tiempo limitado.",
+      "none": "No hay solicitudes.",
+      "requested": "Pedido por {who} el {when}",
+      "until": "hasta {when}",
+      "active": "Activo",
+      "pending": "Pendiente",
+      "approve": "Aprobar",
+      "decline": "Rechazar",
+      "end": "Terminar ahora"
+    },
+    "plan": {
+      "title": "Plan",
+      "status": "Estado",
+      "statuses": {
+        "trial": "Prueba gratis",
+        "active": "Activo",
+        "past_due": "Pago pendiente",
+        "cancelled": "Cancelado"
+      },
+      "trialLeft": "{days, plural, one {Queda # día} other {Quedan # días}} de {total}.",
+      "percentOnly": "{card}% por tarjeta · {ath}% por ATH Móvil",
+      "billing": "Facturación",
+      "billingNote": "Pronto podrás añadir tu método de pago y ver tus facturas aquí.",
+      "soon": "Próximamente"
+    },
+    "preferences": {
+      "title": "Preferencias",
+      "lead": "Cómo se ve Mezza en este dispositivo: tema e idioma de la pantalla.",
+      "theme": "Tema",
+      "language": "Idioma"
+    }
+  },
+  "theme": {
+    "label": "Tema",
+    "auto": "Auto",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "current": "Tema: {mode}. Toca para cambiar."
+  }
+}

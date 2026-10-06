@@ -1,0 +1,237 @@
+@import "tailwindcss";
+
+/* Mezza design tokens. Light values follow the Stratum FSQMS landing page;
+   dark values are Mezza's own. Dark mode follows the OS unless <html data-theme> overrides it. */
+:root {
+  --navy: #1e2b7e;
+  --navy-deep: #141d5c;
+  --blue: #266ab2;
+  --sky: #5fa3da;
+  --sand: #e6e09e;
+  --ath: #f58220;
+
+  --bg: #f3f5fa;
+  --surface: #ffffff;
+  --ink: #16204f;
+  --ink-2: #3a4270;
+  --muted: #586187;
+  --line: #e2e5ec;
+  --line-2: #eceef3;
+  --accent: #1e2b7e;
+  --accent-ink: #ffffff;
+  --soft: #eef0f8;
+  --sandsoft: #f6f3cf;
+  --olive: #5b5410;
+  --ok: #1b7a4c;
+  --ok-bg: #e6f4ee;
+  --warn: #9a5b00;
+  --warn-bg: #fcf1df;
+  --bad: #b3261e;
+  /* Charts (validated with the dataviz palette checker, light on white and dark on #161b42).
+     Payment methods keep the same hue everywhere: card blue, ATH orange, cash violet. */
+  --chart-1: #266ab2;
+  --chart-ref: #8a91ad;
+  --chart-card: #266ab2;
+  --chart-ath: #f58220;
+  --chart-cash: #7b4fa6;
+  --chart-state: #266ab2;
+  --chart-municipal: #b83c78;
+  --chart-grid: #eceef3;
+
+  --gradient: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  --shadow-btn: 0 8px 20px -10px rgba(30, 43, 126, 0.6);
+  --shadow-lift: 0 18px 40px -24px rgba(30, 43, 126, 0.35);
+  --shadow-hero: 0 24px 60px -20px rgba(30, 43, 126, 0.25);
+  --shadow-dialog: 0 40px 80px -30px rgba(22, 32, 79, 0.5);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --gutter: clamp(16px, 4vw, 56px);
+  --maxw: 1440px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1230;
+    --surface: #161b42;
+    --ink: #eceef8;
+    --ink-2: #c9cee6;
+    --muted: #a3a9c9;
+    --line: #2a3163;
+    --line-2: #232a5a;
+    --accent: #6e9be0;
+    --accent-ink: #0e1230;
+    --soft: #1e2556;
+    --sandsoft: #48452a;
+    --olive: #e6e09e;
+    --ok: #4cc08a;
+    --ok-bg: #163a2e;
+    --warn: #e3a84a;
+    --warn-bg: #3a2d14;
+    --bad: #eb6e66;
+    --chart-1: #5b8bd8;
+    --chart-ref: #6b7299;
+    --chart-card: #5b8bd8;
+    --chart-ath: #d9731a;
+    --chart-cash: #9f70c0;
+    --chart-state: #5b8bd8;
+    --chart-municipal: #d8649a;
+    --chart-grid: #232a5a;
+    --shadow-btn: none;
+    --shadow-lift: 0 18px 40px -24px rgba(0, 0, 0, 0.6);
+    --shadow-hero: 0 24px 60px -20px rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0e1230;
+  --surface: #161b42;
+  --ink: #eceef8;
+  --ink-2: #c9cee6;
+  --muted: #a3a9c9;
+  --line: #2a3163;
+  --line-2: #232a5a;
+  --accent: #6e9be0;
+  --accent-ink: #0e1230;
+  --soft: #1e2556;
+  --sandsoft: #48452a;
+  --olive: #e6e09e;
+  --ok: #4cc08a;
+  --ok-bg: #163a2e;
+  --warn: #e3a84a;
+  --warn-bg: #3a2d14;
+  --bad: #eb6e66;
+  --chart-1: #5b8bd8;
+  --chart-ref: #6b7299;
+  --chart-card: #5b8bd8;
+  --chart-ath: #d9731a;
+  --chart-cash: #9f70c0;
+  --chart-state: #5b8bd8;
+  --chart-municipal: #d8649a;
+  --chart-grid: #232a5a;
+  --shadow-btn: none;
+  --shadow-lift: 0 18px 40px -24px rgba(0, 0, 0, 0.6);
+  --shadow-hero: 0 24px 60px -20px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+/* Tokens exposed to Tailwind: bg-surface, text-muted, border-line, rounded-card, shadow-lift… */
+@theme inline {
+  --font-sans:
+    var(--font-archivo-latin), var(--font-archivo-ext), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-blue: var(--blue);
+  --color-sky: var(--sky);
+  --color-sand: var(--sand);
+  --color-ath: var(--ath);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-soft: var(--soft);
+  --color-sandsoft: var(--sandsoft);
+  --color-olive: var(--olive);
+  --color-ok: var(--ok);
+  --color-ok-bg: var(--ok-bg);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-bad: var(--bad);
+
+  --radius-btn: 11px;
+  --radius-btn-lg: 13px;
+  --radius-card: 18px;
+  --radius-hero: 22px;
+  --radius-band: 28px;
+
+  --shadow-btn: var(--shadow-btn);
+  --shadow-lift: var(--shadow-lift);
+  --shadow-hero: var(--shadow-hero);
+  --shadow-dialog: var(--shadow-dialog);
+
+  --ease-out: var(--ease-out);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
+  }
+  :focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  /* On navy and gradient surfaces the focus ring turns sand so it stays visible. */
+  .on-navy :focus-visible {
+    outline-color: var(--sand);
+  }
+}
+
+@layer utilities {
+  .bg-gradient-brand {
+    background: var(--gradient);
+  }
+  .container-site {
+    width: 100%;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Topographic texture, marketing site only. */
+.site-texture {
+  position: absolute;
+  inset: 0;
+  background: url("/brand/topo-tile.jpg") repeat;
+  background-size: 1800px auto;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+/* multiply only darkens a dark background; lighten the lines instead. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .site-texture {
+    mix-blend-mode: screen;
+    opacity: 0.035;
+  }
+}
+:root[data-theme="dark"] .site-texture {
+  mix-blend-mode: screen;
+  opacity: 0.035;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

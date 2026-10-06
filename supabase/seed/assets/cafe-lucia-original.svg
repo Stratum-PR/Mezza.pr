@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1342" width="600" height="1342">
+<defs><pattern id="grain" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".8" fill="#7A5A28" opacity=".08"/></pattern></defs>
+<rect width="600" height="1342" fill="#F3E9D2"/><rect width="600" height="1342" fill="url(#grain)"/>
+<rect x="16" y="16" width="568" height="1310" fill="none" stroke="#1F4D3A" stroke-width="3"/>
+<rect x="26" y="26" width="548" height="1290" fill="none" stroke="#B08D57" stroke-width="1"/>
+<text x="300" y="112" text-anchor="middle" font-family="Playfair Display, Georgia, serif" font-style="italic" font-weight="600" font-size="66" fill="#1F4D3A">Café Lucía</text>
+<text x="300" y="146" text-anchor="middle" font-family="Josefin Sans, Arial, sans-serif" font-size="13" letter-spacing="5" fill="#8C2F2B" font-weight="600">VIEJO SAN JUAN · DESDE 1962</text>
+<line x1="190" y1="168" x2="280" y2="168" stroke="#B08D57"/><path d="M300 160l8 8-8 8-8-8z" fill="#B08D57"/><line x1="320" y1="168" x2="410" y2="168" stroke="#B08D57"/>
+<line x1="70" y1="206" x2="210" y2="206" stroke="#B08D57"/><line x1="390" y1="206" x2="530" y2="206" stroke="#B08D57"/>
+<text x="300" y="212" text-anchor="middle" font-family="Josefin Sans, Arial, sans-serif" font-size="17" letter-spacing="6" fill="#8C2F2B" font-weight="600">CAFÉ</text>
+<text x="64" y="256" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Café con leche</text>
+<line x1="220.4" y1="254" x2="482" y2="254" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="256" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">2.50</text>
+<text x="64" y="277" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Colado puertorriqueño con leche espumada</text>
+<text x="64" y="316" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Cortadito</text>
+<line x1="167.39999999999998" y1="314" x2="482" y2="314" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="316" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">2.25</text>
+<text x="64" y="337" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Espresso con un toque de leche</text>
+<text x="64" y="376" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Café negro</text>
+<line x1="178" y1="374" x2="482" y2="374" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="376" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">1.75</text>
+<text x="64" y="397" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Colado del día</text>
+<line x1="70" y1="456" x2="210" y2="456" stroke="#B08D57"/><line x1="390" y1="456" x2="530" y2="456" stroke="#B08D57"/>
+<text x="300" y="462" text-anchor="middle" font-family="Josefin Sans, Arial, sans-serif" font-size="17" letter-spacing="6" fill="#8C2F2B" font-weight="600">DESAYUNOS</text>
+<text x="64" y="506" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Mallorca</text>
+<line x1="156.8" y1="504" x2="482" y2="504" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="506" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">3.50</text>
+<text x="64" y="527" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Pan dulce con azúcar en polvo</text>
+<text x="64" y="566" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Revoltillo con jamón</text>
+<line x1="284" y1="564" x2="482" y2="564" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="566" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">6.50</text>
+<text x="64" y="587" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Con tostadas de pan de agua</text>
+<text x="64" y="626" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Avena</text>
+<line x1="125" y1="624" x2="482" y2="624" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="626" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">3.00</text>
+<text x="64" y="647" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Avena caliente con canela</text>
+<line x1="70" y1="706" x2="210" y2="706" stroke="#B08D57"/><line x1="390" y1="706" x2="530" y2="706" stroke="#B08D57"/>
+<text x="300" y="712" text-anchor="middle" font-family="Josefin Sans, Arial, sans-serif" font-size="17" letter-spacing="6" fill="#8C2F2B" font-weight="600">SÁNDWICHES</text>
+<text x="64" y="756" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Sándwich de mezcla</text>
+<line x1="262.79999999999995" y1="754" x2="482" y2="754" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="756" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">5.50</text>
+<text x="64" y="777" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">El clásico de fiesta</text>
+<text x="64" y="816" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Tripleta</text>
+<line x1="156.8" y1="814" x2="482" y2="814" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="816" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">9.00</text>
+<text x="64" y="837" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Carne, pollo y jamón con papitas</text>
+<line x1="70" y1="896" x2="210" y2="896" stroke="#B08D57"/><line x1="390" y1="896" x2="530" y2="896" stroke="#B08D57"/>
+<text x="300" y="902" text-anchor="middle" font-family="Josefin Sans, Arial, sans-serif" font-size="17" letter-spacing="6" fill="#8C2F2B" font-weight="600">DULCES</text>
+<text x="64" y="946" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Quesito</text>
+<line x1="146.2" y1="944" x2="482" y2="944" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="946" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">2.00</text>
+<text x="64" y="967" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Hojaldre con queso crema</text>
+<text x="64" y="1006" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Flan de queso</text>
+<line x1="209.79999999999998" y1="1004" x2="482" y2="1004" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="1006" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">4.00</text>
+<text x="64" y="1027" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Receta de la abuela Lucía</text>
+<line x1="70" y1="1086" x2="210" y2="1086" stroke="#B08D57"/><line x1="390" y1="1086" x2="530" y2="1086" stroke="#B08D57"/>
+<text x="300" y="1092" text-anchor="middle" font-family="Josefin Sans, Arial, sans-serif" font-size="17" letter-spacing="6" fill="#8C2F2B" font-weight="600">BEBIDAS</text>
+<text x="64" y="1136" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Jugo de china</text>
+<line x1="209.79999999999998" y1="1134" x2="482" y2="1134" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="1136" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">3.50</text>
+<text x="64" y="1157" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Recién exprimido</text>
+<text x="64" y="1196" font-family="Playfair Display, Georgia, serif" font-size="22" font-weight="600" fill="#2A2620">Malta</text>
+<line x1="125" y1="1194" x2="482" y2="1194" stroke="#B08D57" stroke-width="2" stroke-dasharray="1 6" stroke-linecap="round"/>
+<text x="536" y="1196" text-anchor="end" font-family="Playfair Display, Georgia, serif" font-size="21" font-weight="700" fill="#1F4D3A">2.00</text>
+<text x="64" y="1217" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="15" fill="#6B5E4B">Bien fría</text>
+<text x="300" y="1298" text-anchor="middle" font-family="Playfair Display, Georgia, serif" font-style="italic" font-size="14" fill="#6B5E4B">Precios no incluyen IVU · Gracias por su visita</text>
+</svg>

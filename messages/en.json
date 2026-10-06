@@ -1,0 +1,1446 @@
+{
+  "common": {
+    "brand": "Mezza",
+    "byStratum": "by Stratum PR",
+    "productOf": "Mezza · a Stratum PR LLC product · Puerto Rico",
+    "skipToContent": "Skip to content",
+    "language": "Language",
+    "comingSoon": "Coming soon",
+    "comingSoonBody": "This feature is on its way. We'll let you know when it's ready.",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading…"
+  },
+  "site": {
+    "nav": {
+      "label": "Main",
+      "product": "Product",
+      "how": "How it works",
+      "pricing": "Pricing",
+      "demo": "Demo",
+      "login": "Log in",
+      "cta": "Start your free trial",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
+    },
+    "hero": {
+      "title": "Your menu, your style. Now it takes orders and payments on its own.",
+      "lead": "Guests scan the QR on the table, see your menu in your style, and order and pay from their phone. You keep closing each sale on your fiscal terminal.",
+      "primary": "Start your free trial",
+      "secondary": "Book a guided setup"
+    },
+    "footer": {
+      "product": "Product",
+      "legal": "Legal",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "dpa": "Data processing",
+      "about": "Mezza is a product of Stratum PR LLC, in Trujillo Alto, Puerto Rico.",
+      "copyright": "© {year} Stratum PR LLC. All rights reserved."
+    },
+    "demo": {
+      "title": "Try Café Lucía's menu",
+      "lead": "This is what guests see when they scan the QR on the table. Switch the style and the language and add dishes: it's a demo, and no order reaches a kitchen.",
+      "tryTitle": "Try this",
+      "try1": "Switch the style: House style (the café's own design on a phone), Original (the printed menu, tappable) or Simple.",
+      "try2": "In Original, tap Show tap zones to see where each dish is.",
+      "try3": "The cheese flan is sold out: it's marked and can't be ordered.",
+      "try4": "Open a dish, pick its options and add it to your order.",
+      "qrTitle": "Open it on your phone",
+      "qrBody": "Scan the code with your camera to see the menu as a guest would.",
+      "qrLabel": "QR code that opens the Mezza demo",
+      "requestTitle": "Book a guided setup",
+      "requestLead": "Leave your details and we'll write to set up a demo or the installation at your restaurant.",
+      "form": {
+        "name": "Your name",
+        "restaurantName": "Restaurant name",
+        "email": "Email",
+        "phone": "Phone",
+        "message": "Anything we should know?",
+        "submit": "Send request",
+        "sent": "Thanks! We got your request and will write to you soon.",
+        "privacy": "We only use these details to reply to you.",
+        "errors": {
+          "name": "Type your name.",
+          "email": "Type a valid email, for example name@restaurant.com.",
+          "phone": "The phone can only have numbers, spaces and + ( ) -.",
+          "rate_limited": "We got several requests from here. Try again in an hour.",
+          "failed": "Couldn't send. Try again or write to contact@stratumpr.com."
+        }
+      }
+    },
+    "home": {
+      "heroCard": {
+        "label": "An order at Café Lucía",
+        "pause": "Pause",
+        "play": "Resume",
+        "steps": [
+          {
+            "title": "Table 4 · sent to the kitchen",
+            "body": "2 cafés con leche and a mallorca, from a phone."
+          },
+          {
+            "title": "Ready",
+            "body": "The kitchen marked it ready; the server brings it."
+          },
+          {
+            "title": "Paid with ATH Móvil",
+            "body": "$11.01 with IVU and tip. No waiting for the check."
+          }
+        ]
+      },
+      "steps": {
+        "title": "That simple",
+        "lead": "Start in an afternoon, with the menu you already have.",
+        "s1": {
+          "title": "Upload your menu",
+          "body": "A photo or the PDF of your printed menu. Mezza turns it into dishes, prices and options, and you review it."
+        },
+        "s2": {
+          "title": "Print your QR codes",
+          "body": "Codes in your colors for every table, ready to cut out or fold."
+        },
+        "s3": {
+          "title": "Guests order and pay from the table",
+          "body": "They scan, order, call the server and pay with ATH Móvil, card or cash."
+        }
+      },
+      "signature": {
+        "title": "Your printed menu, now on their phone",
+        "lead": "Mezza keeps your style: your menu's colors, fonts and ornaments. Guests recognize it and order with a tap.",
+        "before": "The menu you printed",
+        "after": "The same menu, ready to order",
+        "replay": "Play again"
+      },
+      "pr": {
+        "title": "Built for Puerto Rico",
+        "ath": {
+          "title": "ATH Móvil",
+          "body": "The payment your guests already use, alongside card and cash."
+        },
+        "ivu": {
+          "title": "IVU on every receipt",
+          "body": "State and municipal IVU on separate lines, to the cent."
+        },
+        "lang": {
+          "title": "Spanish and English",
+          "body": "Every guest reads the menu in their language, without you translating twice."
+        },
+        "offline": {
+          "title": "Keeps working through outages",
+          "body": "Designed for blackouts: the kitchen keeps going if the connection drops."
+        }
+      },
+      "split": {
+        "title": "Split the bill your way",
+        "lead": "One check for the table, equal parts, or everyone pays for their own. Each person pays from their phone.",
+        "one": "One check",
+        "even": "Split evenly",
+        "items": "Pay for your own",
+        "example": "Example"
+      },
+      "owners": {
+        "title": "For owners",
+        "lead": "What you sold today, what sells most, and the IVU summary to prepare your SURI return, without spreadsheets.",
+        "today": "Today's sales",
+        "vsLastWeek": "+12% vs. last Tuesday",
+        "best": "Best sellers",
+        "ivu": "IVU this month",
+        "ivuState": "State",
+        "ivuMunicipal": "Municipal",
+        "example": "Sample data"
+      },
+      "pricing": {
+        "title": "One clear price",
+        "month": "a month",
+        "plusCard": "+ {percent}% of card payments",
+        "athFree": "ATH Móvil and cash pay no percentage.",
+        "trial": "30-day free trial. No card needed.",
+        "guided": "Guided setup",
+        "guidedBody": "We upload your menu, design your QR codes and train your team. One-time {price}.",
+        "seePricing": "See pricing"
+      },
+      "faq": {
+        "title": "Frequently asked questions",
+        "q1": "What equipment do I need?",
+        "a1": "Nothing new. Guests use their phones; your team uses a phone or tablet, and the kitchen a tablet. You can print tickets from the browser.",
+        "q2": "How much does it cost?",
+        "a2": "A fixed monthly fee plus a small percentage of card payments. ATH Móvil and cash pay no percentage. Details are on Pricing.",
+        "q3": "What about my fiscal terminal?",
+        "a3": "You keep closing each sale on your fiscal terminal as today. Mezza tells you the total to enter and reminds you of every pending table.",
+        "q4": "Can I cancel anytime?",
+        "a4": "Yes. There's no contract. If you cancel, you can download your reports and IVU summaries."
+      },
+      "cta": {
+        "title": "Try Mezza free for 30 days",
+        "lead": "Upload your menu today and have your QR codes ready this week. If you prefer, we set it up with you."
+      }
+    },
+    "pricing": {
+      "title": "Pricing",
+      "lead": "A fixed monthly price and a small percentage on card payments only. No contract.",
+      "plan": "Mezza plan",
+      "month": "a month",
+      "plusCard": "+ {percent}% of card payments",
+      "includes": "Includes",
+      "features": [
+        "Your menu in your style, in Spanish and English",
+        "QR codes for every table",
+        "Table ordering, kitchen and server screens",
+        "Payments with ATH Móvil, card and cash",
+        "Sales reports and an IVU summary for SURI"
+      ],
+      "trial": "30 days free. No card needed.",
+      "start": "Start your free trial",
+      "guided": "Guided setup",
+      "guidedBody": "We upload your menu, design and print your QR codes, and train your team at your restaurant.",
+      "guidedPrice": "One-time {price}",
+      "guidedCta": "Book a guided setup",
+      "exampleTitle": "An example",
+      "exampleBody": "If in a month you take {card} by card, {ath} with ATH Móvil and {cash} in cash, you pay {fee}: the monthly fee plus {percent}% of card payments.",
+      "faqTitle": "Questions about fees",
+      "q1": "What counts as a card payment?",
+      "a1": "Payments guests make by credit or debit card from their phone in Mezza. What you charge on your usual terminal pays no percentage.",
+      "q2": "Are there fees for ATH Móvil or cash?",
+      "a2": "No. Mezza charges no percentage on ATH Móvil or cash.",
+      "q3": "What happens when the trial ends?",
+      "a3": "We let you know beforehand. If you continue, you choose how to pay; if not, your account pauses and you can download your reports.",
+      "q4": "Do prices include IVU?",
+      "a4": "Mezza's prices don't include IVU."
+    },
+    "how": {
+      "title": "How it works",
+      "lead": "From your printed menu to ordering and paying from the table, in four steps.",
+      "steps": [
+        {
+          "title": "Import your menu",
+          "body": "Upload the PDF or a photo. Mezza reads dishes, prices and options, and learns your style. You confirm anything unclear before publishing."
+        },
+        {
+          "title": "Print your QR codes",
+          "body": "Design the codes in your colors and download sheets to cut, folded table tents, or stickers."
+        },
+        {
+          "title": "Guests order and pay",
+          "body": "They scan, see your menu in their language, order to the kitchen, call the server, and pay with ATH Móvil, card or cash."
+        },
+        {
+          "title": "Close on your terminal",
+          "body": "Mezza shows each table's total to enter on your fiscal terminal, as you do today, and keeps your reports and IVU."
+        }
+      ]
+    },
+    "legal": {
+      "draft": "Draft: needs legal review",
+      "draftBody": "This text is a draft and hasn't been reviewed by a lawyer yet. It isn't the final version.",
+      "updated": "Last updated: {date}",
+      "back": "Back to home",
+      "terms": {
+        "title": "Terms of use",
+        "body": [
+          "Mezza is a service of Stratum PR LLC, based in Trujillo Alto, Puerto Rico, that lets restaurants show their menu, take orders and get paid from the table.",
+          "The restaurant is responsible for its menu, its prices, the IVU it charges, and closing each sale on its fiscal terminal. Mezza does not issue fiscal receipts.",
+          "You can cancel your account anytime. We'll give you access to download your reports for a reasonable period."
+        ]
+      },
+      "privacy": {
+        "title": "Privacy policy",
+        "body": [
+          "We collect the data needed to run the service: the restaurant and team accounts, orders and payments.",
+          "Guests who order from the table don't need an account. If they leave a phone number for a receipt, we only use it with their consent.",
+          "We don't sell personal data. Card and ATH Móvil payments are handled by certified processors."
+        ]
+      },
+      "data": {
+        "title": "Data processing agreement",
+        "body": [
+          "The restaurant controls its guests' data; Stratum PR LLC processes it only to provide the service.",
+          "Data is stored encrypted, separated by restaurant, and only authorized staff can see it.",
+          "Stratum support access requires the owner's approval, expires, and is logged."
+        ]
+      }
+    }
+  },
+  "app": {
+    "nav": {
+      "label": "Restaurant navigation",
+      "home": "Home",
+      "menu": "Menu",
+      "qr": "QR codes",
+      "service": "Service",
+      "tables": "Tables",
+      "kitchen": "Kitchen",
+      "reports": "Reports",
+      "export": "Export",
+      "team": "Team",
+      "settings": "Settings",
+      "plan": "Plan",
+      "groups": {
+        "ops": "Operations",
+        "menu": "Menu",
+        "business": "Business",
+        "admin": "Admin"
+      },
+      "alerts": "{n, plural, one {# waiting} other {# waiting}}",
+      "orden": "Take order",
+      "quick": "Shortcuts",
+      "open": "Open menu",
+      "close": "Close menu",
+      "more": "Menu"
+    },
+    "placeholder": "This screen is built in a later phase."
+  },
+  "guest": {
+    "table": "Table {label}",
+    "invalidTitle": "This code is no longer valid",
+    "invalidBody": "Ask your server for the table's updated code."
+  },
+  "admin": {
+    "title": "Stratum admin",
+    "restaurants": "Restaurants",
+    "health": "Alerts",
+    "support": "Support access",
+    "flags": "Features",
+    "cols": {
+      "name": "Restaurant",
+      "status": "Status",
+      "setup": "Setup",
+      "trial": "Trial",
+      "volume": "30-day sales",
+      "lastOrder": "Last order"
+    },
+    "statuses": {
+      "trial": "Trial",
+      "active": "Active",
+      "paused": "Paused",
+      "cancelled": "Cancelled"
+    },
+    "planValue": "plan {plan}",
+    "setupDone": "Done",
+    "setupStep": "Step {step} of 6",
+    "days": "{n, plural, one {# day} other {# days}}",
+    "never": "Never",
+    "healthy": "All good: no restaurant needs attention.",
+    "healthFlags": {
+      "noOrders": "No orders in 3 days",
+      "failedPayments": "{n, plural, one {# failed payment} other {# failed payments}} (7 days)",
+      "failedPrints": "{n, plural, one {# failed print} other {# failed prints}} (24 h)",
+      "staleDevices": "{n, plural, one {# device offline} other {# devices offline}} (24 h)"
+    },
+    "supportLead": "Request temporary access. It only starts once the owner approves it in Settings, and everything is logged.",
+    "supportForm": {
+      "restaurant": "Restaurant",
+      "reason": "Reason",
+      "hours": "Duration",
+      "hoursValue": "{h, plural, one {# hour} other {# hours}}",
+      "send": "Request access",
+      "sent": "Request sent to the owner.",
+      "error": "Couldn't send. Check the reason (at least 5 letters)."
+    },
+    "grant": {
+      "pending": "Pending",
+      "active": "Active",
+      "expired": "Expired"
+    },
+    "on": "On",
+    "off": "Off",
+    "flagsNote": "Read-only. They change in src/config/flags.ts once their connector passes its tests."
+  },
+  "menu": {
+    "styleLabel": "Menu style",
+    "styles": {
+      "house": "House style",
+      "original": "Original",
+      "simple": "Simple"
+    },
+    "sectionsLabel": "Sections",
+    "languageLabel": "Language",
+    "soldOut": "Sold out",
+    "showZones": "Show tap zones",
+    "hideZones": "Hide tap zones",
+    "tapHint": "Tap a dish on the printed menu to order it.",
+    "required": "Required",
+    "optional": "Optional",
+    "chooseExactly": "Choose {count}",
+    "chooseUpTo": "Choose up to {count}",
+    "chooseRange": "Choose {min} to {max}",
+    "quantity": "Quantity",
+    "decrease": "One less",
+    "increase": "One more",
+    "note": "Note for the kitchen",
+    "notePlaceholder": "E.g. no onions",
+    "add": "Add to order · {price}",
+    "addMissing": "Choose the required options",
+    "viewOrder": "View order ({count}) · {price}",
+    "yourOrder": "Your order",
+    "subtotal": "Subtotal",
+    "ivuNote": "IVU is added at checkout.",
+    "sendToKitchen": "Send to kitchen",
+    "demoSent": "Demo order: it doesn't reach any kitchen.",
+    "emptyOrder": "Your order is empty. Tap a dish to add it.",
+    "remove": "Remove {name}",
+    "close": "Close",
+    "table": "Table {label}",
+    "added": "{name} added to your order",
+    "flow": {
+      "callServer": "Call the server",
+      "bringCheck": "Ask for the check",
+      "called": "We let your server know.",
+      "checkRequested": "Your server is bringing the check.",
+      "requestOpen": "Sent",
+      "sending": "Sending…",
+      "sent": "Order #{number} sent to the kitchen.",
+      "myOrder": "My order",
+      "statusTitle": "Your table's order",
+      "orderNumber": "Order #{number}",
+      "status": {
+        "new": "Received",
+        "in_kitchen": "In the kitchen",
+        "ready": "Ready",
+        "served": "Served",
+        "void": "Voided"
+      },
+      "orderMore": "Order more",
+      "pay": "Pay the check",
+      "empty": "You haven't ordered anything yet. Pick something from the menu.",
+      "payTitle": "Your check",
+      "subtotal": "Subtotal",
+      "tip": "Tip",
+      "tipNone": "No tip",
+      "tipCustom": "Other",
+      "tipCustomLabel": "Tip in dollars",
+      "tipHint": "The tip is calculated on the subtotal before IVU.",
+      "ivuState": "State IVU",
+      "ivuMunicipal": "Municipal IVU",
+      "total": "Total",
+      "methodTitle": "How do you want to pay?",
+      "methods": {
+        "card": "Card",
+        "ath": "ATH Móvil",
+        "cash": "Cash"
+      },
+      "payWithServer": "Pay with your server: choose cash and they'll come to collect.",
+      "payButton": "Pay {total}",
+      "paying": "Processing the payment…",
+      "cashPending": "Your server is coming to collect {total} in cash.",
+      "cashWaiting": "Waiting for your server…",
+      "receiptTitle": "Payment receipt",
+      "receiptNote": "Payment receipt: the fiscal receipt is issued by the restaurant.",
+      "paidWith": "Paid with {method}",
+      "thanks": "Thanks for your visit!",
+      "backToMenu": "Back to the menu",
+      "errors": {
+        "item_unavailable": "A dish in your order sold out. Remove it and send again.",
+        "tab_closed": "Your table is paying the check. Ask your server if you'd like something else.",
+        "invalid_table": "This code is no longer valid. Ask your server for the table's new code.",
+        "validation": "Something changed on the menu. Check your order and send it again.",
+        "network": "No connection. Tap “Send to kitchen” again: it won't be duplicated.",
+        "request": "We couldn't reach your server. Try again."
+      },
+      "payErrors": {
+        "nothing_to_pay": "There's nothing to pay yet.",
+        "unavailable": "That method isn't available right now. Choose another.",
+        "coming_soon": "That method is coming soon. Pay with your server.",
+        "failed": "Couldn't process the payment. Try again or pay with your server."
+      }
+    },
+    "quickAdd": "Add {name}",
+    "keepOrdering": "Keep ordering",
+    "decreaseItem": "One less {name}",
+    "increaseItem": "One more {name}",
+    "tags": {
+      "vegetariano": "Vegetarian",
+      "sin_gluten": "Gluten-free",
+      "picante": "Spicy"
+    }
+  },
+  "ticket": {
+    "kitchen": "KITCHEN",
+    "receipt": "PAYMENT RECEIPT",
+    "table": "Table",
+    "order": "Order",
+    "subtotal": "Subtotal",
+    "ivuState": "State IVU",
+    "ivuMunicipal": "Municipal IVU",
+    "tip": "Tip",
+    "total": "Total",
+    "note": "Note"
+  },
+  "auth": {
+    "title": "Log in to Mezza",
+    "lead": "Use your account email and password.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "or": "or",
+    "magicLink": "Email me a login link",
+    "magicSent": "If you have an account, we sent you a link. Check your email.",
+    "errors": {
+      "invalid": "Check the email and password: something is missing or in the wrong format.",
+      "credentials": "The email or password doesn't match. Try again or ask for a login link.",
+      "rateLimited": "Too many attempts. Wait a minute and try again.",
+      "link": "The link expired or was already used. Ask for a new one."
+    },
+    "signOut": "Log out",
+    "pickRestaurant": "Choose a restaurant",
+    "noRestaurants": "Your account doesn't belong to a restaurant yet. Ask the owner to invite you.",
+    "signup": {
+      "title": "Create your account",
+      "lead": "30 days free. No card needed.",
+      "fullName": "Your name",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 8 characters.",
+      "restaurantName": "Restaurant name",
+      "phone": "Restaurant phone",
+      "terms": "I accept the {terms} and the {privacy}.",
+      "termsLink": "terms of use",
+      "privacyLink": "privacy policy",
+      "submit": "Create account and start",
+      "haveAccount": "Already have an account?",
+      "login": "Log in here",
+      "confirmEmail": "We sent you an email to confirm your account. Open it to continue setting up.",
+      "errors": {
+        "invalid": "Check the marked fields.",
+        "fullName": "Type your name.",
+        "email": "Type a valid email.",
+        "password": "The password needs at least 8 characters.",
+        "restaurantName": "Type the restaurant's name.",
+        "phone": "Type a phone number, for example 787-555-0142.",
+        "terms": "Accept the terms to continue.",
+        "email_taken": "There's already an account with that email. Log in or ask for a login link.",
+        "weak_password": "That password is too easy to guess. Use a longer one.",
+        "rate_limited": "Too many attempts. Wait a few minutes.",
+        "failed": "Couldn't create the account. Try again."
+      }
+    },
+    "reset": {
+      "title": "Reset your password",
+      "lead": "Type your email and we'll send you a link to create a new one.",
+      "submit": "Send link",
+      "sent": "If you have an account, we sent you a link. Check your email.",
+      "invalid": "Type a valid email.",
+      "forgot": "Forgot your password?",
+      "newTitle": "Create a new password",
+      "newPassword": "New password",
+      "confirm": "Repeat the password",
+      "save": "Save password",
+      "errors": {
+        "mismatch": "The passwords don't match.",
+        "weak": "The password needs at least 8 characters.",
+        "failed": "Couldn't save. Ask for a new link and try again."
+      }
+    },
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create one free"
+  },
+  "editor": {
+    "title": "Menu",
+    "lead": "Edit sections, dishes, prices and options. The preview shows what your guests see.",
+    "tabsLabel": "Menu parts",
+    "tabs": {
+      "dishes": "Dishes",
+      "options": "Options"
+    },
+    "importMenu": "Import menu",
+    "addSection": "Add section",
+    "addItem": "Add dish",
+    "nameEs": "Name in Spanish",
+    "nameEn": "Name in English",
+    "descriptionEs": "Description in Spanish",
+    "descriptionEn": "Description in English",
+    "price": "Price in dollars",
+    "priceHint": "For example 3.50. Before IVU.",
+    "section": "Section",
+    "modifierGroups": "Options for this dish",
+    "noGroups": "Create options in the Options tab to use them here.",
+    "photo": "Photo",
+    "photoHint": "JPG, PNG or WebP, up to 5 MB.",
+    "uploadPhoto": "Upload photo",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit {name}",
+    "archive": "Remove from menu",
+    "archiveConfirm": "Remove “{name}” from the menu? Past orders and reports keep it.",
+    "available": "Available",
+    "soldOutSwitch": "{name}: sold out",
+    "moveUp": "Move {name} up",
+    "moveDown": "Move {name} down",
+    "dragHint": "Drag sections to reorder them, or use the arrows.",
+    "saved": "Changes saved",
+    "preview": "Preview",
+    "emptySections": "Your menu has no sections yet. Add the first one, for example “Breakfast”.",
+    "emptyItems": "This section has no dishes. Add the first one.",
+    "groupNameEs": "Group name in Spanish",
+    "groupNameEn": "Group name in English",
+    "min": "Minimum to choose",
+    "max": "Maximum to choose",
+    "optionNameEs": "Option in Spanish",
+    "optionNameEn": "Option in English",
+    "optionPrice": "Extra price",
+    "addOption": "Add option",
+    "removeOption": "Remove option {n}",
+    "addGroup": "Add option group",
+    "deleteGroup": "Delete group",
+    "deleteGroupConfirm": "Delete the group “{name}”? It is removed from all its dishes.",
+    "emptyGroups": "No options yet. Create one, for example “Milk” with Whole and Oat.",
+    "usedBy": "{count, plural, =0 {No dishes} one {On 1 dish} other {On # dishes}}",
+    "groupSummary": "{min}–{max} · {count} options",
+    "errors": {
+      "invalid": "Check the fields: something is missing or too long.",
+      "price": "Type the price in dollars, for example 3.50.",
+      "photo_type": "The photo must be JPG, PNG or WebP.",
+      "photo_size": "The photo is over 5 MB. Use a lighter one.",
+      "range": "The maximum must be at least the minimum, and no more than the number of options.",
+      "save_failed": "Couldn't save. Check your connection and try again."
+    },
+    "soldOut": "Sold out",
+    "tags": "Tags",
+    "moreActions": "More actions for {name}"
+  },
+  "importer": {
+    "title": "Import menu",
+    "lead": "Upload your printed menu as a PDF or a photo. Mezza turns it into dishes, prices and options, and you review it before publishing.",
+    "file": "Menu as PDF or photo",
+    "fileHint": "PDF, JPG or PNG, up to 15 MB.",
+    "upload": "Upload and read menu",
+    "back": "Back to menu",
+    "processing": "Reading your menu…",
+    "processingHint": "This takes a few seconds. You can stay on this page.",
+    "reviewTitle": "Review the imported menu",
+    "reviewLead": "Confirm the flagged prices, adjust the tap zones on the page, and publish.",
+    "sourcePage": "Original page",
+    "dishes": "Dishes found",
+    "flagged": "{count, plural, =0 {Ready to publish} one {1 price left to confirm} other {# prices left to confirm}}",
+    "missingPrice": "Price wasn't readable",
+    "lowConfidence": "Unsure price: check it against the page",
+    "confirm": "Confirm price",
+    "confirmed": "Confirmed",
+    "price": "Price of {name}",
+    "selectZone": "Select the zone for {name}",
+    "zoneHelp": "Drag a zone to move it and its corner to resize it. With the keyboard: arrows to move, Shift + arrows to resize.",
+    "zone": "Tap zone for {name}",
+    "resize": "Resize the zone for {name}",
+    "theme": "Detected style",
+    "themeFonts": "Fonts: {display} and {body}",
+    "publish": "Publish menu",
+    "publishBlocked": "Confirm every flagged price to publish.",
+    "publishNote": "Dishes that already exist are updated; ones missing from this import leave the menu, but past orders keep them.",
+    "published": "Menu published.",
+    "errors": {
+      "file_type": "The file must be a PDF, JPG or PNG.",
+      "file_size": "The file is over 15 MB. Try a lighter photo.",
+      "coming_soon": "AI import is coming soon. Meanwhile, add dishes by hand.",
+      "failed": "Couldn't read the menu. Try again or add dishes by hand.",
+      "invalid": "A dish is missing details. Check names and prices.",
+      "publish": "Couldn't publish. Try again."
+    }
+  },
+  "wizard": {
+    "title": "Set up {name}",
+    "lead": "Six steps and your guests can order from the table. You can leave and come back anytime.",
+    "stepsLabel": "Setup steps",
+    "trial": "You have {days, plural, one {# day} other {# days}} of free trial left.",
+    "steps": {
+      "1": "Account",
+      "2": "Menu",
+      "3": "Tables",
+      "4": "Payments",
+      "5": "Team",
+      "6": "Print"
+    },
+    "done": "Done",
+    "current": "Current step",
+    "skip": "Skip for now",
+    "continue": "Continue",
+    "back": "Previous step",
+    "account": {
+      "title": "Your account is ready",
+      "body": "We created {name} with a 30-day free trial."
+    },
+    "menu": {
+      "title": "Upload your menu",
+      "body": "A photo or the PDF of your printed menu. While we read it, keep going with the next steps; you review it later in Menu.",
+      "file": "Menu as PDF or photo",
+      "upload": "Upload menu and continue",
+      "manual": "I'd rather add dishes by hand"
+    },
+    "tables": {
+      "title": "Your tables and QR style",
+      "count": "How many tables do you have?",
+      "labels": "Table names (optional)",
+      "labelsHint": "Separate them with commas, for example: 1, 2, 3, Bar, Patio 1. Leave it empty and we number them.",
+      "preset": "QR code style",
+      "presets": {
+        "house": "House style",
+        "bold": "Wine and gold",
+        "clean": "Minimal"
+      },
+      "save": "Create tables and continue",
+      "existing": "You already have {count, plural, one {# table} other {# tables}}. New ones are added to those."
+    },
+    "payments": {
+      "title": "How you get paid",
+      "body": "Cash is always available: the guest asks for it and your server confirms it. Connect card or ATH Móvil to get paid from the phone.",
+      "cash": "Cash",
+      "card": "Card",
+      "ath": "ATH Móvil",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "connect": "Connect",
+      "always": "Always available",
+      "payWithServer": "Until you connect card or ATH Móvil, guests will see “Pay with your server”."
+    },
+    "staff": {
+      "title": "Invite your team",
+      "body": "Everyone signs in with their own account. We email them to create their password.",
+      "email": "Email",
+      "role": "Role",
+      "roles": {
+        "manager": "Manager",
+        "server": "Server",
+        "kitchen": "Kitchen"
+      },
+      "invite": "Send invitation",
+      "invited": "We invited {email}.",
+      "done": "Done inviting"
+    },
+    "print": {
+      "title": "Print your QR codes and open",
+      "body": "Print the codes for your {count, plural, one {# table} other {# tables}} and place them on the tables. You can change the design anytime in QR codes.",
+      "studio": "Open QR codes",
+      "goLive": "Finish and open the dashboard",
+      "download": "Download the QR PDF"
+    },
+    "errors": {
+      "file_type": "The file must be a PDF, JPG or PNG.",
+      "file_size": "The file is over 15 MB.",
+      "tables_invalid": "Type a number of tables between 1 and 80.",
+      "labels_invalid": "Check the names: they can't repeat and each can have up to 20 characters.",
+      "invite_invalid": "Type a valid email and choose a role.",
+      "coming_soon": "This connection is coming soon. Meanwhile, guests pay with their server.",
+      "failed": "Couldn't save. Try again."
+    }
+  },
+  "qr": {
+    "title": "QR codes",
+    "lead": "Design your table codes in your colors and print them ready to cut, fold or stick.",
+    "design": "Design",
+    "presets": "Start from a style",
+    "presetNames": {
+      "house": "House style",
+      "bold": "Wine and gold",
+      "clean": "Minimal",
+      "custom": "Custom"
+    },
+    "colors": "Colors",
+    "fg": "Code",
+    "bg": "Code background",
+    "frame": "Frame",
+    "frameInk": "Frame text",
+    "dots": "Dots",
+    "dotStyles": {
+      "square": "Square",
+      "rounded": "Rounded",
+      "dots": "Circles"
+    },
+    "eyes": "Corners",
+    "eyeStyles": {
+      "square": "Square",
+      "rounded": "Rounded",
+      "circle": "Circle"
+    },
+    "logo": "Center logo",
+    "logoModes": {
+      "none": "No logo",
+      "mono": "Initials",
+      "upload": "My logo"
+    },
+    "logoFile": "Upload logo (PNG or JPG, up to 2 MB)",
+    "message": "Frame message",
+    "messageEs": "In Spanish",
+    "messageEn": "In English",
+    "font": "Font",
+    "fonts": {
+      "menu": "My menu's",
+      "modern": "Modern"
+    },
+    "save": "Save design",
+    "saved": "Design saved",
+    "preview": "Preview · Table {label}",
+    "previewTable": "Preview table",
+    "checks": "Checks",
+    "contrastOk": "Good contrast ({ratio}:1).",
+    "contrastLow": "Low contrast ({ratio}:1). Darken the code or lighten the background: some phones won't read it.",
+    "inverted": "The code is lighter than its background. Many phones don't read inverted codes: use a dark code on a light background.",
+    "logoEc": "With a logo we use the highest error correction so the code still reads where the logo covers it.",
+    "testScan": "Before printing them all, test the code with two or three different phones.",
+    "tables": "Tables",
+    "selectAll": "All",
+    "select": "Choose Table {label}",
+    "rotate": "Change code",
+    "rotateConfirm": "Change the code for Table {label}? The printed code will stop working and you'll need to print a new one.",
+    "rotated": "New code for Table {label}. Print it and replace the old one.",
+    "version": "Version {n}",
+    "noTables": "You don't have tables yet. Create them in the initial setup.",
+    "download": "Download PDF",
+    "downloadFor": "{count, plural, one {For # table} other {For # tables}}",
+    "formats": {
+      "sheet": {
+        "title": "Sheet to cut",
+        "body": "Letter, six cards per sheet."
+      },
+      "tent": {
+        "title": "Folded table tent",
+        "body": "4×6 inches, folds on the table."
+      },
+      "sticker": {
+        "title": "Stickers",
+        "body": "3×3 inches, one per page."
+      }
+    },
+    "errors": {
+      "invalid": "Check the design fields.",
+      "logo_type": "The logo must be PNG or JPG.",
+      "logo_size": "The logo is over 2 MB.",
+      "failed": "Couldn't save. Try again."
+    },
+    "logoSaved": "Logo uploaded. Check the preview and save the design.",
+    "logoCurrent": "Your logo is uploaded. Upload another to replace it.",
+    "logoMissing": "Until you upload a logo, the code shows your initials."
+  },
+  "staff": {
+    "live": "Updates on its own",
+    "table": "Table {label}",
+    "orderNumber": "#{number}",
+    "minutes": "{n} min",
+    "source": {
+      "qr": "QR",
+      "staff": "Server"
+    },
+    "methods": {
+      "card": "Card",
+      "ath": "ATH Móvil",
+      "cash": "Cash"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "refunded": "Refunded",
+      "partially_refunded": "Partly refunded",
+      "failed": "Failed"
+    },
+    "kitchen": {
+      "title": "Kitchen",
+      "columns": {
+        "new": "New",
+        "in_kitchen": "In kitchen",
+        "ready": "Ready"
+      },
+      "empty": "No orders",
+      "advance": {
+        "new": "Start",
+        "in_kitchen": "Mark ready",
+        "ready": "Served"
+      },
+      "sound": "Order sound",
+      "soundHint": "Tap the screen once so the browser allows sound.",
+      "autoprint": "Print automatically",
+      "reprint": "Reprint #{number}",
+      "printed": "Ticket #{number} sent to the printer.",
+      "printFailed": "Couldn't print #{number}: {error}",
+      "soldOut": "Sold-out dishes",
+      "soldOutHint": "Mark what ran out: guests see it right away.",
+      "soldOutLabel": "{name}: sold out",
+      "available": "Available",
+      "soldOutState": "Sold out",
+      "newOrder": "New order #{number} · Table {label}"
+    },
+    "service": {
+      "title": "Service",
+      "alerts": "Alerts",
+      "noAlerts": "No alerts. All good.",
+      "callServer": "Table {label} is calling the server",
+      "bringCheck": "Table {label} asks for the check",
+      "cash": "Table {label}: collect {total} in cash",
+      "ready": "Order #{number} ready · Table {label}",
+      "pos": "Table {label}: enter {total} on the POS",
+      "handled": "Handled",
+      "cashReceived": "Cash received",
+      "served": "Served",
+      "posClosed": "Closed on the POS",
+      "takeOrder": "Take an order",
+      "chooseTable": "Table",
+      "chooseTableHint": "Choose the table for the order.",
+      "ticketEmpty": "Tap dishes to add them to the order.",
+      "send": "Send to kitchen",
+      "sent": "Order #{number} sent to the kitchen.",
+      "remove": "Remove one {name}",
+      "openOrders": "Today's orders",
+      "noOrders": "No orders yet today. They arrive on their own when a guest scans their table's QR; you can also take them in Take order.",
+      "void": "Void",
+      "voidLine": "Void {name}",
+      "voidPrompt": "Why are you voiding “{name}”? (required)",
+      "voided": "Voided",
+      "payments": "Today's payments",
+      "noPayments": "No payments yet today. Card and ATH Móvil payments show up on their own; cash once you confirm it.",
+      "refund": "Refund",
+      "refundAmount": "How much are you refunding? (dollars, up to {max})",
+      "refundReason": "Reason for the refund (required)",
+      "refunded": "Refund recorded.",
+      "managerOnly": "Voids and refunds are for managers and owners.",
+      "done": "Done.",
+      "showAll": "Show all ({n})",
+      "showLess": "Show fewer"
+    },
+    "tables": {
+      "title": "Tables",
+      "free": "Free",
+      "open": "Ordering",
+      "paying": "Paying",
+      "attention": "Needs attention",
+      "legend": "Tap a busy table to see it in Service."
+    },
+    "errors": {
+      "failed": "Couldn't save. Try again.",
+      "forbidden": "Your role can't do this.",
+      "reason": "Type a reason of at least 3 letters.",
+      "amount": "Type the amount in dollars, for example 2.50.",
+      "too_much": "The refund is more than what was paid.",
+      "coming_soon": "Coming soon.",
+      "validation": "Check the order: something changed on the menu.",
+      "item_unavailable": "A dish in the order sold out.",
+      "tab_closed": "That table is paying and takes no new orders.",
+      "invalid": "Something doesn't add up. Reload the page."
+    },
+    "strip": {
+      "title": "Today's orders",
+      "filter": "Filter by status",
+      "all": "All",
+      "new": "New",
+      "in_kitchen": "In kitchen",
+      "ready": "Ready",
+      "served": "Served",
+      "empty": "No orders with this status right now.",
+      "dishes": "{n, plural, one {# dish} other {# dishes}}"
+    },
+    "cash": {
+      "title": "Collect cash",
+      "doneTitle": "Payment received",
+      "table": "Table {label}",
+      "close": "Close",
+      "due": "Amount due",
+      "exact": "Exact",
+      "received": "Received",
+      "change": "Change",
+      "short": "Short",
+      "erase": "Erase",
+      "confirm": "Confirm payment",
+      "methodLabel": "Payment method",
+      "method": "Cash",
+      "total": "Total",
+      "print": "Print receipt",
+      "back": "Back to Service"
+    },
+    "take": {
+      "lead": "Full screen with photos, categories and the check's IVU. Best on a tablet.",
+      "open": "Open Take order",
+      "back": "Back to Service",
+      "dishes": "Dishes",
+      "sections": "Categories",
+      "all": "All",
+      "add": "Add {name}",
+      "less": "One less {name}",
+      "ticket": "Table order",
+      "subtotal": "Subtotal",
+      "ivuState": "State IVU ({rate}%)",
+      "ivuMunicipal": "Municipal IVU ({rate}%)",
+      "total": "Total",
+      "pickTable": "Pick the table before sending."
+    },
+    "floor": {
+      "mainArea": "Main room",
+      "areas": "Areas",
+      "plan": "Floor plan: {area}",
+      "legend": "Legend",
+      "table": "Table {label}",
+      "seats": "{n} seats",
+      "move": "Table {label}: drag or use the arrow keys to move it",
+      "states": {
+        "free": "Free",
+        "open": "Ordering",
+        "paying": "Paying",
+        "attention": "Needs attention"
+      },
+      "editTitle": "Floor plan",
+      "editLead": "Drag each table into place, or select it and move it with the arrow keys (Shift for big steps). Type a new area to add another tab.",
+      "area": "Area",
+      "shape": "Shape",
+      "shapes": {
+        "square": "Square",
+        "round": "Round",
+        "long": "Long"
+      },
+      "seatsLabel": "Seats",
+      "save": "Save floor plan",
+      "phoneNote": "Open Settings on a tablet or computer to move tables."
+    },
+    "reason": {
+      "label": "Reason",
+      "hint": "Required. It's kept in the audit log.",
+      "cancel": "Cancel",
+      "void": "Void",
+      "refund": "Refund"
+    }
+  },
+  "home": {
+    "title": "Today",
+    "sales": "Today's sales",
+    "up": "{pct} more than last {day} at this hour",
+    "down": "{pct} less than last {day} at this hour",
+    "noComparison": "No sales last {day} at this hour",
+    "openTables": "Open tables",
+    "openSub": "of {total} tables · See tables",
+    "tips": "Tips",
+    "refunds": "Refunds: {amount}",
+    "chartTitle": "Today vs. last {day}",
+    "chartNote": "Running sales by hour. {date} closed at {amount}.",
+    "today": "Today",
+    "lastWeek": "Last {day}",
+    "noSalesYet": "No sales yet today. They show up here as soon as the first payment is confirmed.",
+    "methods": "Payments by method",
+    "paymentsCount": "{n, plural, =0 {No payments yet} one {# payment} other {# payments}}",
+    "ivu": "Today's IVU",
+    "ivuState": "State",
+    "ivuMunicipal": "Municipal",
+    "ivuTotal": "Total",
+    "reportsLink": "See reports",
+    "exportLink": "IVU summary",
+    "alerts": {
+      "title": "Needs attention",
+      "none": "All clear. Nothing pending.",
+      "call": "Table {label} is calling the server",
+      "check": "Table {label} asked for the check",
+      "cash": "Table {label}: collect {amount} in cash",
+      "pos": "Table {label}: close {amount} on the POS",
+      "printer": "A {kind} print failed at {time}",
+      "kitchen": "kitchen",
+      "receipt": "receipt",
+      "go": "Go to Service"
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "showTable": "Show table",
+    "showChart": "Show chart",
+    "empty": "No data in this period. Try a longer period.",
+    "range": {
+      "label": "Period",
+      "7d": "7 days",
+      "30d": "30 days",
+      "90d": "90 days",
+      "month": "This month",
+      "lastMonth": "Last month",
+      "from": "From",
+      "to": "To",
+      "apply": "Show",
+      "summary": "{from} – {to} · {days, plural, one {# day} other {# days}}"
+    },
+    "kpi": {
+      "sales": "Sales",
+      "salesNote": "Before IVU and tips",
+      "orders": "Orders",
+      "covers": "{n} guests",
+      "perTable": "Average per table",
+      "perGuest": "{amount} per guest",
+      "tip": "Average tip",
+      "refunds": "Refunds: {amount}"
+    },
+    "heat": {
+      "title": "Sales by hour and day",
+      "note": "Average sales in each hour, by day of the week.",
+      "low": "Less",
+      "high": "More",
+      "day": "Day"
+    },
+    "daily": {
+      "title": "Daily sales vs. the week before",
+      "note": "Each day next to the same weekday one week earlier.",
+      "current": "This period",
+      "lastWeek": "Week before",
+      "date": "Date"
+    },
+    "tables": {
+      "title": "Guests and average per table",
+      "note": "Checks paid in the period, by table.",
+      "table": "Table",
+      "label": "Table {label}",
+      "tabs": "Checks",
+      "covers": "Guests",
+      "sales": "Sales",
+      "perTable": "Per table",
+      "perGuest": "Per guest",
+      "sub": "{covers} guests · {perGuest} each"
+    },
+    "mix": {
+      "title": "Payment methods and tips",
+      "tipNote": "Average tip on card and ATH Móvil: {pct}. Cash tips don't go through Mezza.",
+      "method": "Method",
+      "amount": "Sales",
+      "count": "Payments",
+      "share": "Share",
+      "tip": "Tip",
+      "tipValue": "Tip {pct}",
+      "noTip": "Tips outside Mezza"
+    },
+    "ivu": {
+      "title": "IVU collected by month",
+      "note": "State and municipal, from confirmed payments.",
+      "state": "State IVU",
+      "municipal": "Municipal IVU",
+      "month": "Month",
+      "taxable": "Taxable sales",
+      "total": "Total IVU"
+    },
+    "sellers": {
+      "title": "Best and worst sellers",
+      "rankBy": "Rank by",
+      "byUnits": "Units",
+      "byRevenue": "Sales",
+      "best": "Best sellers",
+      "worst": "Worst sellers",
+      "list": "List",
+      "dish": "Dish",
+      "units": "Units",
+      "revenue": "Sales",
+      "unitsValue": "{n, plural, one {# unit} other {# units}}"
+    },
+    "modifiers": {
+      "title": "Dishes ordered with add-ons",
+      "note": "Share of units ordered with at least one add-on or modifier, on dishes that offer them.",
+      "dish": "Dish",
+      "units": "Units",
+      "rate": "With add-ons"
+    },
+    "soldOut": {
+      "title": "Sold out and lost sales (estimate)",
+      "note": "An estimate: the units the dish usually sells at that hour and weekday (last 4 weeks), times the hours it was sold out.",
+      "dish": "Dish",
+      "times": "Times",
+      "hours": "Hours sold out",
+      "lostUnits": "Lost units (est.)",
+      "lostRevenue": "Lost sales (est.)",
+      "total": "Estimated lost sales: <b>{amount}</b>",
+      "lostValue": "~{amount}",
+      "hoursValue": "{n} h sold out",
+      "none": "No dish sold out in this period."
+    },
+    "qr": {
+      "title": "QR adoption",
+      "note": "Orders and payments made from the guest's phone.",
+      "orders": "Orders from guest phones",
+      "payments": "Payments from guest phones (card and ATH Móvil)",
+      "ordersSub": "{qr} of {total} orders",
+      "metric": "Measure",
+      "value": "Value"
+    },
+    "language": {
+      "title": "Menu language",
+      "note": "On orders placed by QR.",
+      "language": "Language",
+      "es": "Spanish",
+      "en": "English",
+      "orders": "Orders",
+      "share": "Share"
+    }
+  },
+  "exports": {
+    "title": "Export",
+    "month": "Month",
+    "pdf": "Download PDF",
+    "csv": "Download CSV",
+    "xlsx": "Download Excel",
+    "ivu": {
+      "title": "IVU summary",
+      "description": "Taxable sales, state and municipal IVU, and refunds for the month, by day and in total.",
+      "docTitle": "Resumen de IVU para preparar la planilla en SURI",
+      "disclaimer": "This summary helps you prepare the return. It is not an official Hacienda form and does not replace the return in SURI.",
+      "restaurant": "Restaurant",
+      "period": "Period",
+      "generated": "Generated",
+      "date": "Date",
+      "taxable": "Taxable sales",
+      "state": "State IVU ({rate})",
+      "municipal": "Municipal IVU ({rate})",
+      "totalIvu": "Total IVU",
+      "refunds": "Refunds",
+      "total": "Total",
+      "page": "Page"
+    },
+    "sales": {
+      "title": "Sales",
+      "description": "Orders, dishes, payments, refunds and tips for the month, with dates and the staff behind each one. The Excel file has one sheet per type.",
+      "docTitle": "{restaurant} sales · {period}",
+      "sheets": {
+        "orders": "Orders",
+        "lines": "Dishes",
+        "payments": "Payments",
+        "refunds": "Refunds"
+      },
+      "cols": {
+        "orders": ["Order", "Date", "Time", "Table", "Source", "Language", "Status", "Taken by", "Subtotal"],
+        "lines": [
+          "Order",
+          "Date",
+          "Time",
+          "Dish",
+          "Quantity",
+          "Price",
+          "Total",
+          "Add-ons",
+          "Note",
+          "Voided",
+          "Reason",
+          "Voided by"
+        ],
+        "payments": [
+          "Date",
+          "Time",
+          "Table",
+          "Method",
+          "Subtotal",
+          "State IVU",
+          "Municipal IVU",
+          "Tip",
+          "Total",
+          "Status",
+          "Reference",
+          "Confirmed by"
+        ],
+        "refunds": ["Date", "Time", "Method", "Payment date", "Amount", "Reason", "Approved by"]
+      },
+      "source": {
+        "qr": "QR",
+        "staff": "Staff"
+      },
+      "method": {
+        "card": "Card",
+        "ath": "ATH Móvil",
+        "cash": "Cash"
+      },
+      "status": {
+        "new": "New",
+        "in_kitchen": "In kitchen",
+        "ready": "Ready",
+        "served": "Served",
+        "void": "Voided",
+        "paid": "Paid",
+        "partially_refunded": "Partly refunded",
+        "refunded": "Refunded"
+      },
+      "yes": "Yes"
+    },
+    "past": {
+      "title": "Past exports",
+      "none": "Nothing exported yet. Every PDF and spreadsheet you download is kept here.",
+      "download": "Download"
+    },
+    "kinds": {
+      "ivu_monthly_pdf": "IVU summary (PDF)",
+      "ivu_monthly_csv": "IVU summary (CSV)",
+      "sales_csv": "Sales (CSV)",
+      "sales_xlsx": "Sales (Excel)",
+      "qr_pdf": "QR codes (PDF)"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "managerNote": "As a manager you can edit printers. The owner changes the rest.",
+    "soon": "Coming soon",
+    "done": {
+      "saved": "Saved.",
+      "approved": "Access approved.",
+      "ended": "Access ended."
+    },
+    "errors": {
+      "validation": "Check the highlighted fields.",
+      "forbidden": "You don't have permission for this change.",
+      "failed": "Couldn't save. Try again.",
+      "invite_failed": "Couldn't send the invitation. Check the email.",
+      "slug_taken": "Another restaurant already uses that link.",
+      "ip_required": "Network printers need an IP address.",
+      "cover_type": "The cover must be PNG, JPG or WebP.",
+      "cover_size": "The cover must be under 4 MB."
+    },
+    "roles": {
+      "owner": "Owner",
+      "manager": "Manager",
+      "server": "Server",
+      "kitchen": "Kitchen"
+    },
+    "team": {
+      "title": "Team",
+      "lead": "Invite your team by email and choose what each person sees.",
+      "members": "Members",
+      "you": "you",
+      "inactive": "Inactive",
+      "roleFor": "Role for {name}",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "invite": "Invite",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "send": "Send invitation",
+      "sending": "Sending…",
+      "done": {
+        "invited": "Invitation sent.",
+        "added": "They already had an account: added to the team."
+      },
+      "errors": {
+        "validation": "Check the highlighted fields.",
+        "forbidden": "You don't have permission for this change.",
+        "failed": "Couldn't save. Try again.",
+        "invite_failed": "Couldn't send the invitation. Check the email.",
+        "slug_taken": "Another restaurant already uses that link.",
+        "ip_required": "Network printers need an IP address.",
+        "cover_type": "The cover must be PNG, JPG or WebP.",
+        "cover_size": "The cover must be under 4 MB."
+      },
+      "pinTitle": "PIN for shared devices",
+      "pinSoon": "Coming soon: switch users with a PIN on the kitchen or register tablet."
+    },
+    "profile": {
+      "title": "Restaurant",
+      "name": "Name",
+      "slug": "Link",
+      "slugHint": "Used in your dashboard addresses: /app/your-link.",
+      "timezone": "Time zone",
+      "language": "Default language",
+      "menuStyle": "Default menu style",
+      "styles": {
+        "house": "House",
+        "original": "Original",
+        "simple": "Simple"
+      },
+      "save": "Save",
+      "ownerOnly": "Only the owner can change these."
+    },
+    "ivu": {
+      "title": "IVU",
+      "lead": "Percentages added to every check. In Puerto Rico: 10.5% state and 1% municipal.",
+      "state": "State IVU (%)",
+      "municipal": "Municipal IVU (%)",
+      "save": "Save rates"
+    },
+    "brand": {
+      "title": "Branding",
+      "lead": "How the menu header looks on your guests' phones.",
+      "useColor": "Use my restaurant's colour",
+      "color": "Colour",
+      "preview": "Header preview",
+      "lowContrast": "Text wouldn't be readable on that colour, so we'll use Mezza blue.",
+      "cover": "Cover photo",
+      "coverHint": "PNG, JPG or WebP, up to 4 MB. Shown above the menu.",
+      "removeCover": "Remove the cover",
+      "logoFromQr": "The logo is the one you uploaded in QR codes.",
+      "noLogo": "Upload your logo in QR codes and it will show here.",
+      "save": "Save branding"
+    },
+    "fiscal": {
+      "title": "Fiscal mode",
+      "sitBeside": "Beside your POS",
+      "sitBesideNote": "Each sale closes on your fiscal terminal; Mezza tells you the total to enter.",
+      "processor": "Fiscal processor",
+      "processorNote": "Mezza issues the fiscal receipt directly.",
+      "selected": "Active"
+    },
+    "payments": {
+      "title": "Payments",
+      "cash": "Cash",
+      "card": "Card",
+      "ath": "ATH Móvil",
+      "note": "Cards and ATH Móvil connect once they're available on your plan.",
+      "status": {
+        "connected": "Connected",
+        "pending": "Pending",
+        "not_connected": "Not connected",
+        "unavailable": "Unavailable"
+      }
+    },
+    "printers": {
+      "title": "Printers",
+      "new": "Add printer",
+      "none": "No printers. The kitchen prints from the browser.",
+      "name": "Name",
+      "model": "Model",
+      "protocol": "Connection",
+      "protocols": {
+        "browser": "Browser",
+        "epson_epos": "Epson ePOS (network)",
+        "star_webprnt": "Star WebPRNT (network)"
+      },
+      "ip": "IP address",
+      "ipHint": "Network printers only.",
+      "role": "Used for",
+      "roles": {
+        "kitchen": "Kitchen",
+        "receipt": "Receipts"
+      },
+      "width": "Paper width",
+      "widthValue": "{n} characters",
+      "active": "Active",
+      "inactive": "Inactive",
+      "add": "Add",
+      "save": "Save",
+      "edit": "Edit",
+      "close": "Close",
+      "test": "Print test",
+      "testLine": "Test print",
+      "testFooter": "If you can read this, the printer works.",
+      "testSent": "Test sent to {name}.",
+      "testSoon": "{name}: network printing is coming soon. Use the browser for now."
+    },
+    "support": {
+      "title": "Support access",
+      "lead": "Stratum can only enter your account if you approve its request, and only for a limited time.",
+      "none": "No requests.",
+      "requested": "Requested by {who} on {when}",
+      "until": "until {when}",
+      "active": "Active",
+      "pending": "Pending",
+      "approve": "Approve",
+      "decline": "Decline",
+      "end": "End now"
+    },
+    "plan": {
+      "title": "Plan",
+      "status": "Status",
+      "statuses": {
+        "trial": "Free trial",
+        "active": "Active",
+        "past_due": "Payment due",
+        "cancelled": "Cancelled"
+      },
+      "trialLeft": "{days, plural, one {# day} other {# days}} left of {total}.",
+      "percentOnly": "{card}% per card · {ath}% per ATH Móvil",
+      "billing": "Billing",
+      "billingNote": "Soon you'll add your payment method and see your invoices here.",
+      "soon": "Coming soon"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "lead": "How Mezza looks on this device: theme and screen language.",
+      "theme": "Theme",
+      "language": "Language"
+    }
+  },
+  "theme": {
+    "label": "Theme",
+    "auto": "Auto",
+    "light": "Light",
+    "dark": "Dark",
+    "current": "Theme: {mode}. Tap to change."
+  }
+}

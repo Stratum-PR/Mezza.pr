@@ -1,0 +1,18 @@
+/**
+ * Feature flags decide what the UI shows. Connector registries (src/connectors) decide which
+ * implementation runs. Every flag stays false until its connector passes the tests in CONNECTORS.md.
+ */
+export const flags = {
+  cardPayments: false,
+  athPayments: false,
+  splitBill: false,
+  sharedTab: false,
+  pinSwitch: false,
+  offlineMode: false,
+  networkPrinting: false,
+  aiImport: false,
+  fiscalProcessor: false,
+  smsReceipts: false,
+} as const satisfies Record<string, boolean>;
+
+export type FlagName = keyof typeof flags;

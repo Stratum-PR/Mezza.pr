@@ -1,0 +1,138 @@
+/* Marketing-site motion, in the FSQMS style. Everything is gated on html.motion-on, which
+   MotionRoot adds only when the visitor hasn't asked for reduced motion. Without it the page is
+   static and shows every final state. */
+
+.motion-on [data-m] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.8s var(--ease-out),
+    transform 0.8s var(--ease-out);
+  transition-delay: calc(var(--d, 0) * 90ms);
+}
+.motion-on [data-m].m-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero headline: words rise out of a blur. */
+.motion-on .hero-title .w {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.45em);
+  filter: blur(8px);
+  animation: word-in 0.9s var(--ease-out) forwards;
+  animation-delay: calc(120ms + var(--wi) * 75ms);
+}
+@keyframes word-in {
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+.motion-on .hero-rise {
+  animation: rise-in 0.9s 0.55s var(--ease-out) both;
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+/* Hero order card: story-style progress tabs. */
+.order-tab-fill {
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.order-tab[data-done="true"] .order-tab-fill {
+  transform: scaleX(1);
+}
+.order-tab[aria-selected="true"] .order-tab-fill {
+  animation: tab-fill 4.5s linear forwards;
+}
+.order-card[data-paused="true"] .order-tab[aria-selected="true"] .order-tab-fill {
+  animation-play-state: paused;
+}
+@keyframes tab-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .order-tab[aria-selected="true"] .order-tab-fill {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+/* Signature: the printed menu becomes the phone menu. The default CSS is the final state (side by
+   side). .play runs one timeline: the page arrives grey, a scan finds the dishes, colour returns,
+   and the phone builds in beside it. */
+.motion-on .sig.play .sig-page {
+  animation: sig-page 2.8s var(--ease-out) both;
+}
+@keyframes sig-page {
+  0% {
+    opacity: 0;
+    transform: translateX(28%) scale(1.06);
+    filter: grayscale(1) contrast(0.9);
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(28%) scale(1.06);
+    filter: grayscale(1);
+  }
+  70% {
+    transform: translateX(28%) scale(1.06);
+    filter: grayscale(0.2);
+  }
+  100% {
+    transform: none;
+    filter: none;
+  }
+}
+.sig-scan {
+  opacity: 0;
+}
+.motion-on .sig.play .sig-scan {
+  animation: sig-scan 1.6s 0.7s ease-in-out both;
+}
+@keyframes sig-scan {
+  0% {
+    opacity: 0;
+    top: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    top: 100%;
+  }
+}
+.motion-on .sig.play .sig-arrow {
+  animation: rise-in 0.6s 2.2s var(--ease-out) both;
+}
+.motion-on .sig.play .sig-phone {
+  animation: sig-phone 1.1s 2.3s var(--ease-out) both;
+}
+@keyframes sig-phone {
+  0% {
+    opacity: 0;
+    transform: translateX(-32px) scale(0.96);
+    filter: saturate(0);
+  }
+  60% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}

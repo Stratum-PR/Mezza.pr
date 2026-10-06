@@ -1,0 +1,156 @@
+/* Restaurant menu styles. The house style takes the restaurant's palette and fonts through
+   --m-* variables and stays on paper in dark mode (it is the restaurant's look, not Mezza's). */
+
+.mz-house {
+  background-color: var(--m-paper);
+  color: #2a2620;
+  font-family: var(--m-body);
+  padding: 20px 16px 26px;
+  background-image: radial-gradient(rgba(120, 90, 40, 0.07) 1px, transparent 1px);
+  background-size: 6px 6px;
+}
+.mz-house-name {
+  font-family: var(--m-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 2.3rem;
+  line-height: 1;
+  text-align: center;
+  color: var(--m-ink);
+}
+.mz-house-tagline {
+  margin-top: 6px;
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--m-accent);
+}
+.mz-ornament {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 40px 2px;
+  color: var(--m-muted);
+  font-size: 0.7rem;
+}
+.mz-ornament i {
+  flex: 1;
+  height: 1px;
+  background: var(--m-muted);
+}
+.mz-house-section {
+  margin: 18px 0 4px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--m-accent);
+  scroll-margin-top: 8px;
+}
+.mz-house-item {
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--m-muted) 35%, transparent);
+  padding: 9px 0;
+  text-align: left;
+  color: inherit;
+}
+.mz-house-item:focus-visible {
+  outline: 3px solid var(--m-ink);
+  outline-offset: 2px;
+}
+.mz-house-thumb {
+  width: 50px;
+  height: 50px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid var(--m-muted);
+  overflow: hidden;
+}
+.mz-house-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.mz-house-dish {
+  font-family: var(--m-display);
+  font-size: 1.02rem;
+  font-weight: 600;
+}
+.mz-dots {
+  flex: 1;
+  min-width: 10px;
+  border-bottom: 2px dotted var(--m-muted);
+  transform: translateY(-4px);
+}
+.mz-house-price {
+  font-family: var(--m-display);
+  font-weight: 700;
+  color: var(--m-ink);
+}
+.mz-house-desc {
+  display: block;
+  font-family: var(--m-display);
+  font-style: italic;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  color: #6b5e4b;
+}
+.mz-house-item[aria-disabled="true"] {
+  opacity: 0.6;
+}
+.mz-house-item[aria-disabled="true"] .mz-house-dish {
+  text-decoration: line-through;
+}
+.mz-house-soldout {
+  font-family: var(--m-body);
+  font-style: normal;
+  font-weight: 700;
+  color: var(--m-accent);
+}
+.mz-house-footer {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  color: var(--m-accent);
+}
+
+/* Original: the printed page with tap zones. */
+.mz-hot {
+  position: absolute;
+  border-radius: 6px;
+}
+.mz-hot:hover,
+.mz-hot:focus-visible,
+.mz-zones .mz-hot {
+  background: rgba(38, 106, 178, 0.12);
+  outline: 1.5px dashed #266ab2;
+  outline-offset: 0;
+}
+.mz-stamp {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--m-paper) 55%, transparent);
+  pointer-events: none;
+}
+.mz-stamp span {
+  transform: rotate(-6deg);
+  border: 3px solid var(--m-accent);
+  border-radius: 4px;
+  padding: 0 0.6em;
+  font-family: var(--m-body);
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--m-accent);
+  font-size: clamp(9px, 3cqw, 18px);
+}

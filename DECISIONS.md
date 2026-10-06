@@ -1,0 +1,92 @@
+# Decisions
+
+One line each: the decision, why, and how to reverse it.
+
+- **Product name is Mezza (was "Mesa").** User request on 2026-10-05. Spanish "mesa" (table) labels stay: "Mesa 4", the "Mesas" screen, `/mesas`. Reverse: rename `Mezza`/`MEZZA_` back.
+- **Brand follows the Stratum FSQMS landing page.** User request. Tokens and type in `src/app/globals.css`; reference in `reference/mezza-prototype.html`. Reverse: swap the `:root` token values.
+- **Archivo instead of PP Telegraf or Urbanist.** PP Telegraf isn't licensed; Archivo (OFL) is what the FSQMS site self-hosts. Reverse: drop licensed PP Telegraf files in `public/fonts/` and point `src/lib/fonts.ts` at them.
+- **Archivo loads as two `next/font/local` faces (latin, latin-ext) with `unicode-range`.** Matches FSQMS's split files; only latin is preloaded. Reverse: use a single full-coverage file.
+- **No uppercase eyebrow labels**, unlike FSQMS. The Mezza brief forbids all-caps labels. Reverse: n/a (brief rule).
+- **Multiple root layouts:** `[locale]` (site), `app`, `r`, `admin`. Gives `/es`, `/en` prefixes only on the marketing site and lets `[locale]` be a root param. Reverse: a single `app/layout.tsx` with route groups.
+- **Locale resolution:** `next/root-params` `locale` on marketing pages; elsewhere (and in Server Actions/route handlers, where root params throw) the `NEXT_LOCALE` cookie; profile language comes in phase 3. next-intl deprecated `requestLocale` in favor of root params. Reverse: `src/i18n/request.ts`.
+- **One locale cookie (`NEXT_LOCALE`) for site and app.** A language picked on the site carries into the app. Reverse: give `/app` its own cookie name in `src/i18n/locales.ts`.
+- **`middleware` is `src/proxy.ts`.** Next 16 renamed the convention. It runs next-intl only on marketing paths; phase 3 adds the Supabase session refresh for the rest.
+- **SWC native cache is kept in `node_modules/.cache/swc`.** next-intl's plugin loads `@swc/core`, which refused `%LOCALAPPDATA%\swc` because of an extra write permission on that folder. Set in `next.config.ts`; reverse by deleting that block (or fix the folder's permissions).
+- **Dark mode tokens are Mezza's own** (FSQMS has no dark mode); the site texture switches to `screen` blend in dark mode. Reverse: edit the dark blocks in `globals.css`.
+- **Tailwind `dark:` variant is not used.** It only follows the OS, not `data-theme`; tokens flip instead. Reverse: add a `@custom-variant dark` that also matches `[data-theme=dark]`.
+- **Placeholder guided setup price $299** (`src/config/pricing.ts`). Awaiting Stratum's price.
+- **Supabase CLI is a dev dependency** (`pnpm exec supabase`), not a global install. Reverse: install globally and drop it from `devDependencies`.
+- **Git author for this repo is `j.rodriguez@stratumpr.com`** (repo-local), matching the FSQMS repo convention.
+- **Enum `member_role`** instead of a type literally named `role` (spec's `has_role(restaurant_id, roles role[])`). Clearer and avoids the keyword. Reverse: rename the type.
+- **`payments.amount_cents` is the pre-tax subtotal covered**; the charge is amount + IVU + tip. Matches `CreatePaymentInput`. Additions `paid_at` and `confirmed_by` let reports and cash confirmation work.
+- **IVU rounding: each component half-up to the cent** (`src/lib/money`). Awaits CPA confirmation.
+- **Changing `QR_TOKEN_SECRET` invalidates every printed QR code**; rotating one table bumps its `token_version`.
+- **Child rows reference parents by `(restaurant_id, id)`**, so a row can never point at another restaurant's data even through server code bugs.
+- **Kitchen and order-status changes go through definer functions** (`set_item_availability`, `set_order_status`, `void_order`, `record_refund`) that check the role, instead of broad UPDATE policies. Keeps kitchen from editing prices while letting it toggle sold-out.
+- **Price changes are audited by a trigger** (`menu_items_audit_price`), not just app code. Server code acting as service_role sets `mezza.actor_id` to name the user.
+- **Menu imports archive, never delete** (`archived_at` on sections and dishes), so reports keep past dishes. Matching is by Spanish name.
+- **`place_order` rejects new orders on a tab that is `paying`** (`tab_closed`). Reverse: allow and reopen the tab.
+- **Database tests build their own fixture** (two restaurants with a row in every tenant table) instead of relying on `pnpm seed`, so they are stable and roll back.
+- **`pnpm db:check` (PGlite + pgTAP shim)** while Docker isn't reachable from the agent's shell. `supabase test db` remains the source of truth.
+- **Seed emails use the reserved `.example` domain** and one local-only password, listed in README.
+- **Seed photos and the printed page are rasterized with system fonts** (resvg can't fetch Playfair/Josefin offline), so they approximate the menu fonts.
+- **Guest menu demo uses static data** (`src/components/menu/fixtures/cafe-lucia.ts`, same ids as the seed) until phase 7 reads the database. User asked to see the menu screens early.
+- **Local Supabase is isolated**: project id `mezza`, ports 55320–55329 (not the 543xx defaults), so it never shares containers, volumes or ports with other local Supabase projects (user request). Realtime, edge runtime, logs and pooler are skipped locally; pass 1 doesn't use them. Reverse: edit `supabase/config.toml`.
+- **Section access by role** (`SECTION_ROLES` in `src/lib/auth/staff.ts`): servers see Servicio and Mesas, kitchen sees Cocina, managers everything but Plan, owners everything. Non-members of a restaurant get a 404 (not a "forbidden"), so slugs don't leak membership.
+- **A basic login page ships in phase 3** (`/[locale]/entrar`, password + magic link) so route protection is testable; signup, reset and polish stay in phase 5.
+- **Magic-link requests always answer "sent"** unless rate-limited, so the form can't reveal which emails have accounts.
+- **Auth e2e tests run serially**: parallel sign-ins against `next dev` raced. Real users aren't affected.
+- **QR codes use error correction H with a logo or round dots, M otherwise.** Round dots at M failed the decode tests; H with dots passes every preset. Reverse: `renderQr` in `src/lib/qr/render.ts`.
+- **One QR shape list feeds every renderer** (preview, PDF, SVG string), so the printed code is exactly what was previewed and decode-tested.
+- **The fixture importer stores Café Lucía's printed page as SVG** in the restaurant's `menus` bucket for each import, so the review screen always has a page to show (uploaded PDFs aren't rasterized in pass 1).
+- **Publishing an import goes through the service role after the server checks the manager's role and that the upload belongs to the restaurant**; `p_reviewed_by` records who published (and names the actor in price-change audits).
+- **Editor sections reorder by drag or arrow buttons**; dishes keep their order within a section (reordering dishes is not in the brief).
+- **Home page claims that depend on later work**: "ATH Móvil", "split the bill" and "keeps working through outages" describe connectors that are stubs in pass 1 (flags off). Their real implementations must ship before public launch, or the copy changes.
+- **Hero card cycles one real order** (state changes, total computed with `src/lib/money`) instead of FSQMS-style industry stats, to avoid invented numbers. Owner dashboard and split examples are labelled sample data.
+- **Signature transition** is one CSS timeline started by IntersectionObserver; its resting state (and reduced motion) is the printed page and the phone side by side.
+- **QR PDFs use the built-in PDF fonts** (Times for "the menu's font", Helvetica for "modern"); registering the restaurant's Google fonts in react-pdf is left for later. Latin-1 covers Spanish.
+- **Uploaded QR logos are overlaid as an image** on the code's cleared centre (react-pdf SVG has no image element); error correction is H, as with the monogram.
+- **QR code rotation isn't written to `audit_log`**: the audit enum has no fitting action and the brief doesn't ask for it. The table's `token_version` records how many times it changed.
+- **E2E login helper waits for the destination page to hydrate** (`networkidle`) — under parallel load `next dev` was slow enough for clicks to land before React.
+- **Guest pages talk only to server actions and a token-scoped events route** (`/api/r/[restaurant]/t/[token]/events`); every call re-resolves the QR token. No Supabase client in the guest bundle.
+- **A guest's clientOrderId lives in localStorage until accepted**, so retries and double taps reuse it. If the first send succeeded but its answer was lost, a retry returns that same order even if the cart changed since.
+- **Paying moves the tab to `paying`**, which blocks new orders until the table closes; a failed payment start moves it back to `open`. Totals are recomputed on the server.
+- **Service requests open a tab if none is live**, so "Llamar al mesero" works before the first order.
+- **Cash confirmation also closes the tab's open requests**; "Cerrado en el POS" closes the tab (fiscal path A). The POS amount is subtotal + IVU (tips aren't part of the fiscal sale).
+- **"My tables" in Servicio shows every table**: there's no table-to-server assignment in pass 1.
+- **Voids and refunds use `window.prompt` for the reason and amount**; a dialog with proper fields can replace it.
+- **Local demo mode mocks card and ATH Móvil** (`.env.local`); `.env.example` keeps them as stubs.
+- **E2E runs serially with a local-only `resetTable` helper** (service role, refuses non-local URLs) because all tests share Café Lucía.
+- **Reports run as one SQL function, `report_summary`** (security invoker plus an explicit owner/manager check), so PostgREST's 1000-row limit never truncates a metric and RLS still applies. About 0.5 s for 90 days of seed data.
+- **Inicio reads today live from `payments`**, not from `daily_sales`, so it never waits for a refresh. Last week comes from `daily_sales`; the headline compares against last week _up to the same hour_.
+- **Summaries refresh the restaurant's local yesterday and today** after each confirmed payment or refund (`refreshRecentSales`). The earlier code used the UTC date, which put sales after 8 pm in San Juan on the next day. The cron route (every 30 min in `vercel.json`) is a safety net.
+- **"With extras" means an option from an optional group or a paid upgrade.** Required free choices (which milk, which bread) don't count, otherwise most dishes read 100%. Older orders whose options were replaced by a menu re-import fall back to the group name.
+- **QR adoption**: orders with source `qr`, and card + ATH Móvil payments as "payments from the phone" (in pass 1 staff only confirm cash). Menu language counts QR orders only; staff orders are always entered in Spanish.
+- **Tip % is card and ATH only**: cash tips don't pass through Mezza.
+- **Lost-sales estimate** follows the brief: per sold-out hour, the dish's average units in the same weekday-hour over the prior 4 weeks, times its current price. Labelled "estimado" everywhere it appears.
+- **Sales CSV is one file with a titled section per table** (orders, dishes, payments, refunds); the Excel file has one sheet each. Free text is defused against spreadsheet formulas. CSVs carry a UTF-8 BOM so Excel shows accents.
+- **IVU summary refunds are shown as an amount, not adjusted out of taxable sales**: how a refund affects the return is the filer's call. The summary says it isn't an official form.
+- **Chart palette validated with the dataviz checker** for light (on white) and dark (on `#161b42`): card blue, ATH orange, cash violet; IVU state blue and municipal rose. Olive for cash failed in dark mode (too close to orange for deuteranopia).
+- **Report labels normalise Intl's no-break spaces** to plain spaces: Node and Chrome ICU differ ("7 a. m."), which broke hydration.
+- **Login's `next` stays path-only** (no query strings), so deep links like `?range=90d` land on the page without the range.
+- **Guest page fills the screen** (`h-dvh`): the menu scrolls inside, so the header, the sticky section chips and the "Ver pedido" bar stay put. Before, the whole window scrolled and the cart bar sat at the end of the page.
+- **Quick "+" adds a dish only when it has no required choices**; otherwise it opens the dish sheet. It's on the Simple style; De la casa and Original keep the printed-menu look.
+- **Cart minus at 1 removes the line** (the button shows × and says "Quitar"), so there's no separate remove button.
+- **Not copied from the reference designs:** ratings, nutrition facts, favourites, notifications, greetings and a bottom tab bar. Guests at a table are anonymous and stay one visit.
+- **Invites use Supabase's admin invite** from server code; if the email already has an account (e.g. staff at another restaurant), the membership is added without a new invite. Managers add servers and kitchen staff; only the owner adds or changes managers. Nobody edits the owner's membership or their own.
+- **Ajustes is owner-only except printers** (RLS already limits restaurant updates to the owner; the brief keeps payment setup and plan from managers). Managers see the other sections read-only.
+- **Changing the restaurant's link (slug) moves the staff URLs, never the printed QR codes.** A guest code is resolved by its table token alone; if the link in the address is out of date, the guest page redirects to the current one. (Until 2026-10-05 a rename broke every printed code; found before deploying.)
+- **Marca**: the brand colour is used on the guest header and main buttons only when white or dark text on it reaches 4.5:1; otherwise Mezza navy (`readableOn` in `src/lib/brand.ts`). The logo is the one uploaded in the QR studio; the cover photo is new (`restaurants.cover_path`, photos bucket).
+- **"Imprimir prueba"** uses the printer's own driver: browser printers print a test ticket; network printers report "coming soon" until their drivers exist.
+- **Support access**: Stratum requests a 1–72 h grant from /admin (logged in `audit_log`); it's active only after the owner approves in Ajustes, and the owner can decline or end it early (also logged). Impersonation itself is a later pass.
+- **Admin health flags**: no orders in 3 days (only once setup is done), failed payments in 7 days, failed prints in 24 h, devices not seen in 24 h.
+- **Plan page reads `BillingProvider.current()`** (trial-only in pass 1) and the active model in `src/config/pricing.ts`; checkout shows "Próximamente".
+- **One nav element for every size**: a scrolling tab bar on phones, a grouped side menu from `lg` (1024 px) up, so tests and screen readers see the same links. Servicio's badge counts open requests plus cash to collect.
+- **Theme choice is a cookie (`mezza-theme`)** so the server renders the right theme with no flash; "Automático" clears it and follows the device. The guest page has a one-button toggle in its header; De la casa and Original keep the restaurant's paper colours either way.
+- **"Tomar orden" moved to its own screen** (`/servicio/orden`) instead of a panel inside Servicio: tablets get photo cards, category counts and the IVU split. Servicio links to it.
+- **Cash dialog**: quick amounts are the next round bills above the total (plus "Exacto"); confirming calls the same `confirmCash`. The receipt it prints is the browser ticket (not fiscal).
+- **Floor plan positions are percentages** of the area canvas (`pos_x`, `pos_y`), so the plan scales to any screen; unplaced tables get a tidy default grid. Areas are free text (`dining_tables.area` already existed). Phones keep the grid; the plan shows from `md` up.
+- **Dish tags are a fixed set** (vegetariano, sin gluten, picante) checked in the database, so they translate cleanly and can't drift into free text.
+- **Screenshot review signs in once per role** and captures every screen at 390 and 1280 px in light and dark (`pnpm screenshots`). Fixes from the review: "Tomar orden" moved to the top of Servicio on phones; the floor plan editor shows from tablet width up (phones get a note).
+- **E2E tests keep away from Mesa 12**: the QR studio test rotates its code, so other tests use tables whose codes never change.
+- **Printed QR codes are permanent addresses**: `<guest domain>/r/<slug>/t/<token>`. Never change `QR_TOKEN_SECRET` in production; moving domains is done with a path-preserving redirect from the old domain, which must stay registered while old codes are in use.
