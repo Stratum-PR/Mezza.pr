@@ -5,7 +5,7 @@
 export const flags = {
   cardPayments: false,
   athPayments: false,
-  splitBill: false,
+  splitBill: true,
   sharedTab: true,
   pinSwitch: false,
   offlineMode: false,

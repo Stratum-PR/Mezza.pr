@@ -168,12 +168,14 @@ export async function loadFloor(
 
   const payRows = pays.data ?? [];
   const paidByTab = new Map<string, number>();
+  const paidSubtotalByTab = new Map<string, number>();
   for (const p of payRows) {
     if (p.status === "paid" || p.status === "partially_refunded") {
       paidByTab.set(
         p.tab_id,
         (paidByTab.get(p.tab_id) ?? 0) + p.amount_cents + p.ivu_state_cents + p.ivu_municipal_cents,
       );
+      paidSubtotalByTab.set(p.tab_id, (paidSubtotalByTab.get(p.tab_id) ?? 0) + p.amount_cents);
     }
   }
 
@@ -211,9 +213,12 @@ export async function loadFloor(
         totalCents: p.amount_cents + p.ivu_state_cents + p.ivu_municipal_cents + p.tip_cents,
         createdAt: p.created_at,
       })),
-    // Fiscal path A: a paid table stays on the list until someone taps "Cerrado en el POS".
+    // Fiscal path A: a fully paid table stays on the list until someone taps "Cerrado en el POS".
+    // People pay in parts now, so the table waits until payments cover everything on it.
     posToClose: floorTabs
-      .filter((t) => !t.posClosedAt && paidByTab.has(t.id))
+      .filter(
+        (t) => !t.posClosedAt && paidByTab.has(t.id) && (paidSubtotalByTab.get(t.id) ?? 0) >= t.subtotalCents,
+      )
       .map((t) => ({ tabId: t.id, tableLabel: t.tableLabel, posTotalCents: paidByTab.get(t.id) ?? 0 })),
     nearLimit: floorTabs
       .filter((t) => t.status !== "closed" && t.subtotalCents * 5 >= t.qrCapCents * 4)

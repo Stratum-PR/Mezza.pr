@@ -28,7 +28,8 @@ create function pg_temp.place(key text, device integer, lines jsonb, name text d
 returns jsonb language sql as $$
   select public.place_guest_order('00000000-0000-4000-8000-00000000cafe', tbl::uuid, key, lines, 'es', pg_temp.device(device), name) $$;
 create function pg_temp.pid(device integer) returns uuid language sql as $$
-  select id from public.tab_participants where restaurant_id = '00000000-0000-4000-8000-00000000cafe' and device_hash = pg_temp.device(device) $$;
+  select p.id from public.tab_participants p join public.tabs t on t.id = p.tab_id
+  where t.table_id = '00000000-0000-4000-8000-0000000000e4' and t.status <> 'closed' and p.device_hash = pg_temp.device(device) $$;
 
 set local role service_role;
 

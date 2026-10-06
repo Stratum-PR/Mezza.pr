@@ -1112,6 +1112,9 @@ isOneToOne: false
 "attribute_staff_order":
 { Args: { "p_order_id": string,"p_participant_id"?: string }; Returns: undefined
                            },
+"cancel_pending_payment":
+{ Args: { "p_device_hash"?: string,"p_payment_id": string }; Returns: boolean
+                           },
 "cancel_split_plan":
 { Args: { "p_tab_id": string }; Returns: Json
                            },
@@ -1120,6 +1123,9 @@ isOneToOne: false
                            },
 "create_tab_payment":
 { Args: { "p_for"?: string,"p_idempotency_key": string,"p_method": Database["public"]['Enums']["payment_method"],"p_option": string,"p_parts"?: number,"p_payer"?: string,"p_tab_id": string,"p_tip_cents"?: number,"p_tip_percent"?: number }; Returns: Json
+                           },
+"ensure_participant":
+{ Args: { "p_device_hash": string,"p_tab_id": string }; Returns: string
                            },
 "has_role":
 { Args: { "p_restaurant_id": string,"p_roles": (Database["public"]['Enums']["member_role"])[] }; Returns: boolean
@@ -1185,6 +1191,9 @@ isOneToOne: false
 { Args: { "p_tab_id": string }; Returns: {
               "c_cents": number,"c_covered": number,"c_created": string,"c_item": string,"c_owner": string,"c_plan": string,"c_share": string
             }[]
+                           },
+"tab_checkout":
+{ Args: { "p_tab_id": string }; Returns: Json
                            },
 "void_order":
 { Args: { "p_order_id": string,"p_order_item_id"?: string,"p_reason": string }; Returns: undefined

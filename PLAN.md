@@ -150,11 +150,11 @@ UI flags: `splitBill` and `sharedTab` in `src/config/flags.ts`. Even/per-item sp
 
 ### Phase 4: Guest checkout
 
-- [ ] Phone checkout: Mis platos (default), Pagar el balance, Pagar por otra persona, and Dividir en partes iguales (start or join the table's plan)
-- [ ] One pending payment per phone, expires after 15 minutes (enforced in `create_tab_payment` since phase 3); staff can cancel it
-- [ ] Efectivo creates a pending payment that staff confirms; card and ATH use the same path when their connectors are real
-- [ ] `guestPay` no longer locks the whole table to "paying"; the table keeps ordering
-- [ ] Live balance on every phone; a receipt per payment listing what it covered
+- [x] Phone checkout: Mis platos (default when owed), Pagar por otra persona, Todo lo que falta en la mesa, and Dividir en partes iguales (start, join or cancel the table's plan; pay one or more shares); amounts previewed from `tab_checkout` (migration `20261006210000_guest_checkout.sql`), charged by `create_tab_payment`
+- [x] One pending payment per phone, expires after 15 minutes (enforced in `create_tab_payment` since phase 3); the phone or staff ("Cancelar" on the cash alert) can cancel it
+- [x] Efectivo creates a pending payment that staff confirms; card and ATH use the same path (the provider marks the same payment paid; a provider that can't take it releases it)
+- [x] `guestPay` no longer locks the whole table to "paying"; the table keeps ordering. A phone that pays without ordering becomes a person (`ensure_participant`)
+- [x] Live balance on every phone (who has paid, "Pago en proceso", what's left at the table); a receipt per payment listing what it covered (shares and even-split parts marked); "Cerrado en el POS" appears only when the table is fully paid
 
 ### Phase 5: Staff side
 

@@ -88,6 +88,24 @@ export async function confirmCash(slug: string, paymentId: string): Promise<Staf
   return { ok: true };
 }
 
+/** Staff cancel a pending payment a guest abandoned (e.g. asked for cash, then left); its charges are owed again. */
+export async function cancelPendingPayment(slug: string, paymentId: string): Promise<StaffResult> {
+  if (!uuid.safeParse(paymentId).success) return fail("invalid");
+  const ctx = await requireSection(slug, "service");
+  const db = createAdminClient();
+  const { data: payment } = await db
+    .from("payments")
+    .select("id")
+    .eq("id", paymentId)
+    .eq("restaurant_id", ctx.restaurant.id)
+    .maybeSingle();
+  if (!payment) return fail("invalid");
+  const { data, error } = await db.rpc("cancel_pending_payment", { p_payment_id: paymentId });
+  if (error || !data) return fail("failed");
+  refresh(slug);
+  return { ok: true };
+}
+
 /** "Ampliar límite": one more restaurant tab cap for this table's QR orders. Returns the new cap (number). */
 export async function raiseTabLimit(slug: string, tabId: string): Promise<StaffResult> {
   if (!uuid.safeParse(tabId).success) return fail("invalid");

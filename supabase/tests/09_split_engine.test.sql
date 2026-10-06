@@ -148,11 +148,16 @@ select pg_temp.settle(pg_temp.pay('t6', 'plan'), 'failed');
 select is(public.cancel_split_plan(pg_temp.tab('t6')) ->> 'status', 'accepted', 'a plan whose only share failed can be cancelled');
 select is(pg_temp.sub(pg_temp.pay('t6', 'balance')), 10000, 'its charges are free again');
 
--- A void inside a plan shrinks what is left of it.
+-- A void inside a plan shrinks what is left of it. Orders come in separate requests in real use, so
+-- give the second order a later time (inside this test both would share one timestamp).
 select pg_temp.staff_order('t7', 'Cena');
 select pg_temp.staff_order('t7', 'Mofongo');
+reset role;
+update public.order_items set created_at = now() + interval '1 second'
+where item_id = pg_temp.item('Mofongo') and order_id in (select id from public.orders where tab_id = pg_temp.tab('t7'));
+set local role service_role;
 select public.start_split_plan(pg_temp.tab('t7'), 2);
-select is(pg_temp.sub(pg_temp.settle(pg_temp.pay('t7', 'plan'))), 5700, 'first share of $113.99');
+select is(pg_temp.sub(pg_temp.settle(pg_temp.pay('t7', 'plan'))), 5700, 'first share of $113.99 (covers the dinner first)');
 reset role;
 update public.order_items set voided_at = now(), void_reason = 'devuelto'
 where item_id = pg_temp.item('Mofongo') and order_id in (select id from public.orders where tab_id = pg_temp.tab('t7'));

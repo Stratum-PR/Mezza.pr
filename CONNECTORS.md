@@ -103,7 +103,9 @@ Client-side registries can't read server env vars; the page passes the implement
   are computed by `create_tab_payment` in the database with the same rules.
 - **Contract:** parts always sum exactly to the tab's subtotal and IVU totals, none negative
   (property tests for every mode).
-- **Tests before `splitBill`:** the property test passes for every mode.
+- **Tests before `splitBill`:** the property test passes for every mode (done in pass 2 phase 3);
+  `splitBill` is on since phase 4 with the checkout tests (`supabase/tests/10_guest_checkout.test.sql`,
+  `tests/e2e/checkout.spec.ts`).
 - **Tests before `sharedTab`** (people at a table and locked shares of shared dishes, pass 2 phase 1;
   doesn't use the splitter): `supabase/tests/07_participants.test.sql` and the group-check property
   test (`src/lib/guest/group-check.test.ts`). Payment stays one check until `splitBill`.

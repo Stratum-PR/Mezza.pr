@@ -122,3 +122,9 @@ One line each: the decision, why, and how to reverse it.
 - **Pending payments: one per person, abandoned after 15 minutes**, enforced in the database when a payment is created; a failed or abandoned payment frees what it held.
 - **Tips**: a whole percent (0–100) of the payment's subtotal or 0–$1,000 in cents; not taxed.
 - **The splitter connector computes previews** for screens; the database computes real payments with the same rules, and is the authority.
+- **The "Pagar" screen previews amounts from `tab_checkout`; `create_tab_payment` charges.** The two use the same rules; the only difference is that the payment that clears the tab can absorb a cent of drift from failed payments, so the amount staff collect is always the one the payment row records.
+- **A phone that pays without ordering becomes a person at the table** (e.g. a parent paying for the kids), numbered like everyone else, so "one pending payment per phone" holds for every payer.
+- **The receipt opens on its own once per payment**, remembered on the phone; after that the guest stays on the menu and can keep ordering (people pay in parts now, so the table doesn't close after one payment).
+- **"Cerrado en el POS" waits until payments cover the whole table**; a partial payment no longer brings it up.
+- **A pending payment shows as "Pago en proceso"** in the table's check, not "Pagado", until staff confirm it.
+- **`splitBill` is on.** With it off, the phone offers only the whole balance (no locking).

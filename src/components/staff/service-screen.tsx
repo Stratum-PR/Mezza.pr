@@ -10,6 +10,7 @@ import { cn } from "@/lib/cn";
 import { formatCents } from "@/lib/money";
 import {
   advanceOrder,
+  cancelPendingPayment,
   closeOnPos,
   confirmCash,
   handleRequest,
@@ -159,9 +160,24 @@ export function ServiceScreen({
                   <b>
                     {t("service.cash", { label: p.tableLabel, total: formatCents(p.totalCents, locale) })}
                   </b>
-                  <Button size="sm" variant="ok" disabled={pending} onClick={() => setCashFor(p)}>
-                    {t("service.cashReceived")}
-                  </Button>
+                  <span className="flex flex-wrap justify-end gap-1.5">
+                    <Button
+                      size="sm"
+                      variant="soft"
+                      disabled={pending}
+                      onClick={() =>
+                        run(
+                          () => cancelPendingPayment(slug, p.id),
+                          () => t("service.cashCancelled"),
+                        )
+                      }
+                    >
+                      {t("service.cashCancel")}
+                    </Button>
+                    <Button size="sm" variant="ok" disabled={pending} onClick={() => setCashFor(p)}>
+                      {t("service.cashReceived")}
+                    </Button>
+                  </span>
                 </li>
               ))}
               {ready.map((o) => (

@@ -447,7 +447,48 @@
         "nothing_to_pay": "There's nothing to pay yet.",
         "unavailable": "That method isn't available right now. Choose another.",
         "coming_soon": "That method is coming soon. Pay with your server.",
-        "failed": "Couldn't process the payment. Try again or pay with your server."
+        "failed": "Couldn't process the payment. Try again or pay with your server.",
+        "pending_exists": "You already have a payment pending. Wait for your server or cancel it.",
+        "table_full": "The table is full. Ask your server to take your payment.",
+        "rate_limited": "That's a lot at once. Wait a minute and try again.",
+        "no_plan": "The split changed. Check it and try again."
+      },
+      "checkout": {
+        "optionsTitle": "What are you paying for?",
+        "mine": "My dishes",
+        "mineHint": "What you ordered and your share of what's shared.",
+        "mineNone": "You have nothing left to pay.",
+        "person": "Pay for someone else",
+        "personHint": "Choose who you're paying for.",
+        "personNone": "Nobody else has dishes left to pay.",
+        "balance": "Everything left at the table",
+        "balanceHint": "Includes everyone's and the table's.",
+        "plan": "Split evenly",
+        "planHint": "Split what's left among several people.",
+        "planCount": "How many ways?",
+        "planStart": "Split {n} ways",
+        "planActive": "The check is split {parts} ways. Shares left: {left}, {share} each.",
+        "planParts": "Shares you're paying",
+        "planCancel": "Cancel the split",
+        "planCancelled": "The split was cancelled.",
+        "tableLeft": "Left to pay at the table: {total}",
+        "tableDone": "The table is paid.",
+        "paid": "Paid",
+        "owes": "{total} left",
+        "cashPendingMine": "Your server is coming to collect {total} in cash.",
+        "cancelPayment": "Cancel this payment",
+        "paymentCancelled": "Payment cancelled.",
+        "someonePaying": "There are payments in progress at the table.",
+        "receiptPart": "share",
+        "receiptPlan": "{parts} of {of} equal shares",
+        "processing": "Payment in progress"
+      },
+      "planErrors": {
+        "plan_exists": "Someone already split the check {parts} ways. Check the shares left.",
+        "plan_started": "A share was already paid; the split can't be cancelled.",
+        "nothing_to_pay": "There's nothing left to split.",
+        "table_full": "The table is full. Ask your server to take your payment.",
+        "failed": "That didn't work. Try again."
       }
     },
     "quickAdd": "Add {name}",
@@ -936,7 +977,9 @@
       "afterPayment": "Paid, then ordered again",
       "nearLimit": "Table {label} is near its QR limit: {total} of {cap}",
       "raiseLimit": "Raise limit",
-      "limitRaised": "Table limit raised to {cap}."
+      "limitRaised": "Table limit raised to {cap}.",
+      "cashCancel": "Cancel",
+      "cashCancelled": "Payment cancelled; what it covered is owed again."
     },
     "tables": {
       "title": "Tables",

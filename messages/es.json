@@ -447,7 +447,48 @@
         "nothing_to_pay": "Todavía no hay nada que pagar.",
         "unavailable": "Ese método no está disponible ahora. Elige otro.",
         "coming_soon": "Ese método estará disponible pronto. Paga con tu mesero.",
-        "failed": "No se pudo procesar el pago. Inténtalo otra vez o paga con tu mesero."
+        "failed": "No se pudo procesar el pago. Inténtalo otra vez o paga con tu mesero.",
+        "pending_exists": "Ya tienes un pago pendiente. Espera a tu mesero o cancélalo.",
+        "table_full": "La mesa está llena. Pídele a tu mesero que te cobre.",
+        "rate_limited": "Vas muy rápido. Espera un minuto e inténtalo otra vez.",
+        "no_plan": "La división de la cuenta cambió. Revisa y vuelve a intentar."
+      },
+      "checkout": {
+        "optionsTitle": "¿Qué vas a pagar?",
+        "mine": "Mis platos",
+        "mineHint": "Lo que pediste y tu parte de lo compartido.",
+        "mineNone": "No tienes nada pendiente.",
+        "person": "Pagar por otra persona",
+        "personHint": "Elige a quién le pagas.",
+        "personNone": "Nadie más tiene platos pendientes.",
+        "balance": "Todo lo que falta en la mesa",
+        "balanceHint": "Incluye lo de todos y lo de la mesa.",
+        "plan": "Dividir en partes iguales",
+        "planHint": "Divide lo que falta entre varias personas.",
+        "planCount": "¿En cuántas partes?",
+        "planStart": "Dividir en {n}",
+        "planActive": "La cuenta se dividió en {parts}. Partes que quedan: {left}, de {share} cada una.",
+        "planParts": "Partes que pagas",
+        "planCancel": "Cancelar la división",
+        "planCancelled": "Se canceló la división.",
+        "tableLeft": "Falta por pagar en la mesa: {total}",
+        "tableDone": "La mesa está pagada.",
+        "paid": "Pagado",
+        "owes": "Falta {total}",
+        "cashPendingMine": "Tu mesero viene a cobrar {total} en efectivo.",
+        "cancelPayment": "Cancelar este pago",
+        "paymentCancelled": "Pago cancelado.",
+        "someonePaying": "Hay pagos en proceso en la mesa.",
+        "receiptPart": "parte",
+        "receiptPlan": "{parts} de {of} partes iguales",
+        "processing": "Pago en proceso"
+      },
+      "planErrors": {
+        "plan_exists": "Alguien ya dividió la cuenta en {parts}. Revisa las partes que quedan.",
+        "plan_started": "Ya se pagó una parte; la división no se puede cancelar.",
+        "nothing_to_pay": "No queda nada por dividir.",
+        "table_full": "La mesa está llena. Pídele a tu mesero que te cobre.",
+        "failed": "No se pudo. Inténtalo otra vez."
       }
     },
     "quickAdd": "Añadir {name}",
@@ -936,7 +977,9 @@
       "afterPayment": "Pagó y pidió de nuevo",
       "nearLimit": "Mesa {label} cerca de su límite por QR: {total} de {cap}",
       "raiseLimit": "Ampliar límite",
-      "limitRaised": "Límite de la mesa ampliado a {cap}."
+      "limitRaised": "Límite de la mesa ampliado a {cap}.",
+      "cashCancel": "Cancelar",
+      "cashCancelled": "Pago cancelado; lo que cubría queda pendiente."
     },
     "tables": {
       "title": "Mesas",

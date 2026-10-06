@@ -18,11 +18,27 @@ export async function insertPayment(
   const db = createAdminClient();
   const existing = await db
     .from("payments")
-    .select("id")
+    .select("id, status")
     .eq("restaurant_id", ctx.restaurantId)
     .eq("idempotency_key", input.idempotencyKey)
     .maybeSingle();
-  if (existing.data) return existing.data.id;
+  if (existing.data) {
+    // Split payments are created (pending, with what they cover) by create_tab_payment first; a
+    // provider that settles at once marks that same payment paid.
+    if (extra.status === "paid" && existing.data.status === "pending") {
+      const { error } = await db
+        .from("payments")
+        .update({
+          status: "paid",
+          paid_at: new Date().toISOString(),
+          provider_ref: extra.providerRef ?? null,
+        })
+        .eq("id", existing.data.id)
+        .eq("status", "pending");
+      if (error) throw new Error(`payment update failed: ${error.message}`);
+    }
+    return existing.data.id;
+  }
   const { data, error } = await db
     .from("payments")
     .insert({
