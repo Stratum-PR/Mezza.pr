@@ -16,7 +16,7 @@ export function UploadForm({ slug }: { slug: string }) {
           type="file"
           name="menu"
           required
-          accept="application/pdf,image/jpeg,image/png"
+          accept="image/jpeg,image/png"
           className="min-h-11 text-sm font-normal file:mr-3 file:min-h-11 file:rounded-btn file:border-0 file:bg-soft file:px-4 file:font-bold file:text-ink"
         />
         <span className="font-normal text-muted">{t("fileHint")}</span>

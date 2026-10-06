@@ -2,12 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { menuImporter } from "@/connectors/menu-import";
-import { isNotImplemented } from "@/connectors/shared";
+import { isNotImplemented, mocksAllowed } from "@/connectors/shared";
 import { ReviewScreen } from "@/components/menu-import/review-screen";
 import { ProcessingRefresher } from "@/components/menu-import/upload-form";
 import { ComingSoon, Panel } from "@/components/ui/surface";
 import { requireSection } from "@/lib/auth/staff";
 import { createClient } from "@/lib/db/server";
+import { readOriginalUpload } from "@/lib/menu/original";
+import { OriginalReview } from "@/components/menu-import/original-review";
 
 export default async function ImportReviewPage({
   params,
@@ -16,6 +18,48 @@ export default async function ImportReviewPage({
   const ctx = await requireSection(restaurant, "menu");
   const t = await getTranslations("importer");
   const tc = await getTranslations("common");
+
+  if (!mocksAllowed()) {
+    const db = await createClient();
+    let original: Awaited<ReturnType<typeof readOriginalUpload>>;
+    let src: string | null = null;
+    try {
+      original = await readOriginalUpload(db, ctx.restaurant.id, upload);
+      if (original) {
+        const signed = await db.storage.from("menus").createSignedUrl(original.storage_path, 3600);
+        if (signed.error) throw new Error("original image signing failed");
+        src = signed.data?.signedUrl ?? null;
+      }
+    } catch {
+      return (
+        <p role="alert" className="text-bad">
+          {t("errors.image_load")}
+        </p>
+      );
+    }
+    if (!original) notFound();
+    return (
+      <div>
+        <Link href={`/app/${restaurant}/menu`} className="text-sm font-bold text-blue">
+          {t("back")}
+        </Link>
+        <h1 className="my-4 text-[28px] font-extrabold">{t("imageReviewTitle")}</h1>
+        {src ? (
+          <OriginalReview
+            slug={restaurant}
+            uploadId={upload}
+            src={src}
+            width={original.width}
+            height={original.height}
+          />
+        ) : (
+          <p role="alert" className="text-bad">
+            {t("errors.image_load")}
+          </p>
+        )}
+      </div>
+    );
+  }
 
   let state: Awaited<ReturnType<ReturnType<typeof menuImporter>["result"]>>;
   try {

@@ -69,6 +69,7 @@ export interface MenuData {
   sections: MenuSection[];
   items: MenuItem[];
   pages: OriginalPage[];
+  originalError?: boolean;
   /** Ajustes → Marca: header colour (already contrast-checked), logo and cover photo. */
   brand?: { background: string; ink: string; logoSrc?: string; coverSrc?: string };
 }

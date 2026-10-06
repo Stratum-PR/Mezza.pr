@@ -945,6 +945,9 @@ isOneToOne: false
 "place_order":
 { Args: { "p_client_order_id": string,"p_created_by"?: string,"p_device_id"?: string,"p_guest_language"?: Database["public"]['Enums']["app_locale"],"p_lines": Json,"p_restaurant_id": string,"p_source": Database["public"]['Enums']["order_source"],"p_table_id": string }; Returns: Json
                            },
+"publish_original_menu_image":
+{ Args: { "p_upload_id": string,"p_width": number,"p_height": number,"p_reviewed_by": string }; Returns: string
+                           },
 "publish_menu_import":
 { Args: { "p_payload": Json,"p_reviewed_by"?: string,"p_upload_id": string }; Returns: Json
                            },

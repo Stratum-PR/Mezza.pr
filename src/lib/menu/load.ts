@@ -11,7 +11,13 @@ const SIGNED_URL_SECONDS = 60 * 60;
 
 async function signed(db: Db, bucket: "photos" | "menus", paths: string[]): Promise<Map<string, string>> {
   if (paths.length === 0) return new Map();
-  const { data } = await db.storage.from(bucket).createSignedUrls(paths, SIGNED_URL_SECONDS);
+  const { data, error } = await db.storage.from(bucket).createSignedUrls(paths, SIGNED_URL_SECONDS);
+  if (
+    bucket === "menus" &&
+    (error || paths.some((path) => !data?.some((d) => d.path === path && d.signedUrl && !d.error)))
+  ) {
+    throw new Error("Original menu image could not be loaded");
+  }
   return new Map((data ?? []).flatMap((d) => (d.path && d.signedUrl ? [[d.path, d.signedUrl]] : [])));
 }
 
@@ -58,6 +64,7 @@ export async function loadMenu(db: Db, restaurantId: string): Promise<EditorMenu
     db.from("original_menu_pages").select("*").eq("restaurant_id", restaurantId).order("page_number"),
     db.from("item_hotspots").select("*").eq("restaurant_id", restaurantId),
   ]);
+  let originalError = Boolean(pages.error || hotspots.error);
   if (restaurant.error) throw new Error(`menu load failed: ${restaurant.error.message}`);
 
   const groupList: ModifierGroup[] = (groups.data ?? []).map((g) => ({
@@ -78,11 +85,19 @@ export async function loadMenu(db: Db, restaurantId: string): Promise<EditorMenu
     "photos",
     itemRows.flatMap((i) => (i.photo_path ? [i.photo_path] : [])),
   );
-  const pageUrls = await signed(
-    db,
-    "menus",
-    (pages.data ?? []).map((p) => p.image_path),
-  );
+  let pageUrls = new Map<string, string>();
+  if (!originalError) {
+    try {
+      pageUrls = await signed(
+        db,
+        "menus",
+        (pages.data ?? []).map((p) => p.image_path),
+      );
+    } catch {
+      originalError = true;
+    }
+  }
+  if (originalError) console.error("Original menu pages or signed images could not be loaded");
 
   const menuItems: MenuItem[] = itemRows.map((i) => ({
     id: i.id,
@@ -114,6 +129,7 @@ export async function loadMenu(db: Db, restaurantId: string): Promise<EditorMenu
   const palette = (theme.data?.palette ?? {}) as Partial<MenuData["theme"]["palette"]>;
   return {
     restaurantId,
+    originalError,
     restaurantName: restaurant.data.name,
     defaultStyle: restaurant.data.default_menu_style,
     brand: {

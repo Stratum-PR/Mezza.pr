@@ -3,13 +3,15 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { isNotImplemented } from "@/connectors/shared";
+import { isNotImplemented, mocksAllowed } from "@/connectors/shared";
 import { menuImporter } from "@/connectors/menu-import";
 import { requireSection } from "@/lib/auth/staff";
 import { createAdminClient } from "@/lib/db/admin";
 import type { Json } from "@/lib/db/types";
 import { createClient } from "@/lib/db/server";
 import { isMenuFont } from "@/config/menu-fonts";
+import { menuImageSize } from "@/lib/menu/image";
+import { readOriginalUpload } from "@/lib/menu/original";
 
 export type ImportState = { error?: "file_type" | "file_size" | "coming_soon" | "failed" };
 
@@ -21,11 +23,34 @@ export async function startImport(slug: string, _: ImportState, form: FormData):
   const file = form.get("menu");
   if (!(file instanceof File) || !TYPES[file.type]) return { error: "file_type" };
   if (file.size > MAX_BYTES) return { error: "file_size" };
+  if (!mocksAllowed()) {
+    if (file.type === "application/pdf") return { error: "coming_soon" };
+    try {
+      await menuImageSize(Buffer.from(await file.arrayBuffer()), file.type);
+    } catch {
+      return { error: "file_type" };
+    }
+  }
 
   const path = `${ctx.restaurant.id}/uploads/${crypto.randomUUID()}.${TYPES[file.type]}`;
   const db = await createClient(); // the manager's own session; storage RLS checks the role
   const stored = await db.storage.from("menus").upload(path, file, { contentType: file.type });
   if (stored.error) return { error: "failed" };
+
+  if (!mocksAllowed()) {
+    const { data, error } = await db
+      .from("menu_uploads")
+      .insert({
+        restaurant_id: ctx.restaurant.id,
+        storage_path: path,
+        mime_type: file.type,
+        status: "review",
+      })
+      .select("id")
+      .single();
+    if (error) return { error: "failed" };
+    redirect(`/app/${slug}/menu/importar/${data.id}`);
+  }
 
   let uploadId: string;
   try {
@@ -98,6 +123,7 @@ export async function publishImport(
   payload: PublishPayload,
 ): Promise<{ ok: false; error: "invalid" | "failed" } | never> {
   const ctx = await requireSection(slug, "menu");
+  if (!mocksAllowed()) return { ok: false, error: "failed" };
   const parsed = payloadSchema.safeParse(payload);
   if (!z.uuid().safeParse(uploadId).success || !parsed.success) return { ok: false, error: "invalid" };
 
@@ -118,5 +144,28 @@ export async function publishImport(
   });
   if (error) return { ok: false, error: "failed" };
   revalidatePath(`/app/${slug}/menu`);
+  redirect(`/app/${slug}/menu?importado=1`);
+}
+
+/** Image-only publication never calls the dish-replacing import RPC. */
+export async function publishOriginalImage(slug: string, uploadId: string): Promise<ImportState> {
+  const ctx = await requireSection(slug, "menu");
+  if (!z.uuid().safeParse(uploadId).success) return { error: "failed" };
+  try {
+    const db = createAdminClient();
+    const upload = await readOriginalUpload(db, ctx.restaurant.id, uploadId);
+    if (!upload) return { error: "failed" };
+    const { error } = await db.rpc("publish_original_menu_image", {
+      p_upload_id: upload.id,
+      p_width: upload.width,
+      p_height: upload.height,
+      p_reviewed_by: ctx.userId,
+    });
+    if (error) return { error: "failed" };
+  } catch {
+    return { error: "failed" };
+  }
+  revalidatePath(`/app/${slug}/menu`);
+  revalidatePath(`/r/${slug}/t/[token]`, "page");
   redirect(`/app/${slug}/menu?importado=1`);
 }

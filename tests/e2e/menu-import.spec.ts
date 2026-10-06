@@ -12,12 +12,12 @@ test("a fixture import is reviewed, flagged prices block publishing, and publish
   await expect(page).toHaveURL(/\/menu\/importar$/);
   await page.waitForLoadState("networkidle");
 
-  await page.getByLabel("Menú en PDF o foto").setInputFiles({
+  await page.getByLabel("Imagen del menú").setInputFiles({
     name: "menu-cafe-lucia.pdf",
     mimeType: "application/pdf",
     buffer: Buffer.from("%PDF-1.4\n% Mezza test menu\n%%EOF\n"),
   });
-  await page.getByRole("button", { name: "Subir y leer menú" }).click();
+  await page.getByRole("button", { name: "Subir imagen del menú" }).click();
   await expect(page).toHaveURL(/\/menu\/importar\/[0-9a-f-]{36}$/, { timeout: 30_000 });
 
   // The fixture importer takes a few seconds; the page refreshes itself.

@@ -5,13 +5,14 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { menuImporter } from "@/connectors/menu-import";
 import { payments } from "@/connectors/payments";
-import { isNotImplemented } from "@/connectors/shared";
+import { isNotImplemented, mocksAllowed } from "@/connectors/shared";
 import { requireStaff, type StaffContext } from "@/lib/auth/staff";
 import { createAdminClient } from "@/lib/db/admin";
 import { createClient } from "@/lib/db/server";
 import { deriveQrToken, hashQrToken } from "@/lib/qr/token";
 import { serverEnv } from "@/lib/server-env";
 import { QR_PRESETS } from "@/config/qr-presets";
+import { menuImageSize } from "@/lib/menu/image";
 
 export type WizardState = { status: "idle" | "error" | "ok"; error?: string; message?: string };
 
@@ -45,6 +46,15 @@ export async function wizardUploadMenu(slug: string, _: WizardState, form: FormD
   const file = form.get("menu");
   if (!(file instanceof File) || !MENU_TYPES[file.type]) return { status: "error", error: "file_type" };
   if (file.size > 15 * 1024 * 1024) return { status: "error", error: "file_size" };
+  let imageSize: { width: number; height: number } | undefined;
+  if (!mocksAllowed()) {
+    if (file.type === "application/pdf") return { status: "error", error: "pdf_unsupported" };
+    try {
+      imageSize = await menuImageSize(Buffer.from(await file.arrayBuffer()), file.type);
+    } catch {
+      return { status: "error", error: "file_type" };
+    }
+  }
   const path = `${ctx.restaurant.id}/uploads/${crypto.randomUUID()}.${MENU_TYPES[file.type]}`;
   const stored = await (
     await createClient()
@@ -52,6 +62,29 @@ export async function wizardUploadMenu(slug: string, _: WizardState, form: FormD
     .from("menus")
     .upload(path, file, { contentType: file.type });
   if (stored.error) return { status: "error", error: "failed" };
+  if (imageSize) {
+    const db = createAdminClient();
+    const { data, error } = await db
+      .from("menu_uploads")
+      .insert({
+        restaurant_id: ctx.restaurant.id,
+        storage_path: path,
+        mime_type: file.type,
+        status: "review",
+      })
+      .select("id")
+      .single();
+    if (error) return { status: "error", error: "failed" };
+    const published = await db.rpc("publish_original_menu_image", {
+      p_upload_id: data.id,
+      p_width: imageSize.width,
+      p_height: imageSize.height,
+      p_reviewed_by: ctx.userId,
+    });
+    if (published.error) return { status: "error", error: "failed" };
+    await advance(ctx, 3);
+    go(slug, 3);
+  }
   try {
     // The importer keeps working while the owner continues; review waits on the menu import screen.
     await menuImporter().start(

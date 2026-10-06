@@ -453,7 +453,10 @@
       "vegetariano": "Vegetariano",
       "sin_gluten": "Sin gluten",
       "picante": "Picante"
-    }
+    },
+    "originalEmpty": "Todavía no se ha publicado una imagen del menú original.",
+    "originalImageHint": "Menú impreso. Elige platos en la vista Simple o de la Casa para ordenar.",
+    "originalLoadError": "No se pudo cargar la imagen del menú original. Usa la vista Simple o de la Casa."
   },
   "ticket": {
     "kitchen": "COCINA",
@@ -602,10 +605,10 @@
   },
   "importer": {
     "title": "Importar menú",
-    "lead": "Sube tu menú impreso en PDF o una foto. Mezza lo convierte en platos, precios y opciones, y tú revisas antes de publicar.",
-    "file": "Menú en PDF o foto",
-    "fileHint": "PDF, JPG o PNG, hasta 15 MB.",
-    "upload": "Subir y leer menú",
+    "lead": "Sube una imagen JPG o PNG de tu menú impreso. Publica tu imagen en Original; tus platos y precios existentes se conservan. La lectura automática de platos y la importación de PDF estarán disponibles próximamente.",
+    "file": "Imagen del menú",
+    "fileHint": "JPG o PNG, hasta 15 MB. La importación de PDF estará disponible próximamente.",
+    "upload": "Subir imagen del menú",
     "back": "Volver al menú",
     "processing": "Leyendo tu menú…",
     "processingHint": "Tarda unos segundos. Puedes quedarte en esta página.",
@@ -630,13 +633,17 @@
     "publishNote": "Los platos que ya existen se actualizan; los que no están en esta importación salen del menú, pero los pedidos anteriores los conservan.",
     "published": "Menú publicado.",
     "errors": {
-      "file_type": "El archivo debe ser PDF, JPG o PNG.",
+      "file_type": "El archivo debe ser una imagen JPG o PNG válida.",
       "file_size": "El archivo pesa más de 15 MB. Prueba con una foto más liviana.",
-      "coming_soon": "La importación con IA estará disponible pronto. Mientras tanto, añade los platos a mano.",
+      "coming_soon": "La importación de PDF y la lectura automática estarán disponibles próximamente. Sube un JPG o PNG y añade los platos manualmente.",
       "failed": "No se pudo leer el menú. Inténtalo de nuevo o añade los platos a mano.",
       "invalid": "Faltan datos en algún plato. Revisa nombres y precios.",
-      "publish": "No se pudo publicar. Inténtalo de nuevo."
-    }
+      "publish": "No se pudo publicar. Inténtalo de nuevo.",
+      "image_load": "No se pudo cargar la imagen del menú. Regresa a Menú y sube un JPG o PNG válido."
+    },
+    "imageOnlyNote": "Esto publica solamente tu imagen. Tus platos y precios se conservan. Las zonas tocables no se crean automáticamente.",
+    "publishImage": "Publicar imagen original",
+    "imageReviewTitle": "Revisa la imagen de tu menú"
   },
   "wizard": {
     "title": "Configura {name}",
@@ -662,8 +669,8 @@
     },
     "menu": {
       "title": "Sube tu menú",
-      "body": "Una foto o el PDF de tu menú impreso. Mientras lo leemos, sigue con los próximos pasos; lo revisas después en Menú.",
-      "file": "Menú en PDF o foto",
+      "body": "Sube un JPG o PNG para mostrar tu imagen en Original. Tus platos se conservan; añádelos por separado en Menú.",
+      "file": "Imagen del menú (JPG o PNG)",
       "upload": "Subir menú y continuar",
       "manual": "Prefiero añadir los platos a mano"
     },
@@ -720,8 +727,9 @@
       "tables_invalid": "Escribe un número de mesas entre 1 y 80.",
       "labels_invalid": "Revisa los nombres: no se pueden repetir y cada uno puede tener hasta 20 caracteres.",
       "invite_invalid": "Escribe un correo válido y elige un rol.",
-      "coming_soon": "Esta conexión estará disponible pronto. Mientras tanto, tus clientes pagan con su mesero.",
-      "failed": "No se pudo guardar. Inténtalo de nuevo."
+      "coming_soon": "Esta conexión estará disponible próximamente. Mientras tanto, los invitados pagan con su mesero.",
+      "failed": "No se pudo guardar. Inténtalo de nuevo.",
+      "pdf_unsupported": "La importación de PDF estará disponible próximamente. Sube un JPG o PNG."
     }
   },
   "qr": {

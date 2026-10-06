@@ -5,11 +5,14 @@ import { CAFE_LUCIA_PRINTED } from "@/components/menu/fixtures/cafe-lucia";
 import { cafeLuciaImportResult } from "./fixture-result";
 import type { MenuImporter, MenuImportResult } from "./types";
 
+import { mocksAllowed, ConnectorNotImplementedError } from "../shared";
+
 const PROCESSING_MS = 2500;
 
 /** Dev importer: "reads" any upload and, after a short delay, returns Café Lucía's menu. */
 export const fixtureImporter: MenuImporter = {
   async start(ctx, upload) {
+    if (!mocksAllowed()) throw new ConnectorNotImplementedError("menuImporter", "fixture");
     const { data, error } = await createAdminClient()
       .from("menu_uploads")
       .insert({
@@ -25,6 +28,7 @@ export const fixtureImporter: MenuImporter = {
   },
 
   async result(ctx, uploadId) {
+    if (!mocksAllowed()) throw new ConnectorNotImplementedError("menuImporter", "fixture");
     const db = createAdminClient();
     const { data: upload, error } = await db
       .from("menu_uploads")

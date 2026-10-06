@@ -98,21 +98,36 @@ export function HouseMenu({ menu, lang, t, onOpen }: StyleProps) {
 export function OriginalMenu({ menu, lang, t, onOpen }: StyleProps) {
   const [zones, setZones] = useState(false);
   const byId = new Map(menu.items.map((i) => [i.id, i]));
+  if (menu.originalError)
+    return (
+      <p role="alert" className="py-6 text-muted">
+        {t("originalLoadError")}
+      </p>
+    );
+  if (menu.pages.length === 0)
+    return (
+      <p role="status" className="py-6 text-muted">
+        {t("originalEmpty")}
+      </p>
+    );
+  const hasHotspots = menu.pages.some((page) => page.hotspots.length > 0);
   return (
     <div>
       <div className="mb-2 flex items-center justify-between gap-2">
-        <p className="text-xs text-muted">{t("tapHint")}</p>
-        <button
-          type="button"
-          aria-pressed={zones}
-          onClick={() => setZones((z) => !z)}
-          className={cn(
-            "min-h-9 shrink-0 rounded-full border px-3 text-xs font-semibold",
-            zones ? "border-blue bg-soft text-blue" : "border-line text-ink",
-          )}
-        >
-          {zones ? t("hideZones") : t("showZones")}
-        </button>
+        <p className="text-xs text-muted">{t(hasHotspots ? "tapHint" : "originalImageHint")}</p>
+        {hasHotspots && (
+          <button
+            type="button"
+            aria-pressed={zones}
+            onClick={() => setZones((z) => !z)}
+            className={cn(
+              "min-h-9 shrink-0 rounded-full border px-3 text-xs font-semibold",
+              zones ? "border-blue bg-soft text-blue" : "border-line text-ink",
+            )}
+          >
+            {zones ? t("hideZones") : t("showZones")}
+          </button>
+        )}
       </div>
       {menu.pages.map((page, i) => (
         <div

@@ -453,7 +453,10 @@
       "vegetariano": "Vegetarian",
       "sin_gluten": "Gluten-free",
       "picante": "Spicy"
-    }
+    },
+    "originalEmpty": "No original menu image has been published.",
+    "originalImageHint": "Printed menu. Choose dishes from the Simple or House view to order.",
+    "originalLoadError": "The original menu image could not be loaded. Use the Simple or House view."
   },
   "ticket": {
     "kitchen": "KITCHEN",
@@ -602,10 +605,10 @@
   },
   "importer": {
     "title": "Import menu",
-    "lead": "Upload your printed menu as a PDF or a photo. Mezza turns it into dishes, prices and options, and you review it before publishing.",
-    "file": "Menu as PDF or photo",
-    "fileHint": "PDF, JPG or PNG, up to 15 MB.",
-    "upload": "Upload and read menu",
+    "lead": "Upload a JPG or PNG of your printed menu. Publish the actual image in Original; your existing dishes and prices stay unchanged. Automatic dish extraction and PDF import are coming soon.",
+    "file": "Menu image",
+    "fileHint": "JPG or PNG, up to 15 MB. PDF import is coming soon.",
+    "upload": "Upload menu image",
     "back": "Back to menu",
     "processing": "Reading your menu…",
     "processingHint": "This takes a few seconds. You can stay on this page.",
@@ -630,13 +633,17 @@
     "publishNote": "Dishes that already exist are updated; ones missing from this import leave the menu, but past orders keep them.",
     "published": "Menu published.",
     "errors": {
-      "file_type": "The file must be a PDF, JPG or PNG.",
+      "file_type": "The file must be a valid JPG or PNG image.",
       "file_size": "The file is over 15 MB. Try a lighter photo.",
-      "coming_soon": "AI import is coming soon. Meanwhile, add dishes by hand.",
+      "coming_soon": "PDF and AI import are coming soon. Upload a JPG or PNG and add dishes by hand.",
       "failed": "Couldn't read the menu. Try again or add dishes by hand.",
       "invalid": "A dish is missing details. Check names and prices.",
-      "publish": "Couldn't publish. Try again."
-    }
+      "publish": "Couldn't publish. Try again.",
+      "image_load": "The uploaded menu image could not be loaded. Return to Menu and upload a valid JPG or PNG."
+    },
+    "imageOnlyNote": "This publishes only your uploaded picture. Your dishes and prices stay unchanged. Tap zones are not created automatically.",
+    "publishImage": "Publish original image",
+    "imageReviewTitle": "Review your uploaded menu image"
   },
   "wizard": {
     "title": "Set up {name}",
@@ -662,8 +669,8 @@
     },
     "menu": {
       "title": "Upload your menu",
-      "body": "A photo or the PDF of your printed menu. While we read it, keep going with the next steps; you review it later in Menu.",
-      "file": "Menu as PDF or photo",
+      "body": "Upload a JPG or PNG to display your actual picture in Original. Your dishes stay unchanged; add them separately in Menu.",
+      "file": "Menu image (JPG or PNG)",
       "upload": "Upload menu and continue",
       "manual": "I'd rather add dishes by hand"
     },
@@ -721,7 +728,8 @@
       "labels_invalid": "Check the names: they can't repeat and each can have up to 20 characters.",
       "invite_invalid": "Type a valid email and choose a role.",
       "coming_soon": "This connection is coming soon. Meanwhile, guests pay with their server.",
-      "failed": "Couldn't save. Try again."
+      "failed": "Couldn't save. Try again.",
+      "pdf_unsupported": "PDF import is coming soon. Upload a JPG or PNG."
     }
   },
   "qr": {
