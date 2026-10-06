@@ -98,9 +98,11 @@ Client-side registries can't read server env vars; the page passes the implement
 
 ## splitter
 
-- **Now:** `one` check per table. `even` and `items` throw `ConnectorNotImplementedError`.
-- **Contract:** parts always sum exactly to the tab's subtotal and IVU totals (property test; the
-  `even`/`items` cases are `.todo`).
+- **Now:** `standard`: `one` check, `even` (2–20 parts) and `items` (by person, with locked shares;
+  the table's lines last), IVU per part by cumulative difference. It computes previews; real payments
+  are computed by `create_tab_payment` in the database with the same rules.
+- **Contract:** parts always sum exactly to the tab's subtotal and IVU totals, none negative
+  (property tests for every mode).
 - **Tests before `splitBill`:** the property test passes for every mode.
 - **Tests before `sharedTab`** (people at a table and locked shares of shared dishes, pass 2 phase 1;
   doesn't use the splitter): `supabase/tests/07_participants.test.sql` and the group-check property

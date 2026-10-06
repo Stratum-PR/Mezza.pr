@@ -89,6 +89,11 @@ begin
   insert into public.payments (id, restaurant_id, tab_id, method, amount_cents, tip_cents, ivu_state_cents, ivu_municipal_cents, status, idempotency_key, paid_at)
     values (tests.id(p_rid, 'payment'), p_rid, tests.id(p_rid, 'tab'), 'cash', 500, 90, 53, 5, 'paid', 'fixture-pay-0001', now());
   insert into public.refunds (restaurant_id, payment_id, amount_cents, reason) values (p_rid, tests.id(p_rid, 'payment'), 100, 'Fixture');
+  insert into public.payment_allocations (restaurant_id, payment_id, order_item_id, cents)
+    values (p_rid, tests.id(p_rid, 'payment'), tests.id(p_rid, 'line'), 500);
+  insert into public.split_plans (id, restaurant_id, tab_id, parts) values (tests.id(p_rid, 'plan'), p_rid, tests.id(p_rid, 'tab'), 2);
+  insert into public.split_plan_units (restaurant_id, plan_id, order_item_id)
+    values (p_rid, tests.id(p_rid, 'plan'), tests.id(p_rid, 'line2'));
   insert into public.payment_accounts (restaurant_id, provider) values (p_rid, 'stripe');
   insert into public.printers (id, restaurant_id, name, role) values (tests.id(p_rid, 'printer'), p_rid, 'Cocina', 'kitchen');
   insert into public.print_jobs (restaurant_id, order_id, printer_id, kind)

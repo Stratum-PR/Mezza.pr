@@ -141,17 +141,17 @@ UI flags: `splitBill` and `sharedTab` in `src/config/flags.ts`. Even/per-item sp
 
 ### Phase 3: Split engine
 
-- [ ] `TabSplitter` even and per-item modes; fill in the two `it.todo` property tests
-- [ ] `payment_allocations` (payment, item or share, cents): what each payment covered; an item is paid when its allocations reach its price; pending payments hold their lines, failed/cancelled ones release them
-- [ ] One locked RPC computes every payable amount server-side from the chosen option; the phone never sends an amount; idempotency key per payment
-- [ ] IVU per payment = IVU(paid subtotal including this payment) − IVU(paid subtotal before it), so every payment is non-negative and the table total equals the one-check IVU
-- [ ] Even split is one plan per table: the first person sets N, which fixes N equal shares of the current unpaid balance; later orders belong to whoever orders them, outside the plan; cancellable until the first share is paid
-- [ ] Property tests from the 2026-10-06 simulation: random tables with shared dishes, plans, mine/balance/other-person payments, voids and refunds always conserve every cent and exact IVU, with no negative amount
+- [x] `TabSplitter` even and per-item modes (`standardSplitter`, previews for screens); the two `it.todo` property tests are real
+- [x] `payment_allocations` (payment, item or share, cents): what each payment covered; a charge is paid when its allocations reach it; pending payments hold their charges, failed ones release them (migration `20261006190000_split_engine.sql`, `tab_charges`)
+- [x] One locked RPC (`create_tab_payment`) computes every payable amount server-side from the chosen option (mine, person, balance, plan shares); the phone never sends an amount; idempotency key per payment
+- [x] IVU per payment = IVU(paid subtotal including this payment) − IVU(paid subtotal before it), so every payment is non-negative and the table total equals the one-check IVU (`ivuForPart` mirrors it in TypeScript)
+- [x] Even split is one plan per table (`start_split_plan`, `cancel_split_plan`): the first person sets N over everything unpaid; later orders belong to whoever orders them, outside the plan; cancellable until a share is paid or pending
+- [x] Property tests from the 2026-10-06 simulation: 150 random tables in Postgres (shared dishes, whole-table orders, plans, mine/person/balance, failed payments) conserve every cent with exact IVU and nothing negative; TypeScript property tests for the splitter and `ivuForPart`. Voids after payment and refunds are covered with phase 5's flows
 
 ### Phase 4: Guest checkout
 
 - [ ] Phone checkout: Mis platos (default), Pagar el balance, Pagar por otra persona, and Dividir en partes iguales (start or join the table's plan)
-- [ ] One pending payment per phone, expires after 15 minutes; staff can cancel it
+- [ ] One pending payment per phone, expires after 15 minutes (enforced in `create_tab_payment` since phase 3); staff can cancel it
 - [ ] Efectivo creates a pending payment that staff confirms; card and ATH use the same path when their connectors are real
 - [ ] `guestPay` no longer locks the whole table to "paying"; the table keeps ordering
 - [ ] Live balance on every phone; a receipt per payment listing what it covered

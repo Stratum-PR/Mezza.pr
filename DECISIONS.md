@@ -116,3 +116,9 @@ One line each: the decision, why, and how to reverse it.
 - **"Mesa nueva por QR" doesn't add a one-tap void for servers**: voids stay with managers and owners (existing policy); the flag and its hint ask staff to check the table. Reverse: let servers void flagged orders.
 - **The rate limiter fails closed** and is now the default (`MEZZA_RATE_LIMIT=postgres`); per-IP limits use only platform headers (Vercel), so locally every request is "local". Reverse: `MEZZA_RATE_LIMIT=noop`.
 - **QR limit changes are owner-only and audited** (`limit_change`), like IVU.
+- **Even-split shares are computed when each is paid**, as an even split of what's left of the plan over the shares left (leftover cents to the first). With no changes this equals fixing the shares up front; after a void inside the plan, the remaining shares shrink evenly instead of leaving a gap. Reverse: store fixed share amounts.
+- **"Pagar el balance" pays every share left in an active plan**, and "Mis platos" leaves the plan's charges alone (they belong to the split), so a later order is paid as the orderer's own.
+- **The payment that clears a tab absorbs IVU drift** left by payments that failed after later ones were created (never below zero). The randomized test, which fails about one payment in five, keeps the table total exact.
+- **Pending payments: one per person, abandoned after 15 minutes**, enforced in the database when a payment is created; a failed or abandoned payment frees what it held.
+- **Tips**: a whole percent (0–100) of the payment's subtotal or 0–$1,000 in cents; not taxed.
+- **The splitter connector computes previews** for screens; the database computes real payments with the same rules, and is the authority.

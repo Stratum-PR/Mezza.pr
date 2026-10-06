@@ -31,6 +31,28 @@ export function computeIvu(subtotalCents: Cents, rates: IvuRates = DEFAULT_IVU) 
   return { state, municipal, total: state + municipal };
 }
 
+/**
+ * IVU for one payment when a tab is paid in parts: IVU(everything paid including it) minus
+ * IVU(everything paid before), per component. Never negative, and the parts always add up to the
+ * one-check IVU. Mirrors create_tab_payment in the database, which is the authority.
+ */
+export function ivuForPart(paidBeforeCents: Cents, partCents: Cents, rates: IvuRates = DEFAULT_IVU) {
+  const before = computeIvu(paidBeforeCents, rates);
+  const after = computeIvu(paidBeforeCents + assertCents(partCents, "part"), rates);
+  const state = after.state - before.state;
+  const municipal = after.municipal - before.municipal;
+  return { state, municipal, total: state + municipal };
+}
+
+/** Splits cents into equal parts; the first parts get the leftover cents (100 / 3 → 34, 33, 33). */
+export function distributeCents(totalCents: Cents, parts: number): Cents[] {
+  assertCents(totalCents, "total");
+  if (!Number.isInteger(parts) || parts < 1 || parts > 100) throw new RangeError("parts must be 1–100");
+  const base = Math.floor(totalCents / parts);
+  const extra = totalCents - base * parts;
+  return Array.from({ length: parts }, (_, i) => base + (i < extra ? 1 : 0));
+}
+
 /** Tip as a whole percent of the pre-tax subtotal, half-up. Tips are not taxed. */
 export function tipFromPercent(subtotalCents: Cents, percent: number): Cents {
   assertCents(subtotalCents, "subtotal");

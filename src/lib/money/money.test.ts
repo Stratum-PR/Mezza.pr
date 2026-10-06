@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { checkTotals, computeIvu, dollarsToCents, formatCents, formatPlain, tipFromPercent } from ".";
+import {
+  checkTotals,
+  computeIvu,
+  distributeCents,
+  dollarsToCents,
+  formatCents,
+  formatPlain,
+  ivuForPart,
+  tipFromPercent,
+} from ".";
 
 describe("computeIvu", () => {
   it.each([
@@ -61,5 +70,50 @@ describe("formatting", () => {
     expect(formatCents(350, "en")).toBe("$3.50");
     expect(formatPlain(250)).toBe("2.50");
     expect(formatPlain(5)).toBe("0.05");
+  });
+});
+
+describe("paying a tab in parts", () => {
+  it("splits cents evenly, leftover cents first", () => {
+    expect(distributeCents(100, 3)).toEqual([34, 33, 33]);
+    expect(distributeCents(10050, 3)).toEqual([3350, 3350, 3350]);
+    expect(distributeCents(0, 2)).toEqual([0, 0]);
+    expect(() => distributeCents(100, 0)).toThrow();
+  });
+
+  it("IVU per part is never negative and adds up to the one-check IVU (property)", () => {
+    // The case that broke "the last payer absorbs the rounding": 21 × $1.00, then $0.50.
+    const parts = [...Array(21).fill(100), 50];
+    let paid = 0;
+    const ivus = parts.map((p) => {
+      const ivu = ivuForPart(paid, p);
+      paid += p;
+      return ivu;
+    });
+    expect(Math.min(...ivus.map((i) => Math.min(i.state, i.municipal)))).toBeGreaterThanOrEqual(0);
+    expect(ivus.reduce((n, i) => n + i.state, 0)).toBe(computeIvu(paid).state);
+
+    for (let seed = 1; seed <= 1000; seed++) {
+      const rates = { stateBps: 1050, municipalBps: 50 + (seed % 200) };
+      const sizes = Array.from(
+        { length: 1 + (seed % 12) },
+        (_, i) => ((seed * 7919 + i * 104729) % 5000) + 1,
+      );
+      let before = 0;
+      let state = 0;
+      let municipal = 0;
+      for (const s of sizes) {
+        const ivu = ivuForPart(before, s, rates);
+        expect(ivu.state).toBeGreaterThanOrEqual(0);
+        expect(ivu.municipal).toBeGreaterThanOrEqual(0);
+        state += ivu.state;
+        municipal += ivu.municipal;
+        before += s;
+      }
+      expect({ state, municipal }).toEqual({
+        state: computeIvu(before, rates).state,
+        municipal: computeIvu(before, rates).municipal,
+      });
+    }
   });
 });

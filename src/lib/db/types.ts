@@ -599,15 +599,52 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"payments": {
+                },"payment_allocations": {
                   Row: {
-                    "amount_cents": number,"confirmed_by": string | null,"created_at": string,"fiscal_control_number": string | null,"id": string,"idempotency_key": string,"ivu_municipal_cents": number,"ivu_state_cents": number,"method": Database["public"]['Enums']["payment_method"],"paid_at": string | null,"participant_id": string | null,"provider_ref": string | null,"restaurant_id": string,"status": Database["public"]['Enums']["payment_status"],"tab_id": string,"tip_cents": number,"updated_at": string
+                    "cents": number,"created_at": string,"id": string,"order_item_id": string,"payment_id": string,"restaurant_id": string,"share_id": string | null
                   }
                   Insert: {
-                    "amount_cents": number,"confirmed_by"?: string | null,"created_at"?: string,"fiscal_control_number"?: string | null,"id"?: string,"idempotency_key": string,"ivu_municipal_cents"?: number,"ivu_state_cents"?: number,"method": Database["public"]['Enums']["payment_method"],"paid_at"?: string | null,"participant_id"?: string | null,"provider_ref"?: string | null,"restaurant_id": string,"status"?: Database["public"]['Enums']["payment_status"],"tab_id": string,"tip_cents"?: number,"updated_at"?: string
+                    "cents": number,"created_at"?: string,"id"?: string,"order_item_id": string,"payment_id": string,"restaurant_id": string,"share_id"?: string | null
                   }
                   Update: {
-                    "amount_cents"?: number,"confirmed_by"?: string | null,"created_at"?: string,"fiscal_control_number"?: string | null,"id"?: string,"idempotency_key"?: string,"ivu_municipal_cents"?: number,"ivu_state_cents"?: number,"method"?: Database["public"]['Enums']["payment_method"],"paid_at"?: string | null,"participant_id"?: string | null,"provider_ref"?: string | null,"restaurant_id"?: string,"status"?: Database["public"]['Enums']["payment_status"],"tab_id"?: string,"tip_cents"?: number,"updated_at"?: string
+                    "cents"?: number,"created_at"?: string,"id"?: string,"order_item_id"?: string,"payment_id"?: string,"restaurant_id"?: string,"share_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_allocations_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: false
+      referencedRelation: "order_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_allocations_payment_id_fkey"
+      columns: ["payment_id"]
+isOneToOne: false
+      referencedRelation: "payments"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_allocations_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_allocations_share_id_fkey"
+      columns: ["share_id"]
+isOneToOne: false
+      referencedRelation: "order_item_shares"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payments": {
+                  Row: {
+                    "amount_cents": number,"confirmed_by": string | null,"created_at": string,"fiscal_control_number": string | null,"for_participant_id": string | null,"id": string,"idempotency_key": string,"ivu_municipal_cents": number,"ivu_state_cents": number,"method": Database["public"]['Enums']["payment_method"],"paid_at": string | null,"participant_id": string | null,"plan_id": string | null,"plan_parts": number | null,"provider_ref": string | null,"restaurant_id": string,"split_option": string | null,"status": Database["public"]['Enums']["payment_status"],"tab_id": string,"tip_cents": number,"updated_at": string
+                  }
+                  Insert: {
+                    "amount_cents": number,"confirmed_by"?: string | null,"created_at"?: string,"fiscal_control_number"?: string | null,"for_participant_id"?: string | null,"id"?: string,"idempotency_key": string,"ivu_municipal_cents"?: number,"ivu_state_cents"?: number,"method": Database["public"]['Enums']["payment_method"],"paid_at"?: string | null,"participant_id"?: string | null,"plan_id"?: string | null,"plan_parts"?: number | null,"provider_ref"?: string | null,"restaurant_id": string,"split_option"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"tab_id": string,"tip_cents"?: number,"updated_at"?: string
+                  }
+                  Update: {
+                    "amount_cents"?: number,"confirmed_by"?: string | null,"created_at"?: string,"fiscal_control_number"?: string | null,"for_participant_id"?: string | null,"id"?: string,"idempotency_key"?: string,"ivu_municipal_cents"?: number,"ivu_state_cents"?: number,"method"?: Database["public"]['Enums']["payment_method"],"paid_at"?: string | null,"participant_id"?: string | null,"plan_id"?: string | null,"plan_parts"?: number | null,"provider_ref"?: string | null,"restaurant_id"?: string,"split_option"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"tab_id"?: string,"tip_cents"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -617,10 +654,22 @@ isOneToOne: false
       referencedRelation: "restaurants"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "payments_restaurant_id_for_participant_id_fkey"
+      columns: ["restaurant_id","for_participant_id"]
+isOneToOne: false
+      referencedRelation: "tab_participants"
+      referencedColumns: ["restaurant_id","id"]
+    },{
       foreignKeyName: "payments_restaurant_id_participant_id_fkey"
       columns: ["restaurant_id","participant_id"]
 isOneToOne: false
       referencedRelation: "tab_participants"
+      referencedColumns: ["restaurant_id","id"]
+    },{
+      foreignKeyName: "payments_restaurant_id_plan_id_fkey"
+      columns: ["restaurant_id","plan_id"]
+isOneToOne: false
+      referencedRelation: "split_plans"
       referencedColumns: ["restaurant_id","id"]
     },{
       foreignKeyName: "payments_restaurant_id_tab_id_fkey"
@@ -813,6 +862,80 @@ isOneToOne: false
       referencedColumns: ["restaurant_id","id"]
     }
                   ]
+                },"split_plan_units": {
+                  Row: {
+                    "id": string,"order_item_id": string,"plan_id": string,"restaurant_id": string,"share_id": string | null
+                  }
+                  Insert: {
+                    "id"?: string,"order_item_id": string,"plan_id": string,"restaurant_id": string,"share_id"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"order_item_id"?: string,"plan_id"?: string,"restaurant_id"?: string,"share_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "split_plan_units_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: false
+      referencedRelation: "order_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "split_plan_units_plan_id_fkey"
+      columns: ["plan_id"]
+isOneToOne: false
+      referencedRelation: "split_plans"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "split_plan_units_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "split_plan_units_share_id_fkey"
+      columns: ["share_id"]
+isOneToOne: false
+      referencedRelation: "order_item_shares"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"split_plans": {
+                  Row: {
+                    "created_at": string,"created_by_participant": string | null,"created_by_user": string | null,"id": string,"parts": number,"restaurant_id": string,"status": string,"tab_id": string,"updated_at": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"created_by_participant"?: string | null,"created_by_user"?: string | null,"id"?: string,"parts": number,"restaurant_id": string,"status"?: string,"tab_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by_participant"?: string | null,"created_by_user"?: string | null,"id"?: string,"parts"?: number,"restaurant_id"?: string,"status"?: string,"tab_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "split_plans_restaurant_id_created_by_participant_fkey"
+      columns: ["restaurant_id","created_by_participant"]
+isOneToOne: false
+      referencedRelation: "tab_participants"
+      referencedColumns: ["restaurant_id","id"]
+    },{
+      foreignKeyName: "split_plans_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "split_plans_restaurant_id_tab_id_fkey"
+      columns: ["restaurant_id","tab_id"]
+isOneToOne: false
+      referencedRelation: "tab_totals"
+      referencedColumns: ["restaurant_id","tab_id"]
+    },{
+      foreignKeyName: "split_plans_restaurant_id_tab_id_fkey"
+      columns: ["restaurant_id","tab_id"]
+isOneToOne: false
+      referencedRelation: "tabs"
+      referencedColumns: ["restaurant_id","id"]
+    }
+                  ]
                 },"subscriptions": {
                   Row: {
                     "created_at": string,"id": string,"plan": string,"restaurant_id": string,"status": Database["public"]['Enums']["subscription_status"],"stripe_customer_id": string | null,"trial_ends_at": string | null,"updated_at": string
@@ -983,17 +1106,29 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "attribute_staff_order":
+            "active_split_plan":
+{ Args: { "p_tab_id": string }; Returns: string
+                           },
+"attribute_staff_order":
 { Args: { "p_order_id": string,"p_participant_id"?: string }; Returns: undefined
+                           },
+"cancel_split_plan":
+{ Args: { "p_tab_id": string }; Returns: Json
                            },
 "create_restaurant_with_owner":
 { Args: { "p_language"?: Database["public"]['Enums']["app_locale"],"p_name": string,"p_owner_id": string,"p_phone"?: string,"p_slug": string }; Returns: string
+                           },
+"create_tab_payment":
+{ Args: { "p_for"?: string,"p_idempotency_key": string,"p_method": Database["public"]['Enums']["payment_method"],"p_option": string,"p_parts"?: number,"p_payer"?: string,"p_tab_id": string,"p_tip_cents"?: number,"p_tip_percent"?: number }; Returns: Json
                            },
 "has_role":
 { Args: { "p_restaurant_id": string,"p_roles": (Database["public"]['Enums']["member_role"])[] }; Returns: boolean
                            },
 "is_platform_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"ivu_cents":
+{ Args: { "p_bps": number,"p_cents": number }; Returns: number
                            },
 "place_guest_order":
 { Args: { "p_client_order_id": string,"p_device_hash": string,"p_guest_language": Database["public"]['Enums']["app_locale"],"p_lines": Json,"p_name"?: string,"p_restaurant_id": string,"p_table_id": string }; Returns: Json
@@ -1037,8 +1172,19 @@ isOneToOne: false
 "split_item_shares":
 { Args: { "p_order_item_id": string,"p_participants": (string)[] }; Returns: undefined
                            },
+"split_plan_left":
+{ Args: { "p_plan_id": string }; Returns: Record<string, unknown>
+                           },
+"start_split_plan":
+{ Args: { "p_by_participant"?: string,"p_by_user"?: string,"p_parts": number,"p_tab_id": string }; Returns: Json
+                           },
 "storage_restaurant_id":
 { Args: { "p_name": string }; Returns: string
+                           },
+"tab_charges":
+{ Args: { "p_tab_id": string }; Returns: {
+              "c_cents": number,"c_covered": number,"c_created": string,"c_item": string,"c_owner": string,"c_plan": string,"c_share": string
+            }[]
                            },
 "void_order":
 { Args: { "p_order_id": string,"p_order_item_id"?: string,"p_reason": string }; Returns: undefined
