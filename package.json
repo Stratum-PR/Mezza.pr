@@ -17,6 +17,7 @@
     "screenshots": "playwright test tests/e2e/screenshots.spec.ts",
     "db:check": "tsx scripts/db-check/run.ts",
     "seed": "tsx scripts/seed/index.ts",
+    "seed:cloud": "tsx scripts/seed/index.ts --cloud",
     "db:types": "supabase gen types typescript --local > src/lib/db/types.ts"
   },
   "dependencies": {

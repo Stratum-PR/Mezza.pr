@@ -2,9 +2,14 @@
  * pnpm seed — run after `supabase db reset` (which applies supabase/seed.sql).
  * Adds the logins, Café Lucía's 12 tables with QR tokens, the printed menu page and dish photos,
  * Barra Test's tables and orders, 90 days of Café Lucía history, and refreshes the summaries.
- * Local only: refuses to run against a non-local Supabase URL.
+ *
+ * Local by default: refuses any non-local Supabase URL. `pnpm seed:cloud` (the --cloud flag) seeds
+ * the hosted demo project instead: it reads `.env.cloud`, requires MEZZA_SEED_CLOUD_REF to match the
+ * project in the URL, gives every login a random password (printed once, stored nowhere), skips
+ * Barra Test's logins and orders, and keeps the history light (about 15% of the local volume).
  */
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { randomBytes } from "node:crypto";
 import { join } from "node:path";
 import { Resvg } from "@resvg/resvg-js";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -18,8 +23,11 @@ const CAFE = "c0ffee00-0000-4000-8000-000000000001";
 const BARRA = "ba220000-0000-4000-8000-000000000002";
 const root = join(__dirname, "..", "..");
 
+const CLOUD = process.argv.includes("--cloud");
+const envFile = join(root, CLOUD ? ".env.cloud" : ".env.local");
 const loadEnvFile = (process as NodeJS.Process & { loadEnvFile?: (path: string) => void }).loadEnvFile;
-if (existsSync(join(root, ".env.local"))) loadEnvFile?.(join(root, ".env.local"));
+if (existsSync(envFile)) loadEnvFile?.(envFile);
+else if (CLOUD) throw new Error(".env.cloud not found (see README: Hosted demo data)");
 
 function env(name: string): string {
   const value = process.env[name];
@@ -28,8 +36,23 @@ function env(name: string): string {
 }
 
 const url = env("NEXT_PUBLIC_SUPABASE_URL");
-if (!/^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(url)) {
+const isLocal = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(url);
+if (!CLOUD && !isLocal) {
   throw new Error(`Refusing to seed ${url}: the seed is for the local Supabase stack only`);
+}
+if (CLOUD) {
+  const ref = env("MEZZA_SEED_CLOUD_REF");
+  if (isLocal || !url.includes(`://${ref}.`)) {
+    throw new Error(`Refusing to seed ${url}: MEZZA_SEED_CLOUD_REF (${ref}) must match the hosted project`);
+  }
+}
+/** Cloud logins get their own random password; local ones share the documented local password. */
+const passwords = new Map<string, string>();
+function passwordFor(email: string): string {
+  if (!CLOUD) return SEED_PASSWORD;
+  const p = passwords.get(email) ?? randomBytes(12).toString("base64url");
+  passwords.set(email, p);
+  return p;
 }
 const db: SupabaseClient = createClient(url, env("SUPABASE_SERVICE_ROLE_KEY"), {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -54,7 +77,7 @@ async function insertBatched(table: string, rows: Record<string, unknown>[], siz
 async function ensureUser(email: string, fullName: string): Promise<string> {
   const created = await db.auth.admin.createUser({
     email,
-    password: SEED_PASSWORD,
+    password: passwordFor(email),
     email_confirm: true,
     user_metadata: { full_name: fullName },
   });
@@ -110,26 +133,28 @@ async function main() {
   const manager = await ensureUser("gerente@cafelucia.example", "Marta Ortiz");
   const server = await ensureUser("mesero@cafelucia.example", "José Colón");
   const kitchen = await ensureUser("cocina@cafelucia.example", "Ana Torres");
-  const barraOwner = await ensureUser("dueno@barratest.example", "Carlos Méndez");
+  const barraOwner = CLOUD ? null : await ensureUser("dueno@barratest.example", "Carlos Méndez");
   const admin = await ensureUser("admin@stratum.example", "Stratum Soporte");
   check(
     "memberships",
-    await db.from("memberships").upsert(
-      [
-        { restaurant_id: CAFE, user_id: owner, role: "owner" },
-        { restaurant_id: CAFE, user_id: manager, role: "manager" },
-        { restaurant_id: CAFE, user_id: server, role: "server" },
-        { restaurant_id: CAFE, user_id: kitchen, role: "kitchen" },
-        { restaurant_id: BARRA, user_id: barraOwner, role: "owner" },
-      ],
-      { onConflict: "user_id,restaurant_id" },
-    ),
+    await db
+      .from("memberships")
+      .upsert(
+        [
+          { restaurant_id: CAFE, user_id: owner, role: "owner" },
+          { restaurant_id: CAFE, user_id: manager, role: "manager" },
+          { restaurant_id: CAFE, user_id: server, role: "server" },
+          { restaurant_id: CAFE, user_id: kitchen, role: "kitchen" },
+          ...(barraOwner ? [{ restaurant_id: BARRA, user_id: barraOwner, role: "owner" as const }] : []),
+        ],
+        { onConflict: "user_id,restaurant_id" },
+      ),
   );
   check("platform admin", await db.from("platform_admins").upsert({ user_id: admin }));
 
   console.log("Tables and QR tokens");
   const cafeTables = await tables(CAFE, "c0ffee00", 12);
-  const barraTables = await tables(BARRA, "ba220000", 4);
+  const barraTables = CLOUD ? [] : await tables(BARRA, "ba220000", 4);
 
   console.log("Printed menu and photos");
   const assets = join(root, "supabase", "seed", "assets");
@@ -213,6 +238,7 @@ async function main() {
       utcOffsetHours: -4,
       seed: 1962,
       firstOrderNumber: 1001,
+      volume: CLOUD ? 0.15 : 1,
     });
     await insertBatched("tabs", history.tabs);
     await insertBatched("orders", history.orders);
@@ -232,9 +258,9 @@ async function main() {
       `  ${history.tabs.length} tabs, ${history.orders.length} orders, ${history.payments.length} payments`,
     );
 
-    console.log("Barra Test orders");
+    if (barraOwner) console.log("Barra Test orders");
     const barraItems = ["ba220000-0002-4000-8000-000000000001", "ba220000-0002-4000-8000-000000000003"];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; barraOwner && i < 4; i++) {
       const result = check(
         "barra order",
         await db.rpc("place_order", {
@@ -261,11 +287,16 @@ async function main() {
     );
   }
 
-  console.log(`\nDone. Every login uses the local password: ${SEED_PASSWORD}`);
-  console.log(
-    "  dueno@cafelucia.example (owner) · gerente@ (manager) · mesero@ (server) · cocina@ (kitchen)",
-  );
-  console.log("  dueno@barratest.example (Barra Test owner) · admin@stratum.example (Stratum admin)");
+  if (CLOUD) {
+    console.log("\nDone. Save these now: they are shown once and stored nowhere.");
+    for (const [email, password] of passwords) console.log(`  ${email}  ${password}`);
+  } else {
+    console.log(`\nDone. Every login uses the local password: ${SEED_PASSWORD}`);
+    console.log(
+      "  dueno@cafelucia.example (owner) · gerente@ (manager) · mesero@ (server) · cocina@ (kitchen)",
+    );
+    console.log("  dueno@barratest.example (Barra Test owner) · admin@stratum.example (Stratum admin)");
+  }
   console.log(`  Mesa 4: ${tableUrl(guestBase, "cafe-lucia", deriveQrToken(qrSecret, cafeTables[3]!, 1))}`);
 }
 

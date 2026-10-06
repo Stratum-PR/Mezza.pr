@@ -65,6 +65,18 @@ Every seeded login uses the local-only password `mezza-local-2026`.
 | dueno@barratest.example   | Barra Test owner       | Inicio   |
 | admin@stratum.example     | Stratum platform admin | `/admin` |
 
+## Hosted demo data
+
+The hosted project (`mezza.stratumpr.com`) gets the same Café Lucía demo, kept light for the free
+database tier: about 15% of the local history (roughly 500 orders over 90 days), no Barra Test logins.
+
+1. Load the menu, theme and tables' restaurant rows (`supabase/seed.sql`) into the linked project:
+   `pnpm exec supabase db push --include-seed`
+2. Create `.env.cloud` (git-ignored) with `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
+   `NEXT_PUBLIC_GUEST_BASE_URL=https://mezza.stratumpr.com`, `MEZZA_SEED_CLOUD_REF=<project ref>` and the
+   **same** `QR_TOKEN_SECRET` as Vercel (otherwise the demo QR codes won't open).
+3. `pnpm seed:cloud`, then save the passwords it prints (shown once, stored nowhere).
+
 ## Demo walkthrough
 
 1. Sign in as the owner. **Códigos QR** shows each table's code: scan Mesa 4 with a phone on the same

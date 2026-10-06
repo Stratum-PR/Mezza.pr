@@ -40,6 +40,8 @@ export interface HistoryInput {
   utcOffsetHours: number;
   seed: number;
   firstOrderNumber: number;
+  /** Share of a busy café's traffic (1 = full; the cloud demo uses less to stay small). */
+  volume?: number;
 }
 
 export function mulberry32(seed: number) {
@@ -121,7 +123,7 @@ export function generateHistory(input: HistoryInput) {
 
     for (const [hourStr, base] of Object.entries(HOURLY)) {
       const hour = Number(hourStr);
-      const parties = poisson(base * (weekend ? 1.35 : 1) * (0.85 + rnd() * 0.3));
+      const parties = poisson(base * (input.volume ?? 1) * (weekend ? 1.35 : 1) * (0.85 + rnd() * 0.3));
       for (let p = 0; p < parties; p++) {
         const openedLocal = dayStart + hour * 3600_000 + Math.floor(rnd() * 3600_000);
         const opened = toUtc(openedLocal);
