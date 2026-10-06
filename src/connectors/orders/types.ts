@@ -22,6 +22,8 @@ export type SubmitResult =
       status: "rejected";
       reason: "item_unavailable" | "tab_closed" | "invalid_table" | "validation";
       detail?: string;
+      /** For a limit: the cap that was hit (a quantity for lines, cents for orders and tabs). */
+      limit?: number;
     };
 
 export interface OrderQueue {

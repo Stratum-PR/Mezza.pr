@@ -11,6 +11,7 @@ import {
   decideSupport,
   saveBrand,
   saveIvu,
+  saveLimits,
   savePrinter,
   saveProfile,
   type FormResult,
@@ -140,6 +141,65 @@ export function IvuForm({
             name="municipal"
             inputMode="decimal"
             defaultValue={String(municipalBps / 100)}
+            required
+          />
+        </fieldset>
+        <div className="flex items-end gap-3 sm:col-span-2">
+          {canEdit && (
+            <Button type="submit" disabled={pending}>
+              {t("save")}
+            </Button>
+          )}
+          <Result state={state} />
+        </div>
+      </form>
+    </Panel>
+  );
+}
+
+/** QR ordering limits: per order, per dish, per open table, and people per table. */
+export function LimitsForm({
+  slug,
+  values,
+  canEdit,
+}: {
+  slug: string;
+  values: { orderCents: number; lineQty: number; tabCents: number; people: number };
+  canEdit: boolean;
+}) {
+  const t = useTranslations("settings.limits");
+  const [state, action, pending] = useActionState<FormResult, FormData>(saveLimits.bind(null, slug), null);
+  return (
+    <Panel title={t("title")}>
+      <p className="mb-3 text-sm text-muted">{t("lead")}</p>
+      <form action={action} className="grid gap-3 sm:grid-cols-2">
+        <fieldset disabled={!canEdit} className="contents">
+          <Field
+            label={t("order")}
+            name="order"
+            inputMode="decimal"
+            defaultValue={String(values.orderCents / 100)}
+            required
+          />
+          <Field
+            label={t("line")}
+            name="line"
+            inputMode="numeric"
+            defaultValue={String(values.lineQty)}
+            required
+          />
+          <Field
+            label={t("tab")}
+            name="tab"
+            inputMode="decimal"
+            defaultValue={String(values.tabCents / 100)}
+            required
+          />
+          <Field
+            label={t("people")}
+            name="people"
+            inputMode="numeric"
+            defaultValue={String(values.people)}
             required
           />
         </fieldset>

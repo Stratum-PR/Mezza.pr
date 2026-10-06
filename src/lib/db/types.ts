@@ -450,6 +450,37 @@ isOneToOne: false
       referencedColumns: ["restaurant_id","id"]
     }
                   ]
+                },"order_item_shares": {
+                  Row: {
+                    "cents": number,"created_at": string,"id": string,"order_item_id": string,"participant_id": string,"restaurant_id": string
+                  }
+                  Insert: {
+                    "cents": number,"created_at"?: string,"id"?: string,"order_item_id": string,"participant_id": string,"restaurant_id": string
+                  }
+                  Update: {
+                    "cents"?: number,"created_at"?: string,"id"?: string,"order_item_id"?: string,"participant_id"?: string,"restaurant_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "order_item_shares_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: false
+      referencedRelation: "order_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_item_shares_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "order_item_shares_restaurant_id_participant_id_fkey"
+      columns: ["restaurant_id","participant_id"]
+isOneToOne: false
+      referencedRelation: "tab_participants"
+      referencedColumns: ["restaurant_id","id"]
+    }
+                  ]
                 },"order_items": {
                   Row: {
                     "created_at": string,"id": string,"item_id": string | null,"modifiers_snapshot": NonNullable<Json>,"name_snapshot_en": string,"name_snapshot_es": string,"note": string | null,"order_id": string,"participant_id": string | null,"qty": number,"restaurant_id": string,"shared": boolean,"status": Database["public"]['Enums']["order_status"],"unit_price_cents": number,"updated_at": string,"void_reason": string | null,"voided_at": string | null,"voided_by": string | null
@@ -489,13 +520,13 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "created_at": string,"created_by": string | null,"device_id": string | null,"guest_language": Database["public"]['Enums']["app_locale"],"id": string,"idempotency_key": string,"number": number,"restaurant_id": string,"source": Database["public"]['Enums']["order_source"],"status": Database["public"]['Enums']["order_status"],"synced_at": string | null,"tab_id": string,"updated_at": string
+                    "after_payment": boolean,"created_at": string,"created_by": string | null,"device_id": string | null,"guest_language": Database["public"]['Enums']["app_locale"],"id": string,"idempotency_key": string,"number": number,"opened_tab": boolean,"participant_id": string | null,"restaurant_id": string,"source": Database["public"]['Enums']["order_source"],"status": Database["public"]['Enums']["order_status"],"synced_at": string | null,"tab_id": string,"updated_at": string
                   }
                   Insert: {
-                    "created_at"?: string,"created_by"?: string | null,"device_id"?: string | null,"guest_language"?: Database["public"]['Enums']["app_locale"],"id"?: string,"idempotency_key": string,"number": number,"restaurant_id": string,"source": Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"synced_at"?: string | null,"tab_id": string,"updated_at"?: string
+                    "after_payment"?: boolean,"created_at"?: string,"created_by"?: string | null,"device_id"?: string | null,"guest_language"?: Database["public"]['Enums']["app_locale"],"id"?: string,"idempotency_key": string,"number": number,"opened_tab"?: boolean,"participant_id"?: string | null,"restaurant_id": string,"source": Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"synced_at"?: string | null,"tab_id": string,"updated_at"?: string
                   }
                   Update: {
-                    "created_at"?: string,"created_by"?: string | null,"device_id"?: string | null,"guest_language"?: Database["public"]['Enums']["app_locale"],"id"?: string,"idempotency_key"?: string,"number"?: number,"restaurant_id"?: string,"source"?: Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"synced_at"?: string | null,"tab_id"?: string,"updated_at"?: string
+                    "after_payment"?: boolean,"created_at"?: string,"created_by"?: string | null,"device_id"?: string | null,"guest_language"?: Database["public"]['Enums']["app_locale"],"id"?: string,"idempotency_key"?: string,"number"?: number,"opened_tab"?: boolean,"participant_id"?: string | null,"restaurant_id"?: string,"source"?: Database["public"]['Enums']["order_source"],"status"?: Database["public"]['Enums']["order_status"],"synced_at"?: string | null,"tab_id"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -510,6 +541,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "restaurants"
       referencedColumns: ["id"]
+    },{
+      foreignKeyName: "orders_restaurant_id_participant_id_fkey"
+      columns: ["restaurant_id","participant_id"]
+isOneToOne: false
+      referencedRelation: "tab_participants"
+      referencedColumns: ["restaurant_id","id"]
     },{
       foreignKeyName: "orders_restaurant_id_tab_id_fkey"
       columns: ["restaurant_id","tab_id"]
@@ -562,15 +599,52 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"payments": {
+                },"payment_allocations": {
                   Row: {
-                    "amount_cents": number,"confirmed_by": string | null,"created_at": string,"fiscal_control_number": string | null,"id": string,"idempotency_key": string,"ivu_municipal_cents": number,"ivu_state_cents": number,"method": Database["public"]['Enums']["payment_method"],"paid_at": string | null,"participant_id": string | null,"provider_ref": string | null,"restaurant_id": string,"status": Database["public"]['Enums']["payment_status"],"tab_id": string,"tip_cents": number,"updated_at": string
+                    "cents": number,"created_at": string,"id": string,"order_item_id": string,"payment_id": string,"restaurant_id": string,"share_id": string | null
                   }
                   Insert: {
-                    "amount_cents": number,"confirmed_by"?: string | null,"created_at"?: string,"fiscal_control_number"?: string | null,"id"?: string,"idempotency_key": string,"ivu_municipal_cents"?: number,"ivu_state_cents"?: number,"method": Database["public"]['Enums']["payment_method"],"paid_at"?: string | null,"participant_id"?: string | null,"provider_ref"?: string | null,"restaurant_id": string,"status"?: Database["public"]['Enums']["payment_status"],"tab_id": string,"tip_cents"?: number,"updated_at"?: string
+                    "cents": number,"created_at"?: string,"id"?: string,"order_item_id": string,"payment_id": string,"restaurant_id": string,"share_id"?: string | null
                   }
                   Update: {
-                    "amount_cents"?: number,"confirmed_by"?: string | null,"created_at"?: string,"fiscal_control_number"?: string | null,"id"?: string,"idempotency_key"?: string,"ivu_municipal_cents"?: number,"ivu_state_cents"?: number,"method"?: Database["public"]['Enums']["payment_method"],"paid_at"?: string | null,"participant_id"?: string | null,"provider_ref"?: string | null,"restaurant_id"?: string,"status"?: Database["public"]['Enums']["payment_status"],"tab_id"?: string,"tip_cents"?: number,"updated_at"?: string
+                    "cents"?: number,"created_at"?: string,"id"?: string,"order_item_id"?: string,"payment_id"?: string,"restaurant_id"?: string,"share_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_allocations_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: false
+      referencedRelation: "order_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_allocations_payment_id_fkey"
+      columns: ["payment_id"]
+isOneToOne: false
+      referencedRelation: "payments"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_allocations_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_allocations_share_id_fkey"
+      columns: ["share_id"]
+isOneToOne: false
+      referencedRelation: "order_item_shares"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payments": {
+                  Row: {
+                    "amount_cents": number,"confirmed_by": string | null,"created_at": string,"fiscal_control_number": string | null,"for_participant_id": string | null,"id": string,"idempotency_key": string,"ivu_municipal_cents": number,"ivu_state_cents": number,"method": Database["public"]['Enums']["payment_method"],"paid_at": string | null,"participant_id": string | null,"plan_id": string | null,"plan_parts": number | null,"provider_ref": string | null,"restaurant_id": string,"split_option": string | null,"status": Database["public"]['Enums']["payment_status"],"tab_id": string,"tip_cents": number,"updated_at": string
+                  }
+                  Insert: {
+                    "amount_cents": number,"confirmed_by"?: string | null,"created_at"?: string,"fiscal_control_number"?: string | null,"for_participant_id"?: string | null,"id"?: string,"idempotency_key": string,"ivu_municipal_cents"?: number,"ivu_state_cents"?: number,"method": Database["public"]['Enums']["payment_method"],"paid_at"?: string | null,"participant_id"?: string | null,"plan_id"?: string | null,"plan_parts"?: number | null,"provider_ref"?: string | null,"restaurant_id": string,"split_option"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"tab_id": string,"tip_cents"?: number,"updated_at"?: string
+                  }
+                  Update: {
+                    "amount_cents"?: number,"confirmed_by"?: string | null,"created_at"?: string,"fiscal_control_number"?: string | null,"for_participant_id"?: string | null,"id"?: string,"idempotency_key"?: string,"ivu_municipal_cents"?: number,"ivu_state_cents"?: number,"method"?: Database["public"]['Enums']["payment_method"],"paid_at"?: string | null,"participant_id"?: string | null,"plan_id"?: string | null,"plan_parts"?: number | null,"provider_ref"?: string | null,"restaurant_id"?: string,"split_option"?: string | null,"status"?: Database["public"]['Enums']["payment_status"],"tab_id"?: string,"tip_cents"?: number,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -580,10 +654,22 @@ isOneToOne: false
       referencedRelation: "restaurants"
       referencedColumns: ["id"]
     },{
+      foreignKeyName: "payments_restaurant_id_for_participant_id_fkey"
+      columns: ["restaurant_id","for_participant_id"]
+isOneToOne: false
+      referencedRelation: "tab_participants"
+      referencedColumns: ["restaurant_id","id"]
+    },{
       foreignKeyName: "payments_restaurant_id_participant_id_fkey"
       columns: ["restaurant_id","participant_id"]
 isOneToOne: false
       referencedRelation: "tab_participants"
+      referencedColumns: ["restaurant_id","id"]
+    },{
+      foreignKeyName: "payments_restaurant_id_plan_id_fkey"
+      columns: ["restaurant_id","plan_id"]
+isOneToOne: false
+      referencedRelation: "split_plans"
       referencedColumns: ["restaurant_id","id"]
     },{
       foreignKeyName: "payments_restaurant_id_tab_id_fkey"
@@ -694,6 +780,19 @@ isOneToOne: true
       referencedColumns: ["id"]
     }
                   ]
+                },"rate_limits": {
+                  Row: {
+                    "hits": number,"key": string,"window_start": string
+                  }
+                  Insert: {
+                    "hits": number,"key": string,"window_start": string
+                  }
+                  Update: {
+                    "hits"?: number,"key"?: string,"window_start"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"refunds": {
                   Row: {
                     "amount_cents": number,"approved_by": string | null,"created_at": string,"id": string,"payment_id": string,"reason": string,"restaurant_id": string,"updated_at": string
@@ -721,13 +820,13 @@ isOneToOne: false
                   ]
                 },"restaurants": {
                   Row: {
-                    "address": string | null,"brand_color": string | null,"cover_path": string | null,"created_at": string,"default_language": Database["public"]['Enums']["app_locale"],"default_menu_style": Database["public"]['Enums']["menu_style"],"fiscal_mode": Database["public"]['Enums']["fiscal_mode"],"id": string,"ivu_municipal_bps": number,"ivu_state_bps": number,"name": string,"next_order_number": number,"onboarding_step": number,"phone": string | null,"plan": string,"slug": string,"status": Database["public"]['Enums']["restaurant_status"],"timezone": string,"trial_ends_at": string | null,"updated_at": string
+                    "address": string | null,"brand_color": string | null,"cover_path": string | null,"created_at": string,"default_language": Database["public"]['Enums']["app_locale"],"default_menu_style": Database["public"]['Enums']["menu_style"],"fiscal_mode": Database["public"]['Enums']["fiscal_mode"],"id": string,"ivu_municipal_bps": number,"ivu_state_bps": number,"max_people_per_table": number,"name": string,"next_order_number": number,"onboarding_step": number,"phone": string | null,"plan": string,"qr_max_line_qty": number,"qr_max_order_cents": number,"qr_max_tab_cents": number,"slug": string,"status": Database["public"]['Enums']["restaurant_status"],"timezone": string,"trial_ends_at": string | null,"updated_at": string
                   }
                   Insert: {
-                    "address"?: string | null,"brand_color"?: string | null,"cover_path"?: string | null,"created_at"?: string,"default_language"?: Database["public"]['Enums']["app_locale"],"default_menu_style"?: Database["public"]['Enums']["menu_style"],"fiscal_mode"?: Database["public"]['Enums']["fiscal_mode"],"id"?: string,"ivu_municipal_bps"?: number,"ivu_state_bps"?: number,"name": string,"next_order_number"?: number,"onboarding_step"?: number,"phone"?: string | null,"plan"?: string,"slug": string,"status"?: Database["public"]['Enums']["restaurant_status"],"timezone"?: string,"trial_ends_at"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"brand_color"?: string | null,"cover_path"?: string | null,"created_at"?: string,"default_language"?: Database["public"]['Enums']["app_locale"],"default_menu_style"?: Database["public"]['Enums']["menu_style"],"fiscal_mode"?: Database["public"]['Enums']["fiscal_mode"],"id"?: string,"ivu_municipal_bps"?: number,"ivu_state_bps"?: number,"max_people_per_table"?: number,"name": string,"next_order_number"?: number,"onboarding_step"?: number,"phone"?: string | null,"plan"?: string,"qr_max_line_qty"?: number,"qr_max_order_cents"?: number,"qr_max_tab_cents"?: number,"slug": string,"status"?: Database["public"]['Enums']["restaurant_status"],"timezone"?: string,"trial_ends_at"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "address"?: string | null,"brand_color"?: string | null,"cover_path"?: string | null,"created_at"?: string,"default_language"?: Database["public"]['Enums']["app_locale"],"default_menu_style"?: Database["public"]['Enums']["menu_style"],"fiscal_mode"?: Database["public"]['Enums']["fiscal_mode"],"id"?: string,"ivu_municipal_bps"?: number,"ivu_state_bps"?: number,"name"?: string,"next_order_number"?: number,"onboarding_step"?: number,"phone"?: string | null,"plan"?: string,"slug"?: string,"status"?: Database["public"]['Enums']["restaurant_status"],"timezone"?: string,"trial_ends_at"?: string | null,"updated_at"?: string
+                    "address"?: string | null,"brand_color"?: string | null,"cover_path"?: string | null,"created_at"?: string,"default_language"?: Database["public"]['Enums']["app_locale"],"default_menu_style"?: Database["public"]['Enums']["menu_style"],"fiscal_mode"?: Database["public"]['Enums']["fiscal_mode"],"id"?: string,"ivu_municipal_bps"?: number,"ivu_state_bps"?: number,"max_people_per_table"?: number,"name"?: string,"next_order_number"?: number,"onboarding_step"?: number,"phone"?: string | null,"plan"?: string,"qr_max_line_qty"?: number,"qr_max_order_cents"?: number,"qr_max_tab_cents"?: number,"slug"?: string,"status"?: Database["public"]['Enums']["restaurant_status"],"timezone"?: string,"trial_ends_at"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -757,6 +856,80 @@ isOneToOne: false
       referencedColumns: ["restaurant_id","tab_id"]
     },{
       foreignKeyName: "service_requests_restaurant_id_tab_id_fkey"
+      columns: ["restaurant_id","tab_id"]
+isOneToOne: false
+      referencedRelation: "tabs"
+      referencedColumns: ["restaurant_id","id"]
+    }
+                  ]
+                },"split_plan_units": {
+                  Row: {
+                    "id": string,"order_item_id": string,"plan_id": string,"restaurant_id": string,"share_id": string | null
+                  }
+                  Insert: {
+                    "id"?: string,"order_item_id": string,"plan_id": string,"restaurant_id": string,"share_id"?: string | null
+                  }
+                  Update: {
+                    "id"?: string,"order_item_id"?: string,"plan_id"?: string,"restaurant_id"?: string,"share_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "split_plan_units_order_item_id_fkey"
+      columns: ["order_item_id"]
+isOneToOne: false
+      referencedRelation: "order_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "split_plan_units_plan_id_fkey"
+      columns: ["plan_id"]
+isOneToOne: false
+      referencedRelation: "split_plans"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "split_plan_units_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "split_plan_units_share_id_fkey"
+      columns: ["share_id"]
+isOneToOne: false
+      referencedRelation: "order_item_shares"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"split_plans": {
+                  Row: {
+                    "created_at": string,"created_by_participant": string | null,"created_by_user": string | null,"id": string,"parts": number,"restaurant_id": string,"status": string,"tab_id": string,"updated_at": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"created_by_participant"?: string | null,"created_by_user"?: string | null,"id"?: string,"parts": number,"restaurant_id": string,"status"?: string,"tab_id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by_participant"?: string | null,"created_by_user"?: string | null,"id"?: string,"parts"?: number,"restaurant_id"?: string,"status"?: string,"tab_id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "split_plans_restaurant_id_created_by_participant_fkey"
+      columns: ["restaurant_id","created_by_participant"]
+isOneToOne: false
+      referencedRelation: "tab_participants"
+      referencedColumns: ["restaurant_id","id"]
+    },{
+      foreignKeyName: "split_plans_restaurant_id_fkey"
+      columns: ["restaurant_id"]
+isOneToOne: false
+      referencedRelation: "restaurants"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "split_plans_restaurant_id_tab_id_fkey"
+      columns: ["restaurant_id","tab_id"]
+isOneToOne: false
+      referencedRelation: "tab_totals"
+      referencedColumns: ["restaurant_id","tab_id"]
+    },{
+      foreignKeyName: "split_plans_restaurant_id_tab_id_fkey"
       columns: ["restaurant_id","tab_id"]
 isOneToOne: false
       referencedRelation: "tabs"
@@ -803,13 +976,13 @@ isOneToOne: false
                   ]
                 },"tab_participants": {
                   Row: {
-                    "auth_user_id": string | null,"created_at": string,"display_name": string | null,"guest_id": string | null,"id": string,"restaurant_id": string,"tab_id": string,"updated_at": string
+                    "auth_user_id": string | null,"created_at": string,"device_hash": string | null,"display_name": string | null,"guest_id": string | null,"guest_number": number | null,"id": string,"restaurant_id": string,"tab_id": string,"updated_at": string
                   }
                   Insert: {
-                    "auth_user_id"?: string | null,"created_at"?: string,"display_name"?: string | null,"guest_id"?: string | null,"id"?: string,"restaurant_id": string,"tab_id": string,"updated_at"?: string
+                    "auth_user_id"?: string | null,"created_at"?: string,"device_hash"?: string | null,"display_name"?: string | null,"guest_id"?: string | null,"guest_number"?: number | null,"id"?: string,"restaurant_id": string,"tab_id": string,"updated_at"?: string
                   }
                   Update: {
-                    "auth_user_id"?: string | null,"created_at"?: string,"display_name"?: string | null,"guest_id"?: string | null,"id"?: string,"restaurant_id"?: string,"tab_id"?: string,"updated_at"?: string
+                    "auth_user_id"?: string | null,"created_at"?: string,"device_hash"?: string | null,"display_name"?: string | null,"guest_id"?: string | null,"guest_number"?: number | null,"id"?: string,"restaurant_id"?: string,"tab_id"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -840,13 +1013,13 @@ isOneToOne: false
                   ]
                 },"tabs": {
                   Row: {
-                    "closed_at": string | null,"created_at": string,"id": string,"opened_at": string,"party_size": number | null,"pos_closed_at": string | null,"pos_closed_by": string | null,"restaurant_id": string,"split_count": number | null,"split_mode": Database["public"]['Enums']["split_mode"],"status": Database["public"]['Enums']["tab_status"],"table_id": string,"updated_at": string
+                    "closed_at": string | null,"created_at": string,"id": string,"opened_at": string,"party_size": number | null,"pos_closed_at": string | null,"pos_closed_by": string | null,"qr_limit_extra_cents": number,"restaurant_id": string,"split_count": number | null,"split_mode": Database["public"]['Enums']["split_mode"],"status": Database["public"]['Enums']["tab_status"],"table_id": string,"updated_at": string
                   }
                   Insert: {
-                    "closed_at"?: string | null,"created_at"?: string,"id"?: string,"opened_at"?: string,"party_size"?: number | null,"pos_closed_at"?: string | null,"pos_closed_by"?: string | null,"restaurant_id": string,"split_count"?: number | null,"split_mode"?: Database["public"]['Enums']["split_mode"],"status"?: Database["public"]['Enums']["tab_status"],"table_id": string,"updated_at"?: string
+                    "closed_at"?: string | null,"created_at"?: string,"id"?: string,"opened_at"?: string,"party_size"?: number | null,"pos_closed_at"?: string | null,"pos_closed_by"?: string | null,"qr_limit_extra_cents"?: number,"restaurant_id": string,"split_count"?: number | null,"split_mode"?: Database["public"]['Enums']["split_mode"],"status"?: Database["public"]['Enums']["tab_status"],"table_id": string,"updated_at"?: string
                   }
                   Update: {
-                    "closed_at"?: string | null,"created_at"?: string,"id"?: string,"opened_at"?: string,"party_size"?: number | null,"pos_closed_at"?: string | null,"pos_closed_by"?: string | null,"restaurant_id"?: string,"split_count"?: number | null,"split_mode"?: Database["public"]['Enums']["split_mode"],"status"?: Database["public"]['Enums']["tab_status"],"table_id"?: string,"updated_at"?: string
+                    "closed_at"?: string | null,"created_at"?: string,"id"?: string,"opened_at"?: string,"party_size"?: number | null,"pos_closed_at"?: string | null,"pos_closed_by"?: string | null,"qr_limit_extra_cents"?: number,"restaurant_id"?: string,"split_count"?: number | null,"split_mode"?: Database["public"]['Enums']["split_mode"],"status"?: Database["public"]['Enums']["tab_status"],"table_id"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -933,8 +1106,26 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "create_restaurant_with_owner":
+            "active_split_plan":
+{ Args: { "p_tab_id": string }; Returns: string
+                           },
+"attribute_staff_order":
+{ Args: { "p_order_id": string,"p_participant_id"?: string }; Returns: undefined
+                           },
+"cancel_pending_payment":
+{ Args: { "p_device_hash"?: string,"p_payment_id": string }; Returns: boolean
+                           },
+"cancel_split_plan":
+{ Args: { "p_tab_id": string }; Returns: Json
+                           },
+"create_restaurant_with_owner":
 { Args: { "p_language"?: Database["public"]['Enums']["app_locale"],"p_name": string,"p_owner_id": string,"p_phone"?: string,"p_slug": string }; Returns: string
+                           },
+"create_tab_payment":
+{ Args: { "p_for"?: string,"p_idempotency_key": string,"p_method": Database["public"]['Enums']["payment_method"],"p_option": string,"p_parts"?: number,"p_payer"?: string,"p_tab_id": string,"p_tip_cents"?: number,"p_tip_percent"?: number }; Returns: Json
+                           },
+"ensure_participant":
+{ Args: { "p_device_hash": string,"p_tab_id": string }; Returns: string
                            },
 "has_role":
 { Args: { "p_restaurant_id": string,"p_roles": (Database["public"]['Enums']["member_role"])[] }; Returns: boolean
@@ -942,14 +1133,26 @@ isOneToOne: false
 "is_platform_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"ivu_cents":
+{ Args: { "p_bps": number,"p_cents": number }; Returns: number
+                           },
+"place_guest_order":
+{ Args: { "p_client_order_id": string,"p_device_hash": string,"p_guest_language": Database["public"]['Enums']["app_locale"],"p_lines": Json,"p_name"?: string,"p_restaurant_id": string,"p_table_id": string }; Returns: Json
+                           },
 "place_order":
 { Args: { "p_client_order_id": string,"p_created_by"?: string,"p_device_id"?: string,"p_guest_language"?: Database["public"]['Enums']["app_locale"],"p_lines": Json,"p_restaurant_id": string,"p_source": Database["public"]['Enums']["order_source"],"p_table_id": string }; Returns: Json
                            },
-"publish_original_menu_image":
-{ Args: { "p_upload_id": string,"p_width": number,"p_height": number,"p_reviewed_by": string }; Returns: string
-                           },
 "publish_menu_import":
 { Args: { "p_payload": Json,"p_reviewed_by"?: string,"p_upload_id": string }; Returns: Json
+                           },
+"publish_original_menu_image":
+{ Args: { "p_height": number,"p_reviewed_by": string,"p_upload_id": string,"p_width": number }; Returns: string
+                           },
+"raise_tab_limit":
+{ Args: { "p_tab_id": string }; Returns: number
+                           },
+"rate_limit_hit":
+{ Args: { "p_key": string,"p_max": number,"p_window_seconds": number }; Returns: boolean
                            },
 "record_refund":
 { Args: { "p_amount_cents": number,"p_payment_id": string,"p_reason": string }; Returns: string
@@ -957,24 +1160,47 @@ isOneToOne: false
 "refresh_sales_summaries":
 { Args: { "p_from": string,"p_restaurant_id": string,"p_to": string }; Returns: undefined
                            },
+"rename_participant":
+{ Args: { "p_device_hash": string,"p_name": string,"p_tab_id": string }; Returns: string
+                           },
 "report_summary":
 { Args: { "p_from": string,"p_restaurant_id": string,"p_to": string }; Returns: Json
                            },
 "set_item_availability":
 { Args: { "p_available": boolean,"p_item_id": string }; Returns: undefined
                            },
+"set_item_shares":
+{ Args: { "p_order_item_id": string,"p_participants": (string)[] }; Returns: undefined
+                           },
 "set_order_status":
 { Args: { "p_order_id": string,"p_status": Database["public"]['Enums']["order_status"] }; Returns: undefined
                            },
+"split_item_shares":
+{ Args: { "p_order_item_id": string,"p_participants": (string)[] }; Returns: undefined
+                           },
+"split_plan_left":
+{ Args: { "p_plan_id": string }; Returns: Record<string, unknown>
+                           },
+"start_split_plan":
+{ Args: { "p_by_participant"?: string,"p_by_user"?: string,"p_parts": number,"p_tab_id": string }; Returns: Json
+                           },
 "storage_restaurant_id":
 { Args: { "p_name": string }; Returns: string
+                           },
+"tab_charges":
+{ Args: { "p_tab_id": string }; Returns: {
+              "c_cents": number,"c_covered": number,"c_created": string,"c_item": string,"c_owner": string,"c_plan": string,"c_share": string
+            }[]
+                           },
+"tab_checkout":
+{ Args: { "p_tab_id": string }; Returns: Json
                            },
 "void_order":
 { Args: { "p_order_id": string,"p_order_item_id"?: string,"p_reason": string }; Returns: undefined
                            }
           }
           Enums: {
-            "app_locale": "es"|"en","audit_action": "void"|"refund"|"price_change"|"pin_reset"|"support_access","device_kind": "server"|"kitchen"|"register","export_kind": "ivu_monthly_pdf"|"ivu_monthly_csv"|"sales_csv"|"sales_xlsx"|"qr_pdf","fiscal_mode": "sit_beside"|"processor","member_role": "owner"|"manager"|"server"|"kitchen","menu_style": "house"|"original"|"simple","order_source": "qr"|"staff","order_status": "new"|"in_kitchen"|"ready"|"served"|"void","paper_texture": "none"|"linen"|"kraft"|"parchment","payment_method": "card"|"ath"|"cash","payment_provider": "stripe"|"ath","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","print_status": "queued"|"printed"|"failed","printer_protocol": "browser"|"epson_epos"|"star_webprnt","provider_status": "not_connected"|"pending"|"connected"|"unavailable","qr_dot_style": "square"|"rounded"|"dots","qr_eye_style": "square"|"rounded"|"circle","qr_font": "menu"|"modern","qr_logo_mode": "none"|"mono"|"upload","restaurant_status": "trial"|"active"|"paused"|"cancelled","service_request_kind": "call_server"|"bring_check","service_request_status": "open"|"handled","split_mode": "one"|"even"|"items","subscription_status": "trial"|"active"|"past_due"|"cancelled","tab_status": "open"|"paying"|"closed","ticket_kind": "kitchen"|"receipt","upload_status": "processing"|"review"|"published"|"failed"
+            "app_locale": "es"|"en","audit_action": "void"|"refund"|"price_change"|"pin_reset"|"support_access"|"shares"|"limit_change","device_kind": "server"|"kitchen"|"register","export_kind": "ivu_monthly_pdf"|"ivu_monthly_csv"|"sales_csv"|"sales_xlsx"|"qr_pdf","fiscal_mode": "sit_beside"|"processor","member_role": "owner"|"manager"|"server"|"kitchen","menu_style": "house"|"original"|"simple","order_source": "qr"|"staff","order_status": "new"|"in_kitchen"|"ready"|"served"|"void","paper_texture": "none"|"linen"|"kraft"|"parchment","payment_method": "card"|"ath"|"cash","payment_provider": "stripe"|"ath","payment_status": "pending"|"paid"|"failed"|"refunded"|"partially_refunded","print_status": "queued"|"printed"|"failed","printer_protocol": "browser"|"epson_epos"|"star_webprnt","provider_status": "not_connected"|"pending"|"connected"|"unavailable","qr_dot_style": "square"|"rounded"|"dots","qr_eye_style": "square"|"rounded"|"circle","qr_font": "menu"|"modern","qr_logo_mode": "none"|"mono"|"upload","restaurant_status": "trial"|"active"|"paused"|"cancelled","service_request_kind": "call_server"|"bring_check","service_request_status": "open"|"handled","split_mode": "one"|"even"|"items","subscription_status": "trial"|"active"|"past_due"|"cancelled","tab_status": "open"|"paying"|"closed","ticket_kind": "kitchen"|"receipt","upload_status": "processing"|"review"|"published"|"failed"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1094,7 +1320,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "app_locale": ["es", "en"],"audit_action": ["void", "refund", "price_change", "pin_reset", "support_access"],"device_kind": ["server", "kitchen", "register"],"export_kind": ["ivu_monthly_pdf", "ivu_monthly_csv", "sales_csv", "sales_xlsx", "qr_pdf"],"fiscal_mode": ["sit_beside", "processor"],"member_role": ["owner", "manager", "server", "kitchen"],"menu_style": ["house", "original", "simple"],"order_source": ["qr", "staff"],"order_status": ["new", "in_kitchen", "ready", "served", "void"],"paper_texture": ["none", "linen", "kraft", "parchment"],"payment_method": ["card", "ath", "cash"],"payment_provider": ["stripe", "ath"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"print_status": ["queued", "printed", "failed"],"printer_protocol": ["browser", "epson_epos", "star_webprnt"],"provider_status": ["not_connected", "pending", "connected", "unavailable"],"qr_dot_style": ["square", "rounded", "dots"],"qr_eye_style": ["square", "rounded", "circle"],"qr_font": ["menu", "modern"],"qr_logo_mode": ["none", "mono", "upload"],"restaurant_status": ["trial", "active", "paused", "cancelled"],"service_request_kind": ["call_server", "bring_check"],"service_request_status": ["open", "handled"],"split_mode": ["one", "even", "items"],"subscription_status": ["trial", "active", "past_due", "cancelled"],"tab_status": ["open", "paying", "closed"],"ticket_kind": ["kitchen", "receipt"],"upload_status": ["processing", "review", "published", "failed"]
+            "app_locale": ["es", "en"],"audit_action": ["void", "refund", "price_change", "pin_reset", "support_access", "shares", "limit_change"],"device_kind": ["server", "kitchen", "register"],"export_kind": ["ivu_monthly_pdf", "ivu_monthly_csv", "sales_csv", "sales_xlsx", "qr_pdf"],"fiscal_mode": ["sit_beside", "processor"],"member_role": ["owner", "manager", "server", "kitchen"],"menu_style": ["house", "original", "simple"],"order_source": ["qr", "staff"],"order_status": ["new", "in_kitchen", "ready", "served", "void"],"paper_texture": ["none", "linen", "kraft", "parchment"],"payment_method": ["card", "ath", "cash"],"payment_provider": ["stripe", "ath"],"payment_status": ["pending", "paid", "failed", "refunded", "partially_refunded"],"print_status": ["queued", "printed", "failed"],"printer_protocol": ["browser", "epson_epos", "star_webprnt"],"provider_status": ["not_connected", "pending", "connected", "unavailable"],"qr_dot_style": ["square", "rounded", "dots"],"qr_eye_style": ["square", "rounded", "circle"],"qr_font": ["menu", "modern"],"qr_logo_mode": ["none", "mono", "upload"],"restaurant_status": ["trial", "active", "paused", "cancelled"],"service_request_kind": ["call_server", "bring_check"],"service_request_status": ["open", "handled"],"split_mode": ["one", "even", "items"],"subscription_status": ["trial", "active", "past_due", "cancelled"],"tab_status": ["open", "paying", "closed"],"ticket_kind": ["kitchen", "receipt"],"upload_status": ["processing", "review", "published", "failed"]
           }
         }
 } as const

@@ -19,6 +19,8 @@ export interface Ticket {
     totalCents: Cents;
   };
   footer?: string;
+  /** Kitchen: a QR order that opened a free table prints "MESA NUEVA (QR)" under the header. */
+  newTable?: boolean;
 }
 
 // Labels come from the message files like every other UI string.
@@ -81,6 +83,7 @@ export function renderTicketText(ticket: Ticket, widthChars: number): string {
     rule,
     row(`${l.table} ${ticket.tableLabel}`, `${l.order} #${ticket.orderNumber}`, widthChars),
     time(ticket.createdAt, ticket.locale),
+    ...(ticket.newTable ? [center(`** ${l.newTable} **`, widthChars)] : []),
     rule,
   ];
   for (const line of ticket.lines) {

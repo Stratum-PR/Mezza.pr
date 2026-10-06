@@ -88,6 +88,34 @@ export async function confirmCash(slug: string, paymentId: string): Promise<Staf
   return { ok: true };
 }
 
+/** Staff cancel a pending payment a guest abandoned (e.g. asked for cash, then left); its charges are owed again. */
+export async function cancelPendingPayment(slug: string, paymentId: string): Promise<StaffResult> {
+  if (!uuid.safeParse(paymentId).success) return fail("invalid");
+  const ctx = await requireSection(slug, "service");
+  const db = createAdminClient();
+  const { data: payment } = await db
+    .from("payments")
+    .select("id")
+    .eq("id", paymentId)
+    .eq("restaurant_id", ctx.restaurant.id)
+    .maybeSingle();
+  if (!payment) return fail("invalid");
+  const { data, error } = await db.rpc("cancel_pending_payment", { p_payment_id: paymentId });
+  if (error || !data) return fail("failed");
+  refresh(slug);
+  return { ok: true };
+}
+
+/** "Ampliar límite": one more restaurant tab cap for this table's QR orders. Returns the new cap (number). */
+export async function raiseTabLimit(slug: string, tabId: string): Promise<StaffResult> {
+  if (!uuid.safeParse(tabId).success) return fail("invalid");
+  await requireSection(slug, "service");
+  const { data, error } = await (await createClient()).rpc("raise_tab_limit", { p_tab_id: tabId });
+  if (error) return fail(error.code === "42501" ? "forbidden" : "failed");
+  refresh(slug);
+  return { ok: true, number: data };
+}
+
 /** "Cerrado en el POS": the sale was entered on the fiscal terminal; the tab closes. */
 export async function closeOnPos(slug: string, tabId: string): Promise<StaffResult> {
   if (!uuid.safeParse(tabId).success) return fail("invalid");
@@ -111,20 +139,31 @@ const linesSchema = z
       qty: z.number().int().min(1).max(99),
       modifierOptionIds: z.array(uuid).max(20),
       note: z.string().max(200).optional(),
+      shared: z.boolean().optional(),
     }),
   )
   .min(1)
   .max(50);
 
-/** A server takes an order for guests who don't scan (source "staff"); same rules as place_order. */
+/**
+ * A server takes an order for guests who don't scan (source "staff"); same rules as place_order.
+ * The order can go to one person at the table (participantId) or the whole table (null); shared
+ * lines are split among everyone who has ordered.
+ */
 export async function staffPlaceOrder(
   slug: string,
   tableId: string,
   clientOrderId: string,
   lines: z.input<typeof linesSchema>,
+  participantId: string | null = null,
 ): Promise<StaffResult> {
   const parsed = linesSchema.safeParse(lines);
-  if (!uuid.safeParse(tableId).success || !uuid.safeParse(clientOrderId).success || !parsed.success)
+  if (
+    !uuid.safeParse(tableId).success ||
+    !uuid.safeParse(clientOrderId).success ||
+    !parsed.success ||
+    (participantId !== null && !uuid.safeParse(participantId).success)
+  )
     return fail("validation");
   const ctx = await requireSection(slug, "service");
   const { data, error } = await createAdminClient().rpc("place_order", {
@@ -137,8 +176,20 @@ export async function staffPlaceOrder(
     p_created_by: ctx.userId,
   });
   if (error || !data) return fail("failed");
-  const r = data as { status: string; order_id?: string; number?: number; reason?: string };
+  const r = data as {
+    status: string;
+    order_id?: string;
+    number?: number;
+    reason?: string;
+    replayed?: boolean;
+  };
   if (r.status !== "accepted") return fail(r.reason ?? "validation");
+  if (!r.replayed && (participantId || parsed.data.some((l) => l.shared))) {
+    const { error: attributeError } = await (
+      await createClient()
+    ).rpc("attribute_staff_order", { p_order_id: r.order_id!, p_participant_id: participantId ?? undefined });
+    if (attributeError) return fail("failed");
+  }
   refresh(slug);
   return { ok: true, id: r.order_id, number: r.number };
 }

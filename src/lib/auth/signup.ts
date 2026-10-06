@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { rateLimiter } from "@/connectors/rate-limit";
+import { clientIp } from "@/lib/client-ip";
 import { createAdminClient } from "@/lib/db/admin";
 import { createClient } from "@/lib/db/server";
 import { slugify, uniqueSlug } from "@/lib/slug";
@@ -47,7 +48,7 @@ export async function signUp(_: SignupState, form: FormData): Promise<SignupStat
     };
   }
   const d = parsed.data;
-  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
+  const ip = await clientIp();
   if (!(await rateLimiter().limit(`signup:${ip}`, 10, 3600)).ok)
     return { status: "error", error: "rate_limited" };
 

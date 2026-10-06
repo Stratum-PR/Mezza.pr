@@ -436,13 +436,59 @@
         "invalid_table": "This code is no longer valid. Ask your server for the table's new code.",
         "validation": "Something changed on the menu. Check your order and send it again.",
         "network": "No connection. Tap “Send to kitchen” again: it won't be duplicated.",
-        "request": "We couldn't reach your server. Try again."
+        "request": "We couldn't reach your server. Try again.",
+        "table_full": "This table already has 20 people. Ask your server to take your order.",
+        "limit_line": "You can order up to {max} of the same dish in each order.",
+        "limit_order": "A QR order can be up to {max}. Split it in two or ask your server.",
+        "limit_tab": "Your table reached its QR ordering limit. Ask your server to raise it.",
+        "rate_limited": "That's a lot at once. Wait a minute and try again."
       },
       "payErrors": {
         "nothing_to_pay": "There's nothing to pay yet.",
         "unavailable": "That method isn't available right now. Choose another.",
         "coming_soon": "That method is coming soon. Pay with your server.",
-        "failed": "Couldn't process the payment. Try again or pay with your server."
+        "failed": "Couldn't process the payment. Try again or pay with your server.",
+        "pending_exists": "You already have a payment pending. Wait for your server or cancel it.",
+        "table_full": "The table is full. Ask your server to take your payment.",
+        "rate_limited": "That's a lot at once. Wait a minute and try again.",
+        "no_plan": "The split changed. Check it and try again."
+      },
+      "checkout": {
+        "optionsTitle": "What are you paying for?",
+        "mine": "My dishes",
+        "mineHint": "What you ordered and your share of what's shared.",
+        "mineNone": "You have nothing left to pay.",
+        "person": "Pay for someone else",
+        "personHint": "Choose who you're paying for.",
+        "personNone": "Nobody else has dishes left to pay.",
+        "balance": "Everything left at the table",
+        "balanceHint": "Includes everyone's and the table's.",
+        "plan": "Split evenly",
+        "planHint": "Split what's left among several people.",
+        "planCount": "How many ways?",
+        "planStart": "Split {n} ways",
+        "planActive": "The check is split {parts} ways. Shares left: {left}, {share} each.",
+        "planParts": "Shares you're paying",
+        "planCancel": "Cancel the split",
+        "planCancelled": "The split was cancelled.",
+        "tableLeft": "Left to pay at the table: {total}",
+        "tableDone": "The table is paid.",
+        "paid": "Paid",
+        "owes": "{total} left",
+        "cashPendingMine": "Your server is coming to collect {total} in cash.",
+        "cancelPayment": "Cancel this payment",
+        "paymentCancelled": "Payment cancelled.",
+        "someonePaying": "There are payments in progress at the table.",
+        "receiptPart": "share",
+        "receiptPlan": "{parts} of {of} equal shares",
+        "processing": "Payment in progress"
+      },
+      "planErrors": {
+        "plan_exists": "Someone already split the check {parts} ways. Check the shares left.",
+        "plan_started": "A share was already paid; the split can't be cancelled.",
+        "nothing_to_pay": "There's nothing left to split.",
+        "table_full": "The table is full. Ask your server to take your payment.",
+        "failed": "That didn't work. Try again."
       }
     },
     "quickAdd": "Add {name}",
@@ -456,7 +502,29 @@
     },
     "originalEmpty": "No original menu image has been published.",
     "originalImageHint": "Printed menu. Choose dishes from the Simple or House view to order.",
-    "originalLoadError": "The original menu image could not be loaded. Use the Simple or House view."
+    "originalLoadError": "The original menu image could not be loaded. Use the Simple or House view.",
+    "people": {
+      "guest": "Guest #{number}",
+      "you": "You",
+      "table": "For the table",
+      "nameLabel": "Your name (optional)",
+      "nameHint": "So the table knows what you ordered. Leave it blank to be “Guest #{number}”.",
+      "shared": "To share",
+      "sharedHint": "Split among everyone at the table who has ordered.",
+      "sharedOf": "share of {total}",
+      "groupTitle": "The table's check",
+      "groupHint": "What each person ordered and their share of dishes to share.",
+      "rename": "Change my name",
+      "renameSave": "Save",
+      "renamed": "Done, your name was updated.",
+      "nameErrors": {
+        "long": "Use 24 letters or fewer.",
+        "invalid": "Use only letters, numbers, spaces, apostrophes, periods or hyphens.",
+        "blocked": "That name isn't available. Try another.",
+        "name_taken": "Someone at the table already uses that name. Try another.",
+        "failed": "Couldn't change your name. Try again."
+      }
+    }
   },
   "ticket": {
     "kitchen": "KITCHEN",
@@ -468,7 +536,8 @@
     "ivuMunicipal": "Municipal IVU",
     "tip": "Tip",
     "total": "Total",
-    "note": "Note"
+    "note": "Note",
+    "newTable": "NEW TABLE (QR)"
   },
   "auth": {
     "title": "Log in to Mezza",
@@ -864,7 +933,8 @@
       "soldOutLabel": "{name}: sold out",
       "available": "Available",
       "soldOutState": "Sold out",
-      "newOrder": "New order #{number} · Table {label}"
+      "newOrder": "New order #{number} · Table {label}",
+      "newTable": "New table"
     },
     "service": {
       "title": "Service",
@@ -901,7 +971,15 @@
       "managerOnly": "Voids and refunds are for managers and owners.",
       "done": "Done.",
       "showAll": "Show all ({n})",
-      "showLess": "Show fewer"
+      "showLess": "Show fewer",
+      "newTable": "New table by QR",
+      "newTableHint": "This order opened a table that was free. Check that someone is seated.",
+      "afterPayment": "Paid, then ordered again",
+      "nearLimit": "Table {label} is near its QR limit: {total} of {cap}",
+      "raiseLimit": "Raise limit",
+      "limitRaised": "Table limit raised to {cap}.",
+      "cashCancel": "Cancel",
+      "cashCancelled": "Payment cancelled; what it covered is owed again."
     },
     "tables": {
       "title": "Tables",
@@ -966,7 +1044,13 @@
       "ivuState": "State IVU ({rate}%)",
       "ivuMunicipal": "Municipal IVU ({rate}%)",
       "total": "Total",
-      "pickTable": "Pick the table before sending."
+      "pickTable": "Pick the table before sending.",
+      "forLabel": "For",
+      "forTable": "Whole table",
+      "forHint": "Who this order is for. Dishes to share are split among everyone who has ordered.",
+      "shared": "To share",
+      "sharedItem": "Share {name}",
+      "guest": "Guest #{number}"
     },
     "floor": {
       "mainArea": "Main room",
@@ -1443,6 +1527,15 @@
       "lead": "How Mezza looks on this device: theme and screen language.",
       "theme": "Theme",
       "language": "Language"
+    },
+    "limits": {
+      "title": "QR ordering limits",
+      "lead": "They protect the kitchen from fake or huge orders. They only apply to QR orders: what staff take has no limit, and you can raise one table's limit from Servicio.",
+      "order": "Maximum per order ($)",
+      "line": "Maximum of one dish per order",
+      "tab": "Maximum per open table ($)",
+      "people": "Maximum people per table",
+      "save": "Save limits"
     }
   },
   "theme": {

@@ -10,9 +10,11 @@ import { cn } from "@/lib/cn";
 import { formatCents } from "@/lib/money";
 import {
   advanceOrder,
+  cancelPendingPayment,
   closeOnPos,
   confirmCash,
   handleRequest,
+  raiseTabLimit,
   refundPayment,
   voidLine,
   type StaffResult,
@@ -20,6 +22,7 @@ import {
 import type { Floor } from "@/lib/staff/floor";
 import { CashDialog } from "./cash-dialog";
 import { useLiveRefresh, useMinutesSince } from "./live";
+import { OrderFlags } from "./order-flags";
 import { OrderStrip } from "./order-strip";
 import { ReasonDialog } from "./reason-dialog";
 
@@ -62,7 +65,11 @@ export function ServiceScreen({
 
   const ready = floor.orders.filter((o) => o.status === "ready");
   const alertCount =
-    floor.requests.length + floor.cashToCollect.length + ready.length + floor.posToClose.length;
+    floor.requests.length +
+    floor.cashToCollect.length +
+    ready.length +
+    floor.posToClose.length +
+    floor.nearLimit.length;
   const todays = floor.orders
     .filter((o) => o.status !== "void")
     .slice()
@@ -153,9 +160,24 @@ export function ServiceScreen({
                   <b>
                     {t("service.cash", { label: p.tableLabel, total: formatCents(p.totalCents, locale) })}
                   </b>
-                  <Button size="sm" variant="ok" disabled={pending} onClick={() => setCashFor(p)}>
-                    {t("service.cashReceived")}
-                  </Button>
+                  <span className="flex flex-wrap justify-end gap-1.5">
+                    <Button
+                      size="sm"
+                      variant="soft"
+                      disabled={pending}
+                      onClick={() =>
+                        run(
+                          () => cancelPendingPayment(slug, p.id),
+                          () => t("service.cashCancelled"),
+                        )
+                      }
+                    >
+                      {t("service.cashCancel")}
+                    </Button>
+                    <Button size="sm" variant="ok" disabled={pending} onClick={() => setCashFor(p)}>
+                      {t("service.cashReceived")}
+                    </Button>
+                  </span>
                 </li>
               ))}
               {ready.map((o) => (
@@ -171,6 +193,33 @@ export function ServiceScreen({
                     onClick={() => run(() => advanceOrder(slug, o.id, "served"))}
                   >
                     {t("service.served")}
+                  </Button>
+                </li>
+              ))}
+              {floor.nearLimit.map((n) => (
+                <li
+                  key={`limit-${n.tabId}`}
+                  className="flex items-center justify-between gap-2 rounded-[12px] border-l-4 border-l-warn bg-bg p-2.5"
+                >
+                  <b>
+                    {t("service.nearLimit", {
+                      label: n.tableLabel,
+                      total: formatCents(n.subtotalCents, locale),
+                      cap: formatCents(n.capCents, locale),
+                    })}
+                  </b>
+                  <Button
+                    size="sm"
+                    variant="soft"
+                    disabled={pending}
+                    onClick={() =>
+                      run(
+                        () => raiseTabLimit(slug, n.tabId),
+                        (r) => t("service.limitRaised", { cap: formatCents(r.number ?? 0, locale) }),
+                      )
+                    }
+                  >
+                    {t("service.raiseLimit")}
                   </Button>
                 </li>
               ))}
@@ -202,6 +251,8 @@ export function ServiceScreen({
                     </span>
                     <span className="text-muted">{t(`source.${o.source}`)}</span>
                   </div>
+                  <OrderFlags order={o} className="my-1" />
+                  {o.openedTab && <p className="mb-1 text-xs text-muted">{t("service.newTableHint")}</p>}
                   <ul>
                     {o.lines.map((l) => (
                       <li key={l.id} className="flex items-center justify-between gap-2 py-0.5">

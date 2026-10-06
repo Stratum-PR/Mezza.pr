@@ -98,10 +98,17 @@ Client-side registries can't read server env vars; the page passes the implement
 
 ## splitter
 
-- **Now:** `one` check per table. `even` and `items` throw `ConnectorNotImplementedError`.
-- **Contract:** parts always sum exactly to the tab's subtotal and IVU totals (property test; the
-  `even`/`items` cases are `.todo`).
-- **Tests before `splitBill` / `sharedTab`:** the property test passes for every mode.
+- **Now:** `standard`: `one` check, `even` (2–20 parts) and `items` (by person, with locked shares;
+  the table's lines last), IVU per part by cumulative difference. It computes previews; real payments
+  are computed by `create_tab_payment` in the database with the same rules.
+- **Contract:** parts always sum exactly to the tab's subtotal and IVU totals, none negative
+  (property tests for every mode).
+- **Tests before `splitBill`:** the property test passes for every mode (done in pass 2 phase 3);
+  `splitBill` is on since phase 4 with the checkout tests (`supabase/tests/10_guest_checkout.test.sql`,
+  `tests/e2e/checkout.spec.ts`).
+- **Tests before `sharedTab`** (people at a table and locked shares of shared dishes, pass 2 phase 1;
+  doesn't use the splitter): `supabase/tests/07_participants.test.sql` and the group-check property
+  test (`src/lib/guest/group-check.test.ts`). Payment stays one check until `splitBill`.
 
 ## notifier
 
@@ -116,5 +123,11 @@ Client-side registries can't read server env vars; the page passes the implement
 
 ## rate limit
 
-- **Now:** `noop`. Call sites are on guest actions (place order, call server, bring check).
-- **Real implementation must:** a shared store (Upstash) keyed by table token and IP.
+- **Now:** `postgres` (default): fixed-window counters in `public.rate_limits` through
+  `rate_limit_hit`, shared by every app instance; fails closed. `noop` remains for special cases.
+- **Keys (per minute):** guest orders 5 per phone (device hash), 20 per table, 30 per IP; renames 10
+  per phone; service requests 10 per table, 30 per IP; signup 10 and demo requests 5 per IP per hour.
+  The IP comes from `src/lib/client-ip.ts` (platform headers only, never raw `x-forwarded-for`).
+- **Later:** `upstash_stub` if Postgres load from counters ever matters; same interface.
+- **Tests:** `supabase/tests/08_order_limits.test.sql` (windows, independent keys, bounded keys,
+  browsers can't call it).

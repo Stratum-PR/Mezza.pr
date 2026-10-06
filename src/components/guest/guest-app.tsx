@@ -2,14 +2,19 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  guestCancelPayment,
+  guestCancelPlan,
   guestPay,
   guestPaymentMethods,
   guestPlaceOrder,
   guestReceipt,
+  guestRename,
   guestRequest,
+  guestStartPlan,
   guestStatus,
   type Receipt,
 } from "@/app/r/[restaurant]/t/[token]/actions";
+import { flags } from "@/config/flags";
 import { GuestMenu, type LiveMode } from "@/components/menu/guest-menu";
 import { ThemeCycle, type ThemeChoice } from "@/components/ui/theme-switch";
 import type { CartLine } from "@/components/menu/item-sheet";
@@ -17,13 +22,16 @@ import type { MenuT } from "@/components/menu/menu-styles";
 import type { MenuData, MenuLocale } from "@/components/menu/types";
 import { newClientOrderId, orderQueue } from "@/connectors/orders";
 import { realtimeChannel } from "@/connectors/realtime";
+import { groupCheck } from "@/lib/guest/group-check";
+import { participantLabel } from "@/lib/guest/names";
 import type { GuestStatus } from "@/lib/guest/status";
 import { cn } from "@/lib/cn";
-import { computeIvu, dollarsToCents, formatCents, tipFromPercent } from "@/lib/money";
+import { dollarsToCents, formatCents, ivuForPart, tipFromPercent } from "@/lib/money";
 
 type Screen = "menu" | "status" | "pay" | "receipt";
 type Method = "card" | "ath" | "cash";
 type Tip = { percent: number } | { cents: number };
+type PayOption = "mine" | "person" | "balance" | "plan";
 
 const btn = "min-h-12 w-full rounded-btn font-bold";
 const primary = `${btn} bg-accent text-accent-ink shadow-btn disabled:opacity-50`;
@@ -87,11 +95,22 @@ export function GuestApp({
   const [payError, setPayError] = useState<string | null>(null);
   const [requestError, setRequestError] = useState(false);
   const payKey = useRef<string | null>(null);
+  // The name goes with the phone's first order; the server ignores it once the phone is at the table.
+  const [name, setName] = useState("");
+  const [renameValue, setRenameValue] = useState("");
+  const [renameMessage, setRenameMessage] = useState<{ ok: boolean; key: string } | null>(null);
+  // What this phone is paying for (the amount is always computed by the server).
+  const [option, setOption] = useState<PayOption>("mine");
+  const [forId, setForId] = useState<string | null>(null);
+  const [parts, setParts] = useState(1);
+  const [planCount, setPlanCount] = useState(2);
+  const [checkoutMessage, setCheckoutMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const keys = useMemo(
     () => ({
       cart: `mezza-cart:${tableId}`,
       pending: `mezza-pending:${tableId}`,
       payment: `mezza-payment:${tableId}`,
+      shown: `mezza-receipt-shown:${tableId}`,
     }),
     [tableId],
   );
@@ -111,14 +130,17 @@ export function GuestApp({
     const s = await guestStatus(slug, token);
     if (!s) return;
     setStatus(s);
-    // A cash payment the server just confirmed: show the receipt.
-    if (s.payment?.status === "paid" && read(keys.payment) === s.payment.id) {
+    // This phone's cash payment the server just confirmed: show the receipt, once (the guest may go
+    // back to the menu and keep ordering; the receipt stays under "Mi pedido").
+    const mine = s.payments.find((p) => p.id === read(keys.payment));
+    if (mine?.status === "paid" && read(keys.shown) !== mine.id) {
+      store(keys.shown, mine.id);
       setScreen((current) => {
-        if (current !== "receipt") void showReceipt(s.payment!.id);
+        if (current !== "receipt") void showReceipt(mine.id);
         return current;
       });
     }
-  }, [slug, token, keys.payment, showReceipt]);
+  }, [slug, token, keys.payment, keys.shown, showReceipt]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- initial load from the server
@@ -162,8 +184,8 @@ export function GuestApp({
   }, [realtimeImpl, slug, token, restaurantId, refresh]);
 
   const queue = useMemo(
-    () => orderQueue(queueImpl, (draft) => guestPlaceOrder(slug, token, draft)),
-    [queueImpl, slug, token],
+    () => orderQueue(queueImpl, (draft) => guestPlaceOrder(slug, token, draft, name)),
+    [queueImpl, slug, token, name],
   );
 
   async function send(cart: CartLine[], lang: MenuLocale, t: MenuT) {
@@ -182,6 +204,7 @@ export function GuestApp({
           qty: l.qty,
           modifierOptionIds: l.optionIds,
           note: l.note,
+          shared: l.shared,
         })),
       });
       if (result.status === "accepted") {
@@ -190,6 +213,17 @@ export function GuestApp({
         return { ok: true as const, message: t("flow.sent", { number: result.number }) };
       }
       if (result.status === "rejected") store(keys.pending, null);
+      if (result.status === "rejected" && result.detail === "table_full")
+        return { ok: false as const, message: t("flow.errors.table_full") };
+      if (result.status === "rejected" && result.detail?.startsWith("limit_")) {
+        const max =
+          result.detail === "limit_line" ? String(result.limit ?? "") : formatCents(result.limit ?? 0, lang);
+        return { ok: false as const, message: t(`flow.errors.${result.detail}`, { max }) };
+      }
+      if (result.status === "rejected" && result.detail === "rate_limited")
+        return { ok: false as const, message: t("flow.errors.rate_limited") };
+      if (result.status === "rejected" && result.detail?.startsWith("name_"))
+        return { ok: false as const, message: t(`people.nameErrors.${result.detail.slice(5)}`) };
       const reason = result.status === "rejected" ? result.reason : "network";
       return { ok: false as const, message: t(`flow.errors.${reason}`) };
     } catch {
@@ -206,18 +240,89 @@ export function GuestApp({
     }
   }
 
-  const subtotal = status?.totals.subtotalCents ?? 0;
-  const ivu = computeIvu(subtotal, rates);
+  // What's owed comes from the server (tab_checkout); these are previews of what it will charge.
+  const co = status?.checkout ?? null;
+  const me = status?.me ?? null;
+  const plan = co?.plan ?? null;
+  const owedBy = (id: string | null) => (id ? (co?.owed[id] ?? 0) : 0);
+  const planCents = (k: number) =>
+    plan
+      ? Math.floor(plan.amountLeftCents / plan.partsLeft) * k +
+        Math.min(k, plan.amountLeftCents % plan.partsLeft)
+      : 0;
+  const choice: PayOption = flags.splitBill ? option : "balance";
+  const subtotal = !co
+    ? 0
+    : choice === "mine"
+      ? owedBy(me)
+      : choice === "person"
+        ? owedBy(forId)
+        : choice === "plan"
+          ? planCents(Math.min(parts, plan?.partsLeft ?? 0))
+          : co.balanceCents;
+  const ivu = ivuForPart(co?.paidBeforeCents ?? 0, subtotal, rates);
   const tipCents = "percent" in tip ? tipFromPercent(subtotal, tip.percent) : tip.cents;
   const total = subtotal + ivu.total + tipCents;
   const orderedCount = status?.orders.filter((o) => o.status !== "void").length ?? 0;
-  const cashPending = status?.payment?.method === "cash" && status.payment.status === "pending";
+  const balanceLeft = co?.balanceCents ?? 0;
+  const myPending =
+    (me && status?.payments.find((p) => p.participantId === me && p.status === "pending")) || null;
+
+  /** Opens "Pagar" on the most likely choice: my dishes, else the even split, else the balance. */
+  function openPay() {
+    setOption(me && owedBy(me) > 0 ? "mine" : plan ? "plan" : "balance");
+    setParts(1);
+    setPlanCount(Math.max(2, Math.min(20, status?.people.length ?? 2)));
+    setPayError(null);
+    setCheckoutMessage(null);
+    setScreen("pay");
+  }
+
+  async function startPlan(t: MenuT) {
+    const r = await guestStartPlan(slug, token, planCount).catch(() => ({
+      ok: false as const,
+      error: "failed" as const,
+    }));
+    setCheckoutMessage(
+      r.ok
+        ? null
+        : {
+            ok: false,
+            text: t(`flow.planErrors.${r.error}`, { parts: "parts" in r ? (r.parts ?? "") : "" }),
+          },
+    );
+    await refresh();
+    setOption("plan");
+    setParts(1);
+  }
+
+  async function cancelPlan(t: MenuT) {
+    const r = await guestCancelPlan(slug, token).catch(() => ({
+      ok: false as const,
+      error: "failed" as const,
+    }));
+    setCheckoutMessage(
+      r.ok
+        ? { ok: true, text: t("flow.checkout.planCancelled") }
+        : { ok: false, text: t(`flow.planErrors.${r.error}`, { parts: "" }) },
+    );
+    await refresh();
+  }
+
+  async function cancelPayment(t: MenuT, say: (m: string) => void, paymentId: string) {
+    const r = await guestCancelPayment(slug, token, paymentId).catch(() => ({ ok: false }));
+    if (r.ok) say(t("flow.checkout.paymentCancelled"));
+    await refresh();
+  }
 
   async function pay(t: MenuT, lang: MenuLocale) {
     setPaying(true);
     setPayError(null);
     payKey.current ??= newClientOrderId();
     const r = await guestPay(slug, token, {
+      option: choice,
+      forId: choice === "person" ? (forId ?? undefined) : undefined,
+      parts: choice === "plan" ? parts : undefined,
       method,
       tip,
       idempotencyKey: payKey.current,
@@ -231,18 +336,39 @@ export function GuestApp({
     }
     store(keys.payment, r.paymentId);
     payKey.current = null;
-    if (r.next === "done") await showReceipt(r.paymentId);
-    else {
+    if (r.next === "done") {
+      store(keys.shown, r.paymentId);
+      await showReceipt(r.paymentId);
+    } else {
       setScreen("status");
+      void refresh();
+    }
+  }
+
+  async function rename() {
+    const r = await guestRename(slug, token, renameValue).catch(() => ({
+      ok: false as const,
+      error: "failed" as const,
+    }));
+    setRenameMessage(
+      r.ok ? { ok: true, key: "people.renamed" } : { ok: false, key: `people.nameErrors.${r.error}` },
+    );
+    if (r.ok) {
+      setRenameValue("");
       void refresh();
     }
   }
 
   const live: LiveMode = {
     storageKey: keys.cart,
+    sharing: flags.sharedTab,
     send,
     render: ({ lang, t, say }) => {
       const lineName = (l: { nameEs: string; nameEn: string }) => (lang === "es" ? l.nameEs : l.nameEn);
+      const label = (p: { name: string | null; number: number }) =>
+        participantLabel(p, (number) => t("people.guest", { number }));
+      const people = status?.people ?? [];
+      const groups = flags.sharedTab && people.length > 0 ? groupCheck(people, status?.orders ?? []) : [];
       const requests = (
         <div className="mb-3 grid grid-cols-2 gap-2">
           {(["call_server", "bring_check"] as const).map((kind) => {
@@ -277,13 +403,22 @@ export function GuestApp({
             <h2 id="status-title" className="text-xl font-extrabold">
               {t("flow.statusTitle")}
             </h2>
-            {cashPending && (
-              <p
+            {myPending && (
+              <div
                 role="status"
-                className="rounded-btn bg-sandsoft px-3 py-2.5 text-sm font-semibold text-olive"
+                className="grid gap-2 rounded-btn bg-sandsoft px-3 py-2.5 text-sm font-semibold text-olive"
               >
-                {t("flow.cashPending", { total: formatCents(status!.payment!.totalCents, lang) })}
-              </p>
+                <p>
+                  {t("flow.checkout.cashPendingMine", { total: formatCents(myPending.totalCents, lang) })}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => cancelPayment(t, say, myPending.id)}
+                  className="min-h-10 justify-self-start rounded-btn border border-current px-3 font-bold"
+                >
+                  {t("flow.checkout.cancelPayment")}
+                </button>
+              </div>
             )}
             {orderedCount === 0 && <p className="text-muted">{t("flow.empty")}</p>}
             <ul className="grid gap-2">
@@ -320,6 +455,113 @@ export function GuestApp({
                 </li>
               ))}
             </ul>
+            {groups.length > 0 && (
+              <section aria-labelledby="group-title" className="grid gap-2">
+                <h3 id="group-title" className="text-lg font-extrabold">
+                  {t("people.groupTitle")}
+                </h3>
+                <p className="text-sm text-muted">{t("people.groupHint")}</p>
+                <ul className="grid gap-2">
+                  {groups.map((g) => {
+                    const mine = !!g.person && g.person.id === status?.me;
+                    return (
+                      <li
+                        key={g.person?.id ?? "table"}
+                        className={cn(
+                          "rounded-card border p-3",
+                          mine ? "border-blue bg-soft" : "border-line",
+                        )}
+                      >
+                        <div className="tabular mb-1 flex items-baseline justify-between gap-2">
+                          <b>
+                            {g.person ? label(g.person) : t("people.table")}
+                            {mine && <span className="text-muted"> ({t("people.you")})</span>}
+                          </b>
+                          <span className="font-bold">{formatCents(g.subtotalCents, lang)}</span>
+                        </div>
+                        {co && flags.splitBill && (
+                          <p className="mb-1 text-xs font-bold">
+                            {(g.person ? owedBy(g.person.id) : co.tableCents) === 0 ? (
+                              g.person &&
+                              status?.payments.some(
+                                (p) => p.participantId === g.person!.id && p.status === "pending",
+                              ) ? (
+                                <span className="text-olive">{t("flow.checkout.processing")}</span>
+                              ) : (
+                                <span className="text-ok">✓ {t("flow.checkout.paid")}</span>
+                              )
+                            ) : (
+                              <span className="text-warn">
+                                {t("flow.checkout.owes", {
+                                  total: formatCents(g.person ? owedBy(g.person.id) : co.tableCents, lang),
+                                })}
+                              </span>
+                            )}
+                          </p>
+                        )}
+                        <ul className="tabular text-sm">
+                          {g.entries.map((e) => (
+                            <li key={e.lineId} className="flex justify-between gap-2">
+                              <span>
+                                {e.qty}× {lineName(e)}
+                                {e.sharedOfCents !== null && (
+                                  <span className="text-muted">
+                                    {" "}
+                                    · {t("people.sharedOf", { total: formatCents(e.sharedOfCents, lang) })}
+                                  </span>
+                                )}
+                              </span>
+                              <span>{formatCents(e.cents, lang)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    );
+                  })}
+                </ul>
+                {status?.me && (
+                  <form
+                    className="grid gap-1.5"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      void rename();
+                    }}
+                  >
+                    <label htmlFor="rename" className="text-sm font-bold">
+                      {t("people.rename")}
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        id="rename"
+                        value={renameValue}
+                        maxLength={24}
+                        autoComplete="given-name"
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        className="min-h-11 min-w-0 flex-1 rounded-btn border-[1.5px] border-line bg-bg px-3 text-base"
+                      />
+                      <button type="submit" className="min-h-11 rounded-btn bg-soft px-4 font-bold">
+                        {t("people.renameSave")}
+                      </button>
+                    </div>
+                    {renameMessage && (
+                      <p
+                        role={renameMessage.ok ? "status" : "alert"}
+                        className={cn("text-sm font-semibold", renameMessage.ok ? "text-ok" : "text-bad")}
+                      >
+                        {t(renameMessage.key)}
+                      </p>
+                    )}
+                  </form>
+                )}
+              </section>
+            )}
+            {orderedCount > 0 && co && (
+              <p className="tabular text-center font-bold">
+                {balanceLeft > 0
+                  ? t("flow.checkout.tableLeft", { total: formatCents(balanceLeft, lang) })
+                  : t("flow.checkout.tableDone")}
+              </p>
+            )}
             <div className="grid grid-cols-2 gap-2">
               <button type="button" className={soft} onClick={() => setScreen("menu")}>
                 {t("flow.orderMore")}
@@ -327,8 +569,8 @@ export function GuestApp({
               <button
                 type="button"
                 className={primary}
-                disabled={subtotal === 0 || cashPending}
-                onClick={() => setScreen("pay")}
+                disabled={balanceLeft === 0 || !!myPending}
+                onClick={openPay}
               >
                 {t("flow.pay")}
               </button>
@@ -343,6 +585,134 @@ export function GuestApp({
             <h2 id="pay-title" className="text-xl font-extrabold">
               {t("flow.payTitle")}
             </h2>
+            {flags.splitBill && co && (
+              <fieldset className="grid gap-1.5">
+                <legend className="mb-1.5 text-sm font-bold">{t("flow.checkout.optionsTitle")}</legend>
+                {(
+                  [
+                    [
+                      "mine",
+                      t("flow.checkout.mine"),
+                      owedBy(me),
+                      owedBy(me) > 0 ? t("flow.checkout.mineHint") : t("flow.checkout.mineNone"),
+                    ],
+                    ["person", t("flow.checkout.person"), null, t("flow.checkout.personHint")],
+                    ["balance", t("flow.checkout.balance"), co.balanceCents, t("flow.checkout.balanceHint")],
+                    [
+                      "plan",
+                      t("flow.checkout.plan"),
+                      plan ? plan.nextShareCents : null,
+                      t("flow.checkout.planHint"),
+                    ],
+                  ] as const
+                ).map(([key, title, cents, hint]) => (
+                  <label
+                    key={key}
+                    className={cn(
+                      "flex min-h-12 cursor-pointer items-start gap-2.5 rounded-[10px] border px-3 py-2.5",
+                      option === key ? "border-blue bg-soft" : "border-line",
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="pay-option"
+                      checked={option === key}
+                      onChange={() => setOption(key)}
+                      className="mt-1 size-4 accent-[var(--blue)]"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="tabular flex justify-between gap-2 font-bold">
+                        <span>{title}</span>
+                        {cents !== null && <span>{formatCents(cents, lang)}</span>}
+                      </span>
+                      <small className="block text-muted">{hint}</small>
+                    </span>
+                  </label>
+                ))}
+                {option === "person" && (
+                  <div role="group" aria-label={t("flow.checkout.personHint")} className="grid gap-1.5 pl-6">
+                    {(status?.people ?? []).filter((p) => p.id !== me && owedBy(p.id) > 0).length === 0 && (
+                      <p className="text-sm text-muted">{t("flow.checkout.personNone")}</p>
+                    )}
+                    {(status?.people ?? [])
+                      .filter((p) => p.id !== me && owedBy(p.id) > 0)
+                      .map((p) => (
+                        <label
+                          key={p.id}
+                          className={cn(
+                            "tabular flex min-h-11 cursor-pointer items-center justify-between gap-2 rounded-[10px] border px-3",
+                            forId === p.id ? "border-blue bg-soft" : "border-line",
+                          )}
+                        >
+                          <span className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="pay-for"
+                              checked={forId === p.id}
+                              onChange={() => setForId(p.id)}
+                              className="size-4 accent-[var(--blue)]"
+                            />
+                            {label(p)}
+                          </span>
+                          <b>{formatCents(owedBy(p.id), lang)}</b>
+                        </label>
+                      ))}
+                  </div>
+                )}
+                {option === "plan" && (
+                  <div className="grid gap-2 pl-6 text-sm">
+                    {plan ? (
+                      <>
+                        <p>
+                          {t("flow.checkout.planActive", {
+                            parts: plan.parts,
+                            left: plan.partsLeft,
+                            share: formatCents(plan.nextShareCents, lang),
+                          })}
+                        </p>
+                        <Stepper
+                          label={t("flow.checkout.planParts")}
+                          value={Math.min(parts, plan.partsLeft)}
+                          min={1}
+                          max={plan.partsLeft}
+                          onChange={setParts}
+                        />
+                        {plan.partsLeft === plan.parts && (
+                          <button
+                            type="button"
+                            onClick={() => cancelPlan(t)}
+                            className="min-h-10 justify-self-start rounded-btn border border-line px-3 font-bold"
+                          >
+                            {t("flow.checkout.planCancel")}
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <Stepper
+                          label={t("flow.checkout.planCount")}
+                          value={planCount}
+                          min={2}
+                          max={20}
+                          onChange={setPlanCount}
+                        />
+                        <button type="button" onClick={() => startPlan(t)} className={soft}>
+                          {t("flow.checkout.planStart", { n: planCount })}
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+                {checkoutMessage && (
+                  <p
+                    role={checkoutMessage.ok ? "status" : "alert"}
+                    className={cn("text-sm font-semibold", checkoutMessage.ok ? "text-ok" : "text-bad")}
+                  >
+                    {checkoutMessage.text}
+                  </p>
+                )}
+              </fieldset>
+            )}
             <div className="tabular grid gap-1 rounded-card border border-line p-3 text-[15px]">
               <div className="flex justify-between">
                 <span>{t("flow.subtotal")}</span>
@@ -446,7 +816,7 @@ export function GuestApp({
             )}
             <button
               type="button"
-              disabled={paying || subtotal === 0}
+              disabled={paying || subtotal === 0 || (choice === "person" && !forId)}
               onClick={() => pay(t, lang)}
               className={cn(primary, method === "ath" && "bg-ath text-white")}
             >
@@ -473,10 +843,14 @@ export function GuestApp({
                 </p>
               )}
               <hr className="my-2 border-dashed border-muted" />
+              {receipt.plan && (
+                <p className="font-semibold">{t("flow.checkout.receiptPlan", receipt.plan)}</p>
+              )}
               {receipt.lines.map((l, i) => (
                 <div key={i} className="flex justify-between gap-2">
                   <span>
                     {l.qty}× {lineName(l)}
+                    {l.partial && <span className="text-muted"> · {t("flow.checkout.receiptPart")}</span>}
                   </span>
                   <span>{formatCents(l.lineCents, lang)}</span>
                 </div>
@@ -511,9 +885,27 @@ export function GuestApp({
         );
       }
 
+      const beforeSend =
+        flags.sharedTab && !status?.me ? (
+          <label className="mt-3 grid gap-1 text-sm font-bold">
+            {t("people.nameLabel")}
+            <input
+              value={name}
+              maxLength={24}
+              autoComplete="given-name"
+              onChange={(e) => setName(e.target.value)}
+              className="min-h-11 rounded-btn border-[1.5px] border-line bg-bg px-3 text-base font-normal"
+            />
+            <small className="font-normal text-muted">
+              {t("people.nameHint", { number: people.length + 1 })}
+            </small>
+          </label>
+        ) : undefined;
+
       return {
         top: screen === "menu" ? requests : undefined,
         screen: content,
+        beforeSend,
         footer:
           screen === "menu" && (orderedCount > 0 || receipt) ? (
             <button
@@ -539,5 +931,49 @@ export function GuestApp({
       headerExtra={<ThemeCycle initial={theme} />}
       className="mx-auto h-dvh max-w-[480px] sm:my-6 sm:h-[min(860px,calc(100dvh-48px))] sm:rounded-[24px] sm:shadow-hero"
     />
+  );
+}
+
+/** − value + for a small count (shares of an even split). */
+function Stepper({
+  label,
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (n: number) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="font-bold">{label}</span>
+      <span role="group" aria-label={label} className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-label={`${label} −`}
+          disabled={value <= min}
+          onClick={() => onChange(Math.max(min, value - 1))}
+          className="grid size-10 place-items-center rounded-full border border-line text-lg font-bold disabled:opacity-40"
+        >
+          −
+        </button>
+        <output className="tabular min-w-6 text-center text-lg font-bold" aria-live="polite">
+          {value}
+        </output>
+        <button
+          type="button"
+          aria-label={`${label} +`}
+          disabled={value >= max}
+          onClick={() => onChange(Math.min(max, value + 1))}
+          className="grid size-10 place-items-center rounded-full border border-line text-lg font-bold disabled:opacity-40"
+        >
+          +
+        </button>
+      </span>
+    </div>
   );
 }

@@ -17,6 +17,8 @@ export interface CartLine {
   optionsEs: string[];
   optionsEn: string[];
   note?: string;
+  /** "Para compartir": split among the people at the table who have ordered. */
+  shared?: boolean;
 }
 
 function groupHint(g: ModifierGroup, t: MenuT): string {
@@ -32,17 +34,21 @@ export function ItemSheet({
   t,
   onAdd,
   onClose,
+  canShare = false,
 }: {
   item: MenuItem;
   lang: MenuLocale;
   t: MenuT;
   onAdd: (line: CartLine) => void;
   onClose: () => void;
+  /** Live table ordering offers "Para compartir". */
+  canShare?: boolean;
 }) {
   const titleId = useId();
   const closeRef = useRef<HTMLButtonElement>(null);
   const [qty, setQty] = useState(1);
   const [note, setNote] = useState("");
+  const [shared, setShared] = useState(false);
   // Required single-choice groups start on their first option.
   const [chosen, setChosen] = useState<Record<string, string[]>>(() =>
     Object.fromEntries(
@@ -80,7 +86,7 @@ export function ItemSheet({
   function add() {
     const ids = options.map((o) => o.id);
     onAdd({
-      key: `${item.id}|${ids.join(",")}|${note.trim()}`,
+      key: `${item.id}|${ids.join(",")}|${note.trim()}${shared ? "|shared" : ""}`,
       itemId: item.id,
       nameEs: item.nameEs,
       nameEn: item.nameEn,
@@ -90,6 +96,7 @@ export function ItemSheet({
       optionsEs: options.map((o) => o.nameEs),
       optionsEn: options.map((o) => o.nameEn),
       note: note.trim() || undefined,
+      shared: shared || undefined,
     });
   }
 
@@ -202,6 +209,21 @@ export function ItemSheet({
                 className="mt-1.5 block min-h-11 w-full rounded-btn border-[1.5px] border-line bg-bg px-3 text-base font-normal text-ink focus:border-sky focus:outline-none"
               />
             </label>
+
+            {canShare && (
+              <label className="mt-4 flex min-h-11 cursor-pointer items-start gap-2.5 rounded-[10px] border border-line px-3 py-2.5">
+                <input
+                  type="checkbox"
+                  checked={shared}
+                  onChange={(e) => setShared(e.target.checked)}
+                  className="mt-0.5 size-4 accent-[var(--blue)]"
+                />
+                <span>
+                  <b className="block text-sm">{t("people.shared")}</b>
+                  <small className="text-muted">{t("people.sharedHint")}</small>
+                </span>
+              </label>
+            )}
           </div>
         </div>
 

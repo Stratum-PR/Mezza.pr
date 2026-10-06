@@ -436,13 +436,59 @@
         "invalid_table": "Este código ya no es válido. Pídele a tu mesero el código nuevo de la mesa.",
         "validation": "Algo cambió en el menú. Revisa tu pedido y envíalo otra vez.",
         "network": "No hay conexión. Toca «Enviar a cocina» otra vez: no se duplicará.",
-        "request": "No pudimos avisar a tu mesero. Inténtalo otra vez."
+        "request": "No pudimos avisar a tu mesero. Inténtalo otra vez.",
+        "table_full": "La mesa ya tiene 20 personas. Pídele a tu mesero que tome tu orden.",
+        "limit_line": "Puedes pedir hasta {max} de un mismo plato en cada pedido.",
+        "limit_order": "Un pedido por QR puede ser de hasta {max}. Divídelo en dos o pídele a tu mesero.",
+        "limit_tab": "Tu mesa llegó a su límite de pedidos por QR. Pídele a tu mesero que lo amplíe.",
+        "rate_limited": "Vas muy rápido. Espera un minuto e inténtalo otra vez."
       },
       "payErrors": {
         "nothing_to_pay": "Todavía no hay nada que pagar.",
         "unavailable": "Ese método no está disponible ahora. Elige otro.",
         "coming_soon": "Ese método estará disponible pronto. Paga con tu mesero.",
-        "failed": "No se pudo procesar el pago. Inténtalo otra vez o paga con tu mesero."
+        "failed": "No se pudo procesar el pago. Inténtalo otra vez o paga con tu mesero.",
+        "pending_exists": "Ya tienes un pago pendiente. Espera a tu mesero o cancélalo.",
+        "table_full": "La mesa está llena. Pídele a tu mesero que te cobre.",
+        "rate_limited": "Vas muy rápido. Espera un minuto e inténtalo otra vez.",
+        "no_plan": "La división de la cuenta cambió. Revisa y vuelve a intentar."
+      },
+      "checkout": {
+        "optionsTitle": "¿Qué vas a pagar?",
+        "mine": "Mis platos",
+        "mineHint": "Lo que pediste y tu parte de lo compartido.",
+        "mineNone": "No tienes nada pendiente.",
+        "person": "Pagar por otra persona",
+        "personHint": "Elige a quién le pagas.",
+        "personNone": "Nadie más tiene platos pendientes.",
+        "balance": "Todo lo que falta en la mesa",
+        "balanceHint": "Incluye lo de todos y lo de la mesa.",
+        "plan": "Dividir en partes iguales",
+        "planHint": "Divide lo que falta entre varias personas.",
+        "planCount": "¿En cuántas partes?",
+        "planStart": "Dividir en {n}",
+        "planActive": "La cuenta se dividió en {parts}. Partes que quedan: {left}, de {share} cada una.",
+        "planParts": "Partes que pagas",
+        "planCancel": "Cancelar la división",
+        "planCancelled": "Se canceló la división.",
+        "tableLeft": "Falta por pagar en la mesa: {total}",
+        "tableDone": "La mesa está pagada.",
+        "paid": "Pagado",
+        "owes": "Falta {total}",
+        "cashPendingMine": "Tu mesero viene a cobrar {total} en efectivo.",
+        "cancelPayment": "Cancelar este pago",
+        "paymentCancelled": "Pago cancelado.",
+        "someonePaying": "Hay pagos en proceso en la mesa.",
+        "receiptPart": "parte",
+        "receiptPlan": "{parts} de {of} partes iguales",
+        "processing": "Pago en proceso"
+      },
+      "planErrors": {
+        "plan_exists": "Alguien ya dividió la cuenta en {parts}. Revisa las partes que quedan.",
+        "plan_started": "Ya se pagó una parte; la división no se puede cancelar.",
+        "nothing_to_pay": "No queda nada por dividir.",
+        "table_full": "La mesa está llena. Pídele a tu mesero que te cobre.",
+        "failed": "No se pudo. Inténtalo otra vez."
       }
     },
     "quickAdd": "Añadir {name}",
@@ -456,7 +502,29 @@
     },
     "originalEmpty": "Todavía no se ha publicado una imagen del menú original.",
     "originalImageHint": "Menú impreso. Elige platos en la vista Simple o de la Casa para ordenar.",
-    "originalLoadError": "No se pudo cargar la imagen del menú original. Usa la vista Simple o de la Casa."
+    "originalLoadError": "No se pudo cargar la imagen del menú original. Usa la vista Simple o de la Casa.",
+    "people": {
+      "guest": "Invitado #{number}",
+      "you": "Tú",
+      "table": "De la mesa",
+      "nameLabel": "Tu nombre (opcional)",
+      "nameHint": "Para que la mesa sepa qué pediste. Si lo dejas en blanco serás «Invitado #{number}».",
+      "shared": "Para compartir",
+      "sharedHint": "Se divide entre quienes han pedido en la mesa.",
+      "sharedOf": "parte de {total}",
+      "groupTitle": "La cuenta de la mesa",
+      "groupHint": "Lo que pidió cada persona y su parte de los platos para compartir.",
+      "rename": "Cambiar mi nombre",
+      "renameSave": "Guardar",
+      "renamed": "Listo, tu nombre se actualizó.",
+      "nameErrors": {
+        "long": "Usa 24 letras o menos.",
+        "invalid": "Usa solo letras, números, espacios, apóstrofos, puntos o guiones.",
+        "blocked": "Ese nombre no está disponible. Prueba otro.",
+        "name_taken": "Alguien en la mesa ya usa ese nombre. Prueba otro.",
+        "failed": "No se pudo cambiar el nombre. Inténtalo otra vez."
+      }
+    }
   },
   "ticket": {
     "kitchen": "COCINA",
@@ -468,7 +536,8 @@
     "ivuMunicipal": "IVU municipal",
     "tip": "Propina",
     "total": "Total",
-    "note": "Nota"
+    "note": "Nota",
+    "newTable": "MESA NUEVA (QR)"
   },
   "auth": {
     "title": "Entra a Mezza",
@@ -864,7 +933,8 @@
       "soldOutLabel": "{name}: agotado",
       "available": "Disponible",
       "soldOutState": "Agotado",
-      "newOrder": "Nuevo pedido #{number} · Mesa {label}"
+      "newOrder": "Nuevo pedido #{number} · Mesa {label}",
+      "newTable": "Mesa nueva"
     },
     "service": {
       "title": "Servicio",
@@ -901,7 +971,15 @@
       "managerOnly": "Anular y reembolsar es para gerentes y dueños.",
       "done": "Hecho.",
       "showAll": "Ver todos ({n})",
-      "showLess": "Ver menos"
+      "showLess": "Ver menos",
+      "newTable": "Mesa nueva por QR",
+      "newTableHint": "Este pedido abrió una mesa que estaba libre. Confirma que hay alguien sentado.",
+      "afterPayment": "Pagó y pidió de nuevo",
+      "nearLimit": "Mesa {label} cerca de su límite por QR: {total} de {cap}",
+      "raiseLimit": "Ampliar límite",
+      "limitRaised": "Límite de la mesa ampliado a {cap}.",
+      "cashCancel": "Cancelar",
+      "cashCancelled": "Pago cancelado; lo que cubría queda pendiente."
     },
     "tables": {
       "title": "Mesas",
@@ -966,7 +1044,13 @@
       "ivuState": "IVU estatal ({rate}%)",
       "ivuMunicipal": "IVU municipal ({rate}%)",
       "total": "Total",
-      "pickTable": "Elige la mesa antes de enviar."
+      "pickTable": "Elige la mesa antes de enviar.",
+      "forLabel": "Para",
+      "forTable": "Toda la mesa",
+      "forHint": "Quién pidió esta orden. Los platos para compartir se dividen entre quienes han pedido.",
+      "shared": "Para compartir",
+      "sharedItem": "Compartir {name}",
+      "guest": "Invitado #{number}"
     },
     "floor": {
       "mainArea": "Salón",
@@ -1443,6 +1527,15 @@
       "lead": "Cómo se ve Mezza en este dispositivo: tema e idioma de la pantalla.",
       "theme": "Tema",
       "language": "Idioma"
+    },
+    "limits": {
+      "title": "Límites de pedidos por QR",
+      "lead": "Protegen a la cocina de pedidos falsos o enormes. Solo aplican a pedidos desde el QR: lo que toma el personal no tiene límite, y en Servicio puedes ampliar el límite de una mesa.",
+      "order": "Máximo por pedido ($)",
+      "line": "Máximo de un mismo plato por pedido",
+      "tab": "Máximo por mesa abierta ($)",
+      "people": "Máximo de personas por mesa",
+      "save": "Guardar límites"
     }
   },
   "theme": {

@@ -7,7 +7,7 @@
 - Done early at the user's request (2026-10-05): phase 4 menu renderers on static data (`/es/demo`, home hero).
 - Guest polish pass done after phase 8 (user request): quick "+" add, photo thumbnails in Simple, sticky section chips that follow the scroll, dish sheet with full-width photo and an always-visible add button, cart quantity steppers + "Seguir pidiendo", guest page fills the screen (menu scrolls inside, cart bar always visible).
 - Agreed for phase 9 (user request): Ajustes gets restaurant branding — logo and cover photo on the guest page, guest header/buttons in the restaurant's colour (contrast-checked). Optional, small: a light/dark/auto theme switch (the `mezza-theme` cookie in `src/components/shell/document.tsx` already exists; it needs a toggle).
-- Not in pass 1 but discussed: shared multi-person carts and bill splitting (flags `sharedTab`, `splitBill`); would be its own phase. Testing on real phones needs the dev server on the LAN IP (and `allowedDevOrigins` in `next.config.ts`).
+- Bill splitting is pass 2 (see "Pass 2: bill splitting" at the end); resume from its first unchecked task. Testing on real phones needs the dev server on the LAN IP (and `allowedDevOrigins` in `next.config.ts`).
 - Phases 1–8 complete (phase 8 added migration `20261005000500_reports.sql`: `report_summary` and a revised `refresh_sales_summaries`). Phase 9 done too (migration `20261005000600_branding.sql`: `restaurants.brand_color`, `cover_path`). Phase 9b done too (migration `20261005000700_floor_and_tags.sql`: table shape/position, `menu_items.tags`; "Tomar orden" lives at `/app/[slug]/servicio/orden`). Phase 10 done (2026-10-05): every section 10 item has a test; screenshots of every screen in light and dark; README rewritten for a fresh clone (verified with `supabase db reset` + `pnpm seed`). Pass 1 is complete. Next (user decides): GitHub repo, Supabase cloud + Vercel for client demos; open items below.
 - Phases 1–4 complete (guest menu still reads the static fixture on the website demo; the guest page in phase 7 uses `loadMenu`). Next: phase 5 (website pages, demo QR + request form, signup/reset, onboarding wizard).
 - E2E runs with one worker (shared seeded restaurant); `resetTable(n)` in `tests/e2e/helpers.ts` clears a table's live tab before guest tests.
@@ -116,3 +116,58 @@ Not taking from the references (log in DECISIONS when built): "Bill & Print"/inv
 - [x] Screenshot review and fixes
 - [x] README, CONNECTORS.md, DECISIONS.md
 - [x] Final full test run
+
+## Pass 2: bill splitting (agreed 2026-10-06)
+
+Builds on the pass 1 flow; it doesn't replace it. Guest orders keep going straight to the kitchen through `place_order`: no staff approval and no staff-opened visits. Model: Toast Mobile Order & Pay (one table tab; each phone tracks its own items; "pay for my items", "pay the balance" or split evenly). Rules and the simulations behind them are in DECISIONS.md under "Bill splitting". `feat/staff-bill-splitting` (Codex) is reference only and is not merged; only `distribute()` and its property tests come from it.
+
+UI flags: `splitBill` and `sharedTab` in `src/config/flags.ts`. Even/per-item splitting is implemented in the `TabSplitter` connector. Phase gate as in pass 1 (`pnpm typecheck && pnpm lint && pnpm test && pnpm test:db`), then commit `pass2(phase N): <summary>`.
+
+### Phase 1: Participants
+
+- [x] A participant is created on the phone's first order (not on scan), bound to the tab by an HttpOnly device cookie whose hash is stored server-side; a new tab means a new join (migration `20261006150000_participants.sql`, `place_guest_order`)
+- [x] Optional name field on the first order; otherwise "Invitado #n" / "Guest #n" (n = join order at the table); rename from "Mi pedido"
+- [x] Names unique per table (a taken name is refused, or falls back to "Invitado #n" on the first order); staff-like names blocked (`src/lib/guest/names.ts`); the #n always shows next to the name
+- [x] Orders and their items carry `participant_id`; "Tomar orden" picks a person or the whole table
+- [x] "Para compartir" on the dish sheet and each cart line (guest and staff); a shared line is split at order time into locked shares among the people who have ordered so far (`order_item_shares`). Staff re-sharing is in the database (`set_item_shares`); its screen comes with the phase 5 table detail
+- [x] Group check on "Mi pedido": everyone's items and shares by person, plus the table's lines (`src/lib/guest/group-check.ts`); paid/unpaid per person arrives with per-person payments in phase 4
+
+### Phase 2: Limits and rate limiting
+
+- [x] Restaurant settings (migration `20261006170000_order_limits.sql`) with defaults: max $300 per order, 20 per line, $1,500 per open tab, 20 people per table; editable in Ajustes (owner, audited); enforced in `place_order` for QR orders only
+- [x] Staff "Ampliar límite" on a table raises its tab cap (Servicio shows tables at 80% of their cap); staff-entered orders are never capped
+- [x] Postgres `RateLimiter` implementation (`MEZZA_RATE_LIMIT=postgres`, now the default): per phone, per table and per IP (`src/lib/client-ip.ts`, platform headers only); 5 orders a minute per phone
+- [x] Servicio flags: "Mesa nueva por QR" on an order that opened an idle table (badge and a hint in Servicio; the kitchen board and ticket say "Mesa nueva"; voiding stays with managers), and "pagó y pidió de nuevo" when someone orders after paying (lights up with per-person payments in phase 4)
+
+### Phase 3: Split engine
+
+- [x] `TabSplitter` even and per-item modes (`standardSplitter`, previews for screens); the two `it.todo` property tests are real
+- [x] `payment_allocations` (payment, item or share, cents): what each payment covered; a charge is paid when its allocations reach it; pending payments hold their charges, failed ones release them (migration `20261006190000_split_engine.sql`, `tab_charges`)
+- [x] One locked RPC (`create_tab_payment`) computes every payable amount server-side from the chosen option (mine, person, balance, plan shares); the phone never sends an amount; idempotency key per payment
+- [x] IVU per payment = IVU(paid subtotal including this payment) − IVU(paid subtotal before it), so every payment is non-negative and the table total equals the one-check IVU (`ivuForPart` mirrors it in TypeScript)
+- [x] Even split is one plan per table (`start_split_plan`, `cancel_split_plan`): the first person sets N over everything unpaid; later orders belong to whoever orders them, outside the plan; cancellable until a share is paid or pending
+- [x] Property tests from the 2026-10-06 simulation: 150 random tables in Postgres (shared dishes, whole-table orders, plans, mine/person/balance, failed payments) conserve every cent with exact IVU and nothing negative; TypeScript property tests for the splitter and `ivuForPart`. Voids after payment and refunds are covered with phase 5's flows
+
+### Phase 4: Guest checkout
+
+- [x] Phone checkout: Mis platos (default when owed), Pagar por otra persona, Todo lo que falta en la mesa, and Dividir en partes iguales (start, join or cancel the table's plan; pay one or more shares); amounts previewed from `tab_checkout` (migration `20261006210000_guest_checkout.sql`), charged by `create_tab_payment`
+- [x] One pending payment per phone, expires after 15 minutes (enforced in `create_tab_payment` since phase 3); the phone or staff ("Cancelar" on the cash alert) can cancel it
+- [x] Efectivo creates a pending payment that staff confirms; card and ATH use the same path (the provider marks the same payment paid; a provider that can't take it releases it)
+- [x] `guestPay` no longer locks the whole table to "paying"; the table keeps ordering. A phone that pays without ordering becomes a person (`ensure_participant`)
+- [x] Live balance on every phone (who has paid, "Pago en proceso", what's left at the table); a receipt per payment listing what it covered (shares and even-split parts marked); "Cerrado en el POS" appears only when the table is fully paid
+
+### Phase 5: Staff side
+
+- [ ] Servicio table detail: people, their items, paid, pending and the remaining balance; re-share a shared line (`set_item_shares`)
+- [ ] The cash dialog's "Dividir cuenta" tab: charge a person, the balance or one plan share; confirm pending cash
+- [ ] "Mover a otra persona" / "a la mesa" for unpaid lines only; paid lines can't change
+- [ ] Voids: an unpaid line lowers the balance; a paid line goes through the manager refund flow, refunding each payer from the allocations; lines held by a pending payment can't be voided until it resolves
+- [ ] Manager write-off with a reason for a balance nobody will pay; reports keep sales, collected, tips, refunds, voids and write-offs apart
+- [ ] The tab auto-closes at $0 after 10 minutes with no orders, or when staff marks the table free; closing ends every phone's session
+- [ ] Checked at 390/768/1280 px, light and dark
+
+### Phase 6: Verification
+
+- [ ] Multi-phone E2E: two phones paying at once, paying while someone orders, someone leaving early, an even plan with a late order, a void after a partial payment, a pending payment expiring, auto-close and the next party at the same table
+- [ ] Real phones over the LAN (`allowedDevOrigins`)
+- [ ] README, CONNECTORS.md (`TabSplitter`, Postgres `RateLimiter`), DECISIONS.md updated
