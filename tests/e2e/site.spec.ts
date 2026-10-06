@@ -43,3 +43,18 @@ test.describe("marketing site", () => {
     await expect(page.getByText(/pagas \$44\.00/)).toBeVisible();
   });
 });
+
+test("the hero headline keeps the space between its animated words", async ({ page }, info) => {
+  test.skip(info.project.name !== "phone", "phone layout");
+  await page.goto("/en");
+  await page.waitForTimeout(1500); // let the word animation finish
+  const gaps = await page.locator(".hero-title .w").evaluateAll((words) =>
+    words.slice(1).flatMap((w, i) => {
+      const a = words[i]!.getBoundingClientRect();
+      const b = w.getBoundingClientRect();
+      return Math.abs(a.top - b.top) < 4 ? [b.left - a.right] : []; // same line only
+    }),
+  );
+  expect(gaps.length).toBeGreaterThan(0);
+  for (const gap of gaps) expect(gap).toBeGreaterThan(3);
+});

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import type { CSSProperties } from "react";
+import { Fragment, type CSSProperties } from "react";
 import { CAFE_LUCIA_MENU, CAFE_LUCIA_PRINTED } from "@/components/menu/fixtures/cafe-lucia";
 import { GuestMenu } from "@/components/menu/guest-menu";
 import { menuMessages } from "@/components/menu/menu-messages";
@@ -11,11 +11,18 @@ import { activePricingModel, pricing } from "@/config/pricing";
 import { isLocale } from "@/i18n/locales";
 import { formatCents } from "@/lib/money";
 
+/**
+ * Splits a headline into animated words. The space goes between the word spans, not inside them:
+ * a trailing space inside an inline-block is dropped, which ran the words together on phones.
+ */
 function Words({ text }: { text: string }) {
   return text.split(" ").map((w, i) => (
-    <span key={i} className="w" style={{ "--wi": i } as CSSProperties}>
-      {w}{" "}
-    </span>
+    <Fragment key={i}>
+      {i > 0 && " "}
+      <span className="w" style={{ "--wi": i } as CSSProperties}>
+        {w}
+      </span>
+    </Fragment>
   ));
 }
 
