@@ -19,7 +19,8 @@
     "seed": "tsx scripts/seed/index.ts",
     "seed:cloud": "tsx scripts/seed/index.ts --cloud",
     "db:types": "supabase gen types typescript --local > src/lib/db/types.ts",
-    "test:bills:browser": "playwright test --config playwright.bills.config.ts"
+    "test:bills:browser": "playwright test --config playwright.bills.config.ts",
+    "test:bills:local": "playwright test --config playwright.bills.local.config.ts --reporter=html"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",
