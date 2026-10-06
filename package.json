@@ -14,7 +14,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:db": "supabase test db",
-    "screenshots": "playwright test tests/e2e/screenshots.spec.ts",
+    "screenshots": "playwright test --config playwright.screenshots.config.ts",
     "db:check": "tsx scripts/db-check/run.ts",
     "seed": "tsx scripts/seed/index.ts",
     "seed:cloud": "tsx scripts/seed/index.ts --cloud",

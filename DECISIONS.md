@@ -135,3 +135,4 @@ One line each: the decision, why, and how to reverse it.
 - **Idle tables close as screens load**, not on a timer: Vercel Hobby runs crons daily only. "Idle" is a settled tab with no orders or payments for 10 minutes. The POS reminder ("Cerrado en el POS") is separate and still needs a tap.
 - **The Data API refuses DELETE/UPDATE without a WHERE clause** (Supabase's safeupdate), which pgTAP tests don't exercise: SQL called through the API must always filter. Found by the staff-tools E2E test (`write_off` used a scratch table).
 - **A person with no dishes shows no status** in the table view (not "Pagado"), e.g. after their only dish moved to someone else.
+- **The screenshot review is on demand** (`pnpm screenshots`, `playwright.screenshots.config.ts`), not part of `pnpm test:e2e`: it took a third of the full run and checks almost nothing by itself. User decision after the timing report (docs/E2E_TESTS.md). Reverse: drop `testIgnore` from playwright.config.ts.

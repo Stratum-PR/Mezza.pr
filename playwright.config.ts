@@ -5,6 +5,8 @@ const baseURL = `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: "tests/e2e",
+  // The screenshot review (every screen, light and dark) is on demand: `pnpm screenshots`.
+  testIgnore: ["**/screenshots.spec.ts"],
   // One worker: the tests share one seeded restaurant (and one dev server), so they run in order.
   fullyParallel: false,
   workers: 1,

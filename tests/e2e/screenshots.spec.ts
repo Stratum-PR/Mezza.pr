@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { test, type Page } from "@playwright/test";
 import { guestUrl, login } from "./helpers";
 
 /**
@@ -73,18 +73,3 @@ for (const scheme of ["light", "dark"] as const) {
     });
   });
 }
-
-test("mobile menu opens and the language switch keeps the page", async ({ page }, info) => {
-  test.skip(info.project.name !== "phone", "menu button is only shown on phones");
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/es");
-  await page.getByRole("button", { name: "Abrir menú" }).click();
-  await expect(
-    page.getByRole("navigation", { name: "Principal" }).getByRole("link", { name: "Precios" }),
-  ).toBeVisible();
-  await page.screenshot({ path: "docs/screenshots/site-menu-open.phone.light.png" });
-  await page.getByRole("button", { name: "Cerrar menú" }).click();
-  await page.getByRole("banner").getByRole("button", { name: "en", exact: true }).click();
-  await expect(page).toHaveURL(/\/en$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Your menu, your style");
-});

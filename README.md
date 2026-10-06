@@ -114,11 +114,14 @@ pnpm typecheck && pnpm lint && pnpm test   # types, lint, unit tests
 pnpm test:db                               # pgTAP database tests (needs the local stack)
 pnpm db:check                              # same database tests on in-process PGlite (no Docker)
 pnpm test:e2e                              # Playwright smoke tests; starts the dev server if needed
-pnpm screenshots                           # every screen, 390 and 1280 px, light and dark
+pnpm screenshots                           # on demand: every screen, 390 and 1280 px, light and dark
 ```
 
 End-to-end tests run serially against the seeded Café Lucía data and tidy up after themselves
-(`resetTable` in `tests/e2e/helpers.ts` only ever touches the local stack).
+(`resetTable` in `tests/e2e/helpers.ts` only ever touches the local stack). The screenshot review is
+left out of `pnpm test:e2e`; run it before a release or after UI work. What every test checks and
+how long it takes: [docs/E2E_TESTS.md](docs/E2E_TESTS.md); `npx playwright show-report` opens the
+latest run.
 
 ## What's real and what's a stub
 
