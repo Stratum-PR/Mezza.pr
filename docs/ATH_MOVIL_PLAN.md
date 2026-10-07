@@ -1,6 +1,8 @@
 # ATH Móvil plan (agreed 2026-10-07, revised the same day)
 
-ATH Móvil payments for Mezza through the shared private package `@stratum-pr/payments` (`Stratum-PR/payment_methods`, Genesis's design: ATH Móvil + Stripe Connect). Grumi (`Stratum-PR/pet-hub`) already charges ATH Móvil with it on `dev`. This plan covers what the package still needs and the Mezza adapter (pass 3). Nothing is built in Mezza yet.
+> **Shared document.** Identical copies live in `Stratum-PR/Mezza.pr`, `Stratum-PR/pet-hub` (Grumi) and `Stratum-PR/payment_methods`, at the same path. Change all three together. Each platform implements its own section and the security items in `docs/PAYMENTS_SECURITY_REVIEW.md`.
+
+ATH Móvil payments for Mezza through the shared private package `@stratum-pr/payments` (`Stratum-PR/payment_methods`, Genesis's design). The package also contains Stripe code, but neither app uses it: Stripe is built on Stripe's official SDK in each app (`docs/STRIPE_PLAN.md`). Grumi (`Stratum-PR/pet-hub`) already charges ATH Móvil with it on `dev`. This plan covers what the package still needs and the Mezza adapter (pass 3). Nothing is built in Mezza yet.
 
 **Revised 2026-10-07 (user decision):** the earlier idea of a separate public `athmovil` package is dropped; Mezza adopts `@stratum-pr/payments`. Before building, read [PAYMENTS_SECURITY_REVIEW.md](PAYMENTS_SECURITY_REVIEW.md): the package items (P-1 to P-13) and Mezza's (M-1 to M-4) are part of this plan.
 
@@ -152,4 +154,13 @@ Installs `@stratum-pr/payments` from GitHub Packages (read-only token only in Ve
 
 ## Grumi
 
-Already built on `@stratum-pr/payments` by Genesis (`dev` at `4874946`: Settings → Pagos, ATH Móvil from checkout, a test mode with a hosted simulator). Its plan is `docs/PAYMENTS.md` in pet-hub. Before real ATH Móvil for businesses it needs the Grumi items in the security review (G-1 to G-12), including its own Docker test environment (G-12).
+Already built on `@stratum-pr/payments` by Genesis (`dev`, commit `4874946`): Settings → Pagos, ATH Móvil from checkout, and a test mode with a hosted simulator. How it works today: `docs/PAYMENTS.md` in pet-hub.
+
+Before real ATH Móvil for businesses, Grumi follows the rules above and fixes its items in `docs/PAYMENTS_SECURITY_REVIEW.md`. In order of severity:
+- [ ] G-1: test mode only outside production (or flag and exclude test sales); simulator page and approvals for managers only
+- [ ] G-2, G-3: the server computes the charge from a pending transaction; a payment links to one transaction only, with the amount checked
+- [ ] G-4: ATH keys and auth tokens encrypted (Vault)
+- [ ] G-13: only managers update the business; billing columns locked
+- [ ] G-5 to G-11 and G-14 to G-18 (refund tracking, disconnect, support sessions, webhook key, access tiers, remove the raw card form, rate limits, CORS, ownership checks)
+- [ ] G-12: Grumi's own Docker test environment (ports 55420–55429, simulator on 55430)
+- [ ] Rules 7 and 8 above (server-only money writes, daily reconciliation), and webhook events done only when `processed_at` is set

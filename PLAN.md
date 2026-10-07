@@ -191,3 +191,17 @@ Full plan: [docs/ATH_MOVIL_PLAN.md](docs/ATH_MOVIL_PLAN.md). Uses Genesis's shar
 - [ ] Phase 5: Staff and refunds
 - [ ] Phase 0: live spike + Evertec questions (needs the user's ATH Business account)
 - [ ] Phase 6: Verification
+
+## Pass 4: Stripe (planned 2026-10-07, not started)
+
+Full plan: [docs/STRIPE_PLAN.md](docs/STRIPE_PLAN.md). Card payments through Stripe Connect (Accounts v2, direct charges on each restaurant's account, 0.5% application fee) and Stratum plan billing (Stripe Billing), built on Stripe's official SDK with no shared package; Grumi's section is in the same shared file (identical in pet-hub and payment_methods). Pass 3 (ATH Móvil) is planned on branch `docs/ath-movil-plan`. The order of passes 3 and 4 is still open. Phase 0 runs in a Stripe sandbox, so no live account is needed until phase 7. Wait for the user's go-ahead before starting.
+
+- [ ] Phase 0: Sandbox spike (platform account, v2 merchant + customer account, application fee, subscription, webhooks, Apple Pay domain)
+- [ ] Docker test environment: Stripe CLI container and `stripe-mock` (55331) beside the `mezza` stack
+- [ ] Phase 1: Data (including card holds that end only at Stripe)
+- [ ] Phase 2: Connecting a restaurant
+- [ ] Phase 3: Provider and server routes
+- [ ] Phase 4: Guest screens
+- [ ] Phase 5: Staff, refunds and disputes
+- [ ] Phase 6: Billing (Stratum plans)
+- [ ] Phase 7: Verification
