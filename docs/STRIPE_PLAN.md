@@ -29,15 +29,17 @@ Defaults taken (change any by saying so):
 ## Stripe rules (shared with Grumi, word for word)
 
 1. **The amount comes from the database.** The server creates every PaymentIntent and Checkout Session from amounts stored by server code. The browser only ever receives a `client_secret` or a Checkout URL, never sends an amount.
-2. **`settle()` is the only path to "paid", and running it again is harmless.** It retrieves the PaymentIntent (or Checkout Session) from Stripe, checks status `succeeded`, the amount received equals our row to the cent, currency `usd`, and `metadata.payment_id` matches. Three things call it: the payer's return or polling, the webhook and a sweeper. Whichever comes first wins.
-3. **Webhooks are verified and deduped.** Every event's signature is checked on the raw body (`constructEvent` on Node, `constructEventAsync` with the SubtleCrypto provider on Deno) and recorded once by `(provider, event_id)` before it's handled. A replayed event does nothing. Events only trigger `settle()` or a reconcile, never write "paid" from the payload alone.
+2. **`settle()` is the only path to "paid", and running it again is harmless.** It retrieves the PaymentIntent (or Checkout Session) from Stripe using **our stored** connected-account id and PaymentIntent (or Session) id, never ids taken from a webhook payload or the browser, checks status `succeeded`, the amount received equals our row to the cent, currency `usd`, and `metadata.payment_id` matches. Three things call it: the payer's return or polling, the webhook and a sweeper. Whichever comes first wins.
+3. **Webhooks are verified and deduped.** Every event's signature is checked on the raw body (`constructEvent` on Node, `constructEventAsync` with the SubtleCrypto provider on Deno) and stored by `(provider, event_id)`. It counts as done only when its handler finishes and sets `processed_at`; a handler that fails returns an error so Stripe retries it, and the retry runs again. An event that already has `processed_at` does nothing. Events only trigger `settle()` or a reconcile, never write "paid" from the payload alone.
 4. **Idempotency keys come from our ids.** Creating a PaymentIntent uses our payment's idempotency key; refunds use our refund's id. A retry after a timeout returns the same Stripe object instead of charging twice.
 5. **A hold ends at Stripe first.** When a pending card payment expires or the payer switches method, cancel the PaymentIntent (or expire the Checkout Session) before releasing what it held. If Stripe says it already succeeded, record it as paid.
 6. **No automatic refunds.** Money that arrives for something already paid (for example, a cancel that lost the race) is recorded as received, shown as an overpayment and flagged. Staff decide and refund.
 7. **Refunds: check, then Stripe, then us.** Check the staff role and the refundable amount; refund at Stripe (on the business's account, idempotent); then record it with Stripe's refund id (unique). A `charge.refunded` webhook records any Stripe refund missing on our side, so a crash between the two steps self-heals.
 8. **Disputes are recorded and flagged**, never silently netted. The business answers them in the Express Dashboard.
 9. **Keys live in server environment variables only** (restricted keys where possible): the platform secret key, webhook signing secrets and the publishable key. A business's Stripe account id is not a secret. Never collect card numbers in our own inputs; only Stripe's Elements or hosted pages touch them.
-10. **One SDK line.** Both apps pin the same `stripe` major version and the same `apiVersion`, and bump them together.
+10. **Money rows are written by the server only.** No signed-in browser role can insert or update payments, refunds, payment accounts, subscriptions, usage fees or billing columns. Staff actions go through server functions that check the role.
+11. **Reconcile daily.** A job compares our paid payments, refunds and disputes per business with Stripe's charges, refunds and disputes for the day, and flags any difference (a "paid" row with no charge, a charge with no row, an amount that differs).
+12. **One SDK line.** Both apps pin the same `stripe` major version and the same `apiVersion`, and bump them together.
 
 ## How a restaurant connects (Ajustes → Pagos → Tarjeta)
 
@@ -86,7 +88,10 @@ Fits the existing connector: `PaymentProvider` for `card` in `src/connectors/pay
 - [ ] Migration: `payment_accounts` gets the account's state (charges enabled, requirements due, dashboard, connected_at, last checked); `payments` gets `application_fee_cents` and the PaymentIntent id in `provider_ref` (indexed); `refunds` gets `provider_refund_id` (unique); a `payment_disputes` table (payment, Stripe dispute id, amount, status, reason, opened/closed), listed apart in Reportes like write-offs
 - [ ] `subscriptions` gets the Stripe subscription id, price, status and period end; `restaurants.status` follows it
 - [ ] **Holds:** the 15-minute expiry in `create_tab_payment` and `close_idle_tabs` skips pending card payments that have a PaymentIntent. Those end only through `settle()` (rule 5), which cancels at Stripe and then releases. Without this, the database could free lines while the card payment still succeeds.
-- [ ] Webhook dedupe through `webhook_events` (provider `stripe`); RLS: none of the new columns readable by guests; database tests
+- [ ] Webhook dedupe through `webhook_events` (provider `stripe`), done only when `processed_at` is set (rule 3); RLS: none of the new columns readable by guests; database tests
+- [ ] **Money tables written by the server only (rule 10).** Today `owner_all` (20261005000300_rls.sql) gives owners INSERT/UPDATE/DELETE on every table with `restaurant_id`, including `payments`, `refunds`, `payment_accounts`, `subscriptions`, `usage_fees` and `payment_allocations`, and `payments_insert/update_manager_server` let servers and managers write payments. Replace with: SELECT for staff as today; writes only by the service role or `security definer` functions. Cash keeps working through server code (`cash.ts` already confirms on the server). A trigger rejects any change to `status`, amounts, `method` or `provider_ref` on card/ATH payments unless made by the service role
+- [ ] **Billing columns locked:** a trigger on `restaurants` rejects changes to `status`, `plan` and `trial_ends_at` (and the same on `subscriptions`) unless made by the service role; `restaurants_update_owner` keeps the rest editable
+- [ ] Database tests: an owner, manager and server each fail to mark a card payment paid, change its amount or `provider_ref`, insert a refund, change `payment_accounts.stripe_account_id`, or change plan, status or trial
 
 ### Phase 2: Connecting a restaurant
 - [ ] Ajustes → Pagos → Tarjeta (owner only): connect, resume onboarding, status, what Stripe still needs, "Abrir panel de Stripe" (Express Dashboard login link); audited
@@ -98,17 +103,19 @@ Fits the existing connector: `PaymentProvider` for `card` in `src/connectors/pay
 - [ ] `settle(paymentId)` per rule 2; on success it reuses cash's "mark paid" path (extract it from `cash.ts` so cash, mocks and Stripe share it: fiscal `recordSale`, `refreshRecentSales`)
 - [ ] Routes: the settle route the phone calls on return or while waiting; `/api/webhooks/stripe/connect` (payment, refund and dispute events of connected accounts); `/api/webhooks/stripe/platform` (billing, plus v2 account events as phase 0 decides); a sweeper for pending card payments, run as screens load (like `close_idle_tabs`) and from the cron
 - [ ] Declined card: the same PaymentIntent is retried. Switching method or backing out: cancel the PaymentIntent, then `cancel_pending_payment`. A PaymentIntent that succeeds after its hold ended is recorded as received, and the overpayment is flagged (rule 6)
-- [ ] Payment creation stays rate limited per phone and table (existing `pay:` keys)
+- [ ] Payment creation stays rate limited per phone and table (existing `pay:` keys), plus per IP (the device cookie can be cleared)
+- [ ] **Card testing:** at most 3 failed confirmations per PaymentIntent (counted from `payment_intent.payment_failed`; then the PaymentIntent is cancelled and the phone must start over), at most 5 card declines per table and per IP per hour; a challenge (Cloudflare Turnstile or similar) after the first decline; card offered only when the tab has orders; an alert to the owner and Stratum on a decline spike. Radar on direct charges runs on each restaurant's account, so these limits are ours
 
 ### Phase 4: Guest screens
 - [ ] Card on the pay screen: Express Checkout Element (Apple Pay, Google Pay) above the Payment Element, loaded with the restaurant's account id; amount shown from the server; Stripe's locale follows the guest's language
 - [ ] 3-D Secure and the return URL land back on the table, which calls settle; then the receipt, as today
 - [ ] Declined → try again or another method; the table's live balance shows "Pago en proceso" while a card payment is pending (exists)
 - [ ] Strings in both languages; 390/768/1280, light and dark
+- [ ] Content-Security-Policy on guest pages (none today: `next.config.ts`, `src/proxy.ts` and `vercel.json` set no CSP): `script-src` and `frame-src` limited to self and Stripe's documented hosts, so an injected script can't skim the payment page
 
 ### Phase 5: Staff, refunds and disputes
 - [ ] Refunds and voids of card-paid lines follow rule 7: a pre-check of role and refundable amount, then Stripe, then `record_refund` with the Stripe refund id. A webhook-side variant, server-only and idempotent on `provider_refund_id`, records refunds that arrive only by webhook
-- [ ] Overpayments flagged in Servicio and the table detail; a manager refunds them or keeps them with a reason (shared with the ATH plan's phase 5; whichever ships first builds it)
+- [ ] Overpayments flagged in Servicio and the table detail; a manager refunds them or keeps them with a reason (shared with the ATH plan's phase 5; whichever ships first builds it). An open overpayment older than 7 days is escalated to the owner and Stratum, and listed in Reportes until resolved
 - [ ] Disputes: Servicio and Ajustes flag them with a link to the Express Dashboard; Reportes lists them apart
 - [ ] Payments list and table detail show card payments with brand and last 4
 
@@ -122,12 +129,18 @@ Fits the existing connector: `PaymentProvider` for `card` in `src/connectors/pay
 - [ ] CONNECTORS.md tests in the Docker environment: webhook replay is idempotent; amounts equal subtotal + IVU + tip to the cent; a failed provider call leaves no `paid` row; refunds never exceed what was paid; onboarding status survives restarts. Add: the application fee to the cent, a hold that ends while Stripe succeeds (overpayment flag), and a refund recorded only by webhook
 - [ ] E2E with test cards and the Stripe CLI (prod build on 3100): one guest pays by card; two phones pay at once (card + cash); 3-D Secure; decline then success; switch method; refund after a void; a dispute shows up
 - [ ] Billing E2E: trial → subscribe → `invoice.payment_failed` → paused → paid → active; the Customer Portal opens
-- [ ] Live check on a preview deploy with live keys: connect one real restaurant (or a Stratum test business), a $1 card payment, a refund
+- [ ] Live keys exist only in Vercel's Production environment; previews and local use sandbox keys. The live check runs on production behind the flag (or a protected, non-public deployment), never on a public preview URL with live keys: connect one real restaurant (or a Stratum test business), a $1 card payment, a refund
 - [ ] Turn on `cardPayments` and `MEZZA_BILLING=stripe` (merging to main deploys production, so ask first); update README, CONNECTORS.md, DECISIONS.md
 
 ## Grumi
 
 Planned in pet-hub's `docs/STRIPE_PLAN.md` (branch `dev`), expected to be built by Genesis. In short: the same rules; card payments through hosted Checkout shown as a QR code or link at the counter (clients pay on their own phone, Apple Pay included); built on Grumi's existing `payments` table, `payments` Edge Function and Settings → Pagos page (one row per card or ATH charge, so split tenders record what each paid); Edge Functions that read totals from the database; plan subscriptions for existing businesses; no platform fee on payments. Grumi uses its own Stripe platform account and sandbox.
+
+## Liabilities and terms (decide before phase 7)
+
+- **Application fee on tips:** the default charges 0.5% on subtotal + IVU + tip. Decide whether tips are excluded (servers' money); `usage_fees.card_volume_cents` and `pricing.ts` change with it.
+- **Terms with restaurants** (Stratum's merchant terms, accepted in Ajustes before connecting): Stripe's connected-account agreement; restaurants pay Stripe's fees; disputes and chargebacks are theirs; Stratum's application fee isn't returned on lost disputes; how long overpayments are held and who decides; refunds only from Mezza; Stratum may pause card payments on fraud signals.
+- **Records:** keep payment, refund and dispute rows (and webhook events) for the period Puerto Rico tax rules require; never store card data.
 
 ## Later
 
