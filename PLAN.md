@@ -178,3 +178,16 @@ Faster E2E first (user request, 2026-10-06), so the rest of the phase runs on it
 - [x] Multi-phone E2E (`tests/e2e/split-edge-cases.spec.ts`): two phones paying at once, paying while someone orders, someone leaving early, an even plan with a late order, a pending payment expiring, auto-close and the next party at the same table; a void after a partial payment is in staff-tools.spec.ts and the database tests. Found and fixed a deadlock (paying while someone orders or pays) and lapsed payments that kept "Pagar" disabled
 - [ ] Real phones over the LAN: prepared (`MEZZA_DEV_ORIGINS` → `allowedDevOrigins`, README "Testing on phones"); needs the user with two or three phones
 - [x] README, CONNECTORS.md (`TabSplitter`, Postgres `RateLimiter`), DECISIONS.md updated
+
+## Pass 3: ATH Móvil (planned 2026-10-07, not started)
+
+Full plan: [docs/ATH_MOVIL_PLAN.md](docs/ATH_MOVIL_PLAN.md). Order: the public `athmovil` package (P1–P5, its own repo) and Mezza phases 1–5 against a fake ATH server first (the user's ATH Business account isn't available yet); phase 0 live spike when it is, before Mezza phase 6; then Grumi (`Stratum-PR/pet-hub`, expected to be built by Genesis). The package repo and Grumi each start with their own Docker test environment (see "Separate Docker test environments" in the plan). Wait for the user's go-ahead before starting.
+
+- [ ] Package P1–P5 released as `0.1.0` (fake server from Evertec's documented responses)
+- [ ] Phase 1: Data
+- [ ] Phase 2: Connecting a restaurant
+- [ ] Phase 3: Provider and server routes
+- [ ] Phase 4: Guest screens
+- [ ] Phase 5: Staff and refunds
+- [ ] Phase 0: live spike + Evertec questions (needs the user's ATH Business account)
+- [ ] Phase 6: Verification

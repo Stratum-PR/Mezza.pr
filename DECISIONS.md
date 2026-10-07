@@ -141,3 +141,13 @@ One line each: the decision, why, and how to reverse it.
 - **Restaurant rows are locked FOR NO KEY UPDATE, never FOR UPDATE**, in `place_order`, `place_guest_order` and `ensure_participant`. FOR UPDATE blocks the foreign-key check of a payment or order another transaction inserts while it holds the tab, so paying while someone orders (or two phones paying at once) deadlocked and one phone saw "No se pudo procesar el pago". NO KEY UPDATE still serializes order numbers. Found by the two-phones E2E test.
 - **Lapsed pending payments are expired as screens load** (the `close_idle_tabs` housekeeping), not only when someone pays: otherwise a phone whose cash payment lapsed kept "Pagar" disabled and the cash alert stayed in Servicio. Found by the edge-case E2E test.
 - **Phone testing over Wi-Fi covers guests**: staff sign-in reaches the local Supabase at 127.0.0.1, which phones can't, so staff use the computer (README).
+
+## ATH Móvil (pass 3, agreed 2026-10-07)
+
+- **One public package for the ATH protocol, one adapter per app.** Mezza (Next.js, Node) and Grumi (`Stratum-PR/pet-hub`, Supabase Edge Functions, Deno) share the client, `settle()`, webhook parsing and a fake ATH server; each app keeps its own data, money rules and screens. Public on npm because Deno Edge Functions can't easily install private packages and the code holds no secrets. Reverse: a private package plus a copy in Grumi's `supabase/functions/_shared`.
+- **Mezza first**, since its payment connector and tests already exist; Grumi then proves the package on Deno.
+- **Server-side REST, not the JS button.** The button sets the total in the browser, against the rule that the browser never sends an amount to charge.
+- **Webhooks are hints.** They aren't signed, so they only trigger `settle()`, which reads the status from `findPayment`; the listener URL carries a per-restaurant secret.
+- **Each restaurant connects its own ATH Business account** (tokens pasted in Ajustes, stored in Vault). Whether Evertec allows a platform to hold merchants' tokens is one of the open questions in docs/ATH_MOVIL_PLAN.md.
+- **No automatic refunds.** User decision: money that arrives for lines someone else already paid is recorded, shown as an overpayment and flagged; a manager refunds it (as in Toast, where refunds are a staff action behind a permission). To make it rare, a pending ATH payment holds its lines until ATH confirms it ended. Reverse: auto-refund in the sweeper.
+- **Built against a fake ATH server first**: the user's ATH Business account isn't available, so the live spike (phase 0) moves to just before Mezza's verification phase.
