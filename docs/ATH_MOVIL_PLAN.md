@@ -21,10 +21,12 @@ Sources: [ATHM-Payment-Button-API](https://github.com/evertec/ATHM-Payment-Butto
 
 1. **Server-side REST only.** The JS button sets `total` in the browser, which breaks Mezza's rule that the browser never sends an amount to charge. The server creates the payment and the app shows its own waiting screen.
 2. **A webhook is a hint.** Any webhook only triggers `settle()`, which reads the real status from `findPayment`. The listener URL carries a per-business random secret, since ATH doesn't sign webhooks.
-3. **`settle()` is the only path to "paid"**, and running it again is harmless. Three things call it: the waiting phone polling every few seconds, the webhook and a cron sweeper. Whichever comes first wins.
+3. **`settle()` is the only path to "paid"**, and running it again is harmless. Three things call it: the waiting phone polling every few seconds, the webhook and a cron sweeper. Whichever comes first wins. It calls `findPayment` with **our stored** `ecommerceId` and the business's stored keys, never ids from the webhook body, and checks status, total to the cent and `metadata2` = our payment id.
 4. **Never retry `/payment` blindly.** There's no idempotency key, so a timeout on create may mean a live payment exists. Look it up by `metadata2` (our payment id) through `findPayment` or search, or cancel it, before trying again.
 5. **Tokens belong to each business.** Each business has its own public + private token and its own webhook subscription. Tokens are passed into every call and stored encrypted per business, never in env vars.
 6. **The customer's phone number is used for the request and not stored.**
+7. **Money rows are written by the server only.** No signed-in browser role can insert or update payments, refunds, payment accounts or ATH keys; staff actions go through server code that checks the role (same as the Stripe plan's rule 10).
+8. **Reconcile daily.** Compare our paid ATH payments and refunds with ATH's records (`findPayment` / the transaction report) and flag differences.
 
 ## Separate Docker test environments (required, user request 2026-10-07)
 
@@ -113,7 +115,8 @@ Installs `@stratum-pr/payments` from GitHub Packages (read-only token only in Ve
 
 ### Phase 1: Data
 - [ ] Migration: per-restaurant ATH account (Vault secret ids for both tokens, webhook secret, status, connected_at, last check); ATH fields on `payments` (`ecommerce_id`, encrypted `auth_token`, `reference_number` in `provider_ref`, `expires_at`), indexed by `ecommerce_id`
-- [ ] Dedupe webhooks through the existing `webhook_events`
+- [ ] Dedupe webhooks through the existing `webhook_events`, done only when `processed_at` is set (a failed handler is retried, not skipped)
+- [ ] Money tables written by the server only (rule 7): same RLS change as the Stripe plan's phase 1 (`owner_all` and `payments_insert/update_manager_server` today let owners, managers and servers write payments, refunds and `payment_accounts.ath_keys_secret_id`); a trigger rejects changes to status, amounts, `method` or `provider_ref` on ATH payments unless made by the service role. Whichever pass ships first builds it
 - [ ] RLS: tokens never readable by any client role; database tests
 
 ### Phase 2: Connecting a restaurant
@@ -137,7 +140,7 @@ Installs `@stratum-pr/payments` from GitHub Packages (read-only token only in Ve
 - [ ] Strings in both languages; 390/768/1280, light and dark
 
 ### Phase 5: Staff and refunds
-- [ ] Overpayments flagged in Servicio and the table detail; a manager refunds them (or keeps them, for example as tip, with a reason), audited
+- [ ] Overpayments flagged in Servicio and the table detail; a manager refunds them (or keeps them, for example as tip, with a reason), audited; open more than 7 days → escalated to the owner and Stratum and listed in Reportes until resolved
 - [ ] Refunds and voids of ATH-paid lines call ATH `refund` first, then `record_refund`; a failed ATH refund leaves nothing recorded and tells staff
 - [ ] Payments list and table detail show ATH payments with their reference number; Reportes already colours ATH
 
