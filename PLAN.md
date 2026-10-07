@@ -178,3 +178,30 @@ Faster E2E first (user request, 2026-10-06), so the rest of the phase runs on it
 - [x] Multi-phone E2E (`tests/e2e/split-edge-cases.spec.ts`): two phones paying at once, paying while someone orders, someone leaving early, an even plan with a late order, a pending payment expiring, auto-close and the next party at the same table; a void after a partial payment is in staff-tools.spec.ts and the database tests. Found and fixed a deadlock (paying while someone orders or pays) and lapsed payments that kept "Pagar" disabled
 - [ ] Real phones over the LAN: prepared (`MEZZA_DEV_ORIGINS` → `allowedDevOrigins`, README "Testing on phones"); needs the user with two or three phones
 - [x] README, CONNECTORS.md (`TabSplitter`, Postgres `RateLimiter`), DECISIONS.md updated
+
+## Pass 3: ATH Móvil (planned 2026-10-07, not started)
+
+Full plan: [docs/ATH_MOVIL_PLAN.md](docs/ATH_MOVIL_PLAN.md). Uses Genesis's shared private package `@stratum-pr/payments` (`Stratum-PR/payment_methods`; user decision 2026-10-07, replacing the public `athmovil` idea). Order: package work P1–P4 (test environment, security fixes, shared `settle()`), then Mezza phases 1–5 against the package's ATH simulator (the user's ATH Business account isn't available yet), phase 0 live spike when it is, then phase 6. Security items to fix: [docs/PAYMENTS_SECURITY_REVIEW.md](docs/PAYMENTS_SECURITY_REVIEW.md). Grumi already runs ATH Móvil on the package (`pet-hub` `dev`). Wait for the user's go-ahead before starting.
+
+- [ ] Package P1–P4 in `payment_methods` (agreed with Genesis): Docker/edge-runtime tests, review fixes P-1–P-13, shared `settle()`, simulator test controls
+- [ ] Phase 1: Data
+- [ ] Phase 2: Connecting a restaurant
+- [ ] Phase 3: Provider and server routes
+- [ ] Phase 4: Guest screens
+- [ ] Phase 5: Staff and refunds
+- [ ] Phase 0: live spike + Evertec questions (needs the user's ATH Business account)
+- [ ] Phase 6: Verification
+
+## Pass 4: Stripe (planned 2026-10-07, not started)
+
+Full plan: [docs/STRIPE_PLAN.md](docs/STRIPE_PLAN.md). Card payments through Stripe Connect (Accounts v2, direct charges on each restaurant's account, 0.5% application fee) and Stratum plan billing (Stripe Billing), built on Stripe's official SDK with no shared package; Grumi's section is in the same shared file (identical in pet-hub and payment_methods). Pass 3 (ATH Móvil) is planned on branch `docs/ath-movil-plan`. The order of passes 3 and 4 is still open. Phase 0 runs in a Stripe sandbox, so no live account is needed until phase 7. Wait for the user's go-ahead before starting.
+
+- [ ] Phase 0: Sandbox spike (platform account, v2 merchant + customer account, application fee, subscription, webhooks, Apple Pay domain)
+- [ ] Docker test environment: Stripe CLI container and `stripe-mock` (55331) beside the `mezza` stack
+- [ ] Phase 1: Data (including card holds that end only at Stripe)
+- [ ] Phase 2: Connecting a restaurant
+- [ ] Phase 3: Provider and server routes
+- [ ] Phase 4: Guest screens
+- [ ] Phase 5: Staff, refunds and disputes
+- [ ] Phase 6: Billing (Stratum plans)
+- [ ] Phase 7: Verification
