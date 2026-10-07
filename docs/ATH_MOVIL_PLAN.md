@@ -30,7 +30,7 @@ Each repo tests in its own Docker environment, so the package, Mezza and Grumi n
 
 | Repo | Docker environment | Ports |
 |---|---|---|
-| `athmovil` (package) | `docker compose` with a Node 20, a Node 22 and a Deno service running the test suite and a smoke test against the build; no database | none published |
+| `athmovil` (package) | `docker compose` with a Node 20, a Node 22 and a Deno service running the test suite and a smoke test against the build, plus a Supabase edge-runtime service (the version the Supabase CLI uses) running a sample Edge Function that imports the build and completes a payment against the fake over HTTP; no database | none published |
 | Mezza | Supabase stack `project_id = "mezza"` (exists) | 55320–55329; fake ATH over HTTP on 55330 |
 | Grumi | Its own local Supabase stack, separate from the hosted project and from Mezza: its own local `project_id` and port range | proposed 55420–55429; fake ATH on 55430 |
 
@@ -88,7 +88,8 @@ Runs on Node 20+ (Mezza, Next.js on Vercel) and Deno (Grumi, Supabase Edge Funct
 
 ### P1: Repo
 - [ ] `PLAN.md` copied from this plan (package phases + "Separate Docker test environments")
-- [ ] Docker test environment first: `docker compose` services for Node 20, Node 22 and Deno; `pnpm test:docker` runs all three; CI runs the same file
+- [ ] Docker test environment first: `docker compose` services for Node 20, Node 22, Deno and Supabase's edge runtime; `pnpm test:docker` runs all four; CI runs the same file on every pull request and before every release
+- [ ] Edge-runtime check: a sample Edge Function imports the built package and runs create → approve → settle → refund against the fake ATH over HTTP, so a release can't break Grumi without failing here first (Node covers Mezza)
 - [ ] Repo, TypeScript strict, tsup ESM build with types, Vitest, ESLint
 - [ ] CI: tests on Node 20/22 and a Deno smoke test (`deno run` importing the build)
 - [ ] npm publishing with provenance from GitHub Actions on tags; CHANGELOG
