@@ -1,6 +1,8 @@
-# ATH Móvil plan (agreed 2026-10-07)
+# ATH Móvil plan (agreed 2026-10-07, revised the same day)
 
-ATH Móvil payments for Mezza first, then Grumi (`Stratum-PR/pet-hub`), built on one shared, public TypeScript package. This plan covers the package, the Mezza adapter (pass 3) and the Grumi adapter. Nothing is built yet.
+ATH Móvil payments for Mezza through the shared private package `@stratum-pr/payments` (`Stratum-PR/payment_methods`, Genesis's design: ATH Móvil + Stripe Connect). Grumi (`Stratum-PR/pet-hub`) already charges ATH Móvil with it on `dev`. This plan covers what the package still needs and the Mezza adapter (pass 3). Nothing is built in Mezza yet.
+
+**Revised 2026-10-07 (user decision):** the earlier idea of a separate public `athmovil` package is dropped; Mezza adopts `@stratum-pr/payments`. Before building, read [PAYMENTS_SECURITY_REVIEW.md](PAYMENTS_SECURITY_REVIEW.md): the package items (P-1 to P-13) and Mezza's (M-1 to M-4) are part of this plan.
 
 Sources: [ATHM-Payment-Button-API](https://github.com/evertec/ATHM-Payment-Button-API) (REST), [athmovil-webhooks](https://github.com/evertec/athmovil-webhooks), [athmovil-javascript-api](https://github.com/evertec/athmovil-javascript-api) (browser button, not used), [ath.business/botondepago](https://ath.business/en/botondepago).
 
@@ -30,11 +32,11 @@ Each repo tests in its own Docker environment, so the package, Mezza and Grumi n
 
 | Repo | Docker environment | Ports |
 |---|---|---|
-| `athmovil` (package) | `docker compose` with a Node 20, a Node 22 and a Deno service running the test suite and a smoke test against the build, plus a Supabase edge-runtime service (the version the Supabase CLI uses) running a sample Edge Function that imports the build and completes a payment against the fake over HTTP; no database | none published |
+| `payment_methods` (package `@stratum-pr/payments`) | `docker compose` with a Node 20, a Node 22 and a Deno service running the test suite and a smoke test against the build, plus a Supabase edge-runtime service (the version the Supabase CLI uses) running a sample Edge Function that imports the build and completes a payment against the fake over HTTP; no database | none published |
 | Mezza | Supabase stack `project_id = "mezza"` (exists) | 55320–55329; fake ATH over HTTP on 55330 |
 | Grumi | Its own local Supabase stack, separate from the hosted project and from Mezza: its own local `project_id` and port range | proposed 55420–55429; fake ATH on 55430 |
 
-- **The fake ATH server also runs over HTTP** (`npx athmovil fake --port …`, package P4). Grumi's Edge Functions run inside Supabase's edge-runtime container, so a test can't hand them a fake `fetch`. Instead they get the fake's base URL (`http://host.docker.internal:55430`) through a function secret. Mezza's E2E uses the same mode.
+- **The package's ATH Móvil simulator also runs over HTTP** (`simulator/athmovil`, its own port per app). Grumi's Edge Functions run inside Supabase's edge-runtime container, so a test can't hand them a fake `fetch`. Instead they get the fake's base URL (`http://host.docker.internal:55430`) through a function secret. Mezza's E2E uses the same mode.
 - **Grumi caution:** `supabase/config.toml` holds the hosted project ref as `project_id`, and it uses the default ports. Before changing either, confirm that linking and deploys use `supabase link` (`supabase/.temp/project-ref`), not `project_id`.
 - **Test data is separate from dev data:** each test environment seeds its own test businesses and resets between runs. Nothing in these environments ever uses real ATH tokens.
 
@@ -78,48 +80,36 @@ Through the support form on ath.business/botondepago (answers within 4 business 
 5. Is a test environment planned, or can a business get test accounts?
 6. Fees for e-commerce payments, and whether platforms can add a fee (Mezza only takes a fee on card, so this is informational).
 
-## Package: `athmovil` (public, npm)
+## Package: `@stratum-pr/payments` (adopted)
 
-Working name; check npm availability at phase P1. Public GitHub repo under `Stratum-PR`, MIT license.
+Private repo `Stratum-PR/payment_methods`, published to GitHub Packages (`@stratum-pr` scope). Zero runtime dependencies; runs on Node and Deno; integer cents. It already has the ATH Móvil client (create, find, authorize, cancel, phone update, refund, webhook subscription and parsing), Stripe Connect (Standard accounts, Checkout links, refunds, webhook signatures) and an ATH Móvil simulator (Node server and a store-agnostic core).
 
-**Contains:** the ATH protocol only. **Doesn't contain:** database code, UI, env reading, token storage, i18n strings.
+What it needs before Mezza depends on it (agree each with Genesis; most also protect Grumi):
 
-Runs on Node 20+ (Mezza, Next.js on Vercel) and Deno (Grumi, Supabase Edge Functions): plain ESM, `fetch` only, no runtime dependencies.
+### P1: Test environment
+- [ ] Docker test environment: Node 20, Node 22, Deno and Supabase's edge runtime services; one command runs all four; CI runs the same on every pull request and before every release
+- [ ] Edge-runtime check: a sample Edge Function imports the build and runs create → approve → settle → refund against the simulator over HTTP
+- [ ] Simulator port configurable (Mezza 55330, Grumi 55430), not fixed at 4010
 
-### P1: Repo
-- [ ] `PLAN.md` copied from this plan (package phases + "Separate Docker test environments")
-- [ ] Docker test environment first: `docker compose` services for Node 20, Node 22, Deno and Supabase's edge runtime; `pnpm test:docker` runs all four; CI runs the same file on every pull request and before every release
-- [ ] Edge-runtime check: a sample Edge Function imports the built package and runs create → approve → settle → refund against the fake ATH over HTTP, so a release can't break Grumi without failing here first (Node covers Mezza)
-- [ ] Repo, TypeScript strict, tsup ESM build with types, Vitest, ESLint
-- [ ] CI: tests on Node 20/22 and a Deno smoke test (`deno run` importing the build)
-- [ ] npm publishing with provenance from GitHub Actions on tags; CHANGELOG
+### P2: Fixes from the security review
+- [ ] P-1 webhook subscription checks ATH's envelope; a real `checkCredentials()`
+- [ ] P-2 refund idempotency (Stripe key; ATH rules documented)
+- [ ] P-3 SQL template keeps `auth_token` in a service-only table
+- [ ] P-8 hosted simulator only posts to allowed hosts; P-10 publish job split; P-11 no personal data in error details; P-12 Stripe API version pinned
 
-### P2: Client
-- [ ] `createAthClient({ publicToken, privateToken?, fetch?, baseUrl? })`, so tokens are passed per business and `fetch` is injectable for the fake server
-- [ ] Amounts in integer cents on our side; converted to dollars with 2 decimals only in requests; responses converted back. Rejects totals outside $1.00–$1,500.00 before calling
-- [ ] `createPayment`, `findPayment`, `authorize`, `cancel`, `updatePhoneNumber`, `refund`, `registerWebhook`
-- [ ] Typed results and errors: Evertec codes mapped to a small union (`invalid_token`, `expired`, `not_found`, `limit`, `invalid_phone`, `network`, `unknown`) that keeps the raw code. Apps translate them
-- [ ] Request timeouts; reads are retried with backoff, `createPayment` never is (rule 4)
+### P3: Shared logic Mezza needs
+- [ ] P-4 `settle()` in the package (port Grumi's `refresh()` lock logic), used by both apps
+- [ ] P-5 Stripe event checks (account, amount, livemode) and dedupe guidance
+- [ ] Typed error union mapped from Evertec codes (move Grumi's `errorCode()` up)
+- [ ] P-13 lookup by `metadata2` to recover a create that timed out
+- [ ] Simulator test controls for Mezza's required tests: fail or time out the next call, replay a webhook, advance the clock
 
-### P3: Settle, webhooks, credentials
-- [ ] `settle(client, ecommerceId, authToken)` → `{ state: "pending" | "paid" | "cancelled", payment }`: `CONFIRM` → authorize; `COMPLETED` → paid; `CANCEL` → cancelled; safe to run concurrently (a second `authorize` on a completed payment reads as paid)
-- [ ] `parseWebhook(body)`: validates the shape and returns `{ ecommerceId, event, … , verified: false }`
-- [ ] `checkCredentials(client)`: the harmless-call check from the token section
-- [ ] `findByMetadata` (or search) for recovering a create that timed out
-
-### P4: Fake ATH server
-- [ ] An in-memory implementation behind the same `fetch` (`createFakeAth()`), built from the response examples in Evertec's docs; each guessed behaviour is marked and replaced with real responses after phase 0
-- [ ] HTTP mode (`npx athmovil fake --port …`) with a small control API, for apps whose server code runs in another process or container (Grumi's Edge Functions, Mezza's E2E)
-- [ ] Controls for tests: `approve(id)`, `decline(id)`, `expire(id)`, advance the clock, make the next call fail or time out, deliver or replay webhooks to a callback
-- [ ] Package tests run entirely against it: full flow, expiry, cancel, partial refunds, refunds never exceeding the total, settle racing itself, webhook replay
-
-### P5: Release 0.1.0
-- [ ] README (flow diagram, Node and Deno examples, the six design rules), `docs/FINDINGS.md`
-- [ ] Publish `0.1.0`; Mezza depends on it from here
+### P4: Release
+- [ ] A version with the above; CHANGELOG with security notes; P-9 version marker in copied files
 
 ## Mezza: pass 3
 
-Fits the existing connector: `PaymentProvider` for `ath` in `src/connectors/payments` (`PaymentNext` already has `external_app`; `handleWebhook` and `startOnboarding` exist), `MEZZA_PAYMENTS_ATH=athmovil`, flag `athPayments`. Every payment rule from pass 2 stays: amounts come from `create_tab_payment`, payments record what they covered, IVU is cumulative, lapsed pending payments release their lines.
+Installs `@stratum-pr/payments` from GitHub Packages (read-only token only in Vercel/CI secrets). Fits the existing connector: `PaymentProvider` for `ath` in `src/connectors/payments` (`PaymentNext` already has `external_app`; `handleWebhook` and `startOnboarding` exist), `MEZZA_PAYMENTS_ATH=athmovil`, flag `athPayments`. Every payment rule from pass 2 stays: amounts come from `create_tab_payment`, payments record what they covered, IVU is cumulative, lapsed pending payments release their lines.
 
 ### Phase 1: Data
 - [ ] Migration: per-restaurant ATH account (Vault secret ids for both tokens, webhook secret, status, connected_at, last check); ATH fields on `payments` (`ecommerce_id`, encrypted `auth_token`, `reference_number` in `provider_ref`, `expires_at`), indexed by `ecommerce_id`
@@ -137,7 +127,8 @@ Fits the existing connector: `PaymentProvider` for `ath` in `src/connectors/paym
 - [ ] Settle route the phone polls; `/api/webhooks/ath/[restaurant]/[secret]`; a cron sweeper for `OPEN`/`CONFIRM` payments; all go through `settle()`, then the existing "mark paid" path (`refreshRecentSales`, fiscal)
 - [ ] A pending ATH payment keeps its lines until ATH itself says `CANCEL` (Mezza's hold outlasts ATH's timeout, and `settle()` confirms the end), then Mezza releases them; Mezza cancels at ATH when the guest backs out
 - [ ] Nothing is refunded automatically (user decision). If money still arrives for lines someone else already paid (for example, a failed cancel), the payment is recorded as received, the table shows the overpayment and Servicio flags it; a manager decides and refunds from the payments list (phase 5)
-- [ ] Rate limit payment creation per phone (`RateLimiter`)
+- [ ] Push-spam limits (review M-1): per device, phone number, table and IP through `RateLimiter`; one open ATH request per person; limited number changes
+- [ ] The guest status route only touches the caller's own tab (M-2); the simulator URL comes only from server env and production refuses anything but ATH's own (M-3)
 
 ### Phase 4: Guest screens
 - [ ] ATH Móvil on the pay screen: phone number field (remembered on that phone only, if the guest agrees), then "Abre ATH Móvil y confirma el pago" with the amount and a countdown
@@ -156,15 +147,6 @@ Fits the existing connector: `PaymentProvider` for `ath` in `src/connectors/paym
 - [ ] Live test with the user's ATH Business account on a preview deploy: $1 payment, a split, a refund
 - [ ] Turn on `athPayments` (merging to main deploys production, so ask first); update README, CONNECTORS.md, DECISIONS.md
 
-## Grumi: after Mezza ships
+## Grumi
 
-Expected to be built by Genesis, starting from this section and "Separate Docker test environments".
-
-Grumi is a Vite + React app on Vercel; its server code is Supabase Edge Functions (Deno). `transactions` already stores cents and allows `payment_method = 'ath_movil'`; `src/pages/Payment.tsx` fakes ATH today. Transactions are written from the browser, so ATH needs the total read from the database by an Edge Function.
-
-- [ ] G0 Plan and test environment first: copy the Grumi phases and "Separate Docker test environments" into Grumi's docs; set up its own local Supabase stack (own local project id, ports 55420–55429, test seed with test businesses) and the fake ATH on 55430, reachable from the edge-runtime container; one command runs the ATH tests
-- [ ] G1 Data: per-business ATH account (Vault), ATH fields on `transactions` (or a `transaction_payments` table if a transaction can be paid in parts), RLS
-- [ ] G2 Edge Functions (import the package with `npm:`): connect (check + store + subscribe), start payment (reads the transaction's total), settle, webhook, refund; a scheduled sweeper
-- [ ] G3 Business settings: the ATH Móvil card next to Stripe (replacing "coming soon")
-- [ ] G4 Checkout: the client's phone number → waiting screen → paid; replace the fake in `Payment.tsx`; the client portal can reuse it to pay ahead
-- [ ] G5 Tests with the fake server, then a live $1 test
+Already built on `@stratum-pr/payments` by Genesis (`dev` at `4874946`: Settings → Pagos, ATH Móvil from checkout, a test mode with a hosted simulator). Its plan is `docs/PAYMENTS.md` in pet-hub. Before real ATH Móvil for businesses it needs the Grumi items in the security review (G-1 to G-12), including its own Docker test environment (G-12).

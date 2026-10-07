@@ -181,9 +181,9 @@ Faster E2E first (user request, 2026-10-06), so the rest of the phase runs on it
 
 ## Pass 3: ATH Móvil (planned 2026-10-07, not started)
 
-Full plan: [docs/ATH_MOVIL_PLAN.md](docs/ATH_MOVIL_PLAN.md). Order: the public `athmovil` package (P1–P5, its own repo) and Mezza phases 1–5 against a fake ATH server first (the user's ATH Business account isn't available yet); phase 0 live spike when it is, before Mezza phase 6; then Grumi (`Stratum-PR/pet-hub`, expected to be built by Genesis). The package repo and Grumi each start with their own Docker test environment (see "Separate Docker test environments" in the plan). Wait for the user's go-ahead before starting.
+Full plan: [docs/ATH_MOVIL_PLAN.md](docs/ATH_MOVIL_PLAN.md). Uses Genesis's shared private package `@stratum-pr/payments` (`Stratum-PR/payment_methods`; user decision 2026-10-07, replacing the public `athmovil` idea). Order: package work P1–P4 (test environment, security fixes, shared `settle()`), then Mezza phases 1–5 against the package's ATH simulator (the user's ATH Business account isn't available yet), phase 0 live spike when it is, then phase 6. Security items to fix: [docs/PAYMENTS_SECURITY_REVIEW.md](docs/PAYMENTS_SECURITY_REVIEW.md). Grumi already runs ATH Móvil on the package (`pet-hub` `dev`). Wait for the user's go-ahead before starting.
 
-- [ ] Package P1–P5 released as `0.1.0` (fake server from Evertec's documented responses)
+- [ ] Package P1–P4 in `payment_methods` (agreed with Genesis): Docker/edge-runtime tests, review fixes P-1–P-13, shared `settle()`, simulator test controls
 - [ ] Phase 1: Data
 - [ ] Phase 2: Connecting a restaurant
 - [ ] Phase 3: Provider and server routes
