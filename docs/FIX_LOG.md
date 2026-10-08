@@ -103,3 +103,35 @@ Nothing in this file has been applied to the hosted database by an agent.
   It should return 0 rows. The trigger only checks future changes, but any restaurant listed would
   block its own staff edits.
 - Backup / applied / verified / tag: _pending (production owner)._
+
+## P0-4 — tabs are read-only to signed-in roles; audited POS close (#7)
+
+- Finding: M3 (Medium). Staff could close any tab (skipping `close_tab`'s settled check and audit),
+  raise a table's QR cap (`qr_limit_extra_cents`) without `raise_tab_limit`, or delete tabs, through
+  the REST API. "Cerrado en el POS" was a raw, unaudited UPDATE.
+- Status: **Ready, not applied to production.**
+- Failing test first: `supabase/tests/15_tab_writes.test.sql` (commit `133d99a`); before the fix
+  owner, manager and server could write tabs, and `close_tab_on_pos` did not exist.
+- Migration: `supabase/migrations/20261008000400_tab_writes.sql`.
+  - Drops the staff and owner write policies on `tabs`; adds an owner read policy.
+  - Revokes INSERT/UPDATE/DELETE/TRUNCATE from `authenticated`.
+  - Adds `close_tab_on_pos(uuid)`: SECURITY DEFINER, audited as `pos_close`. It updates the same
+    columns as before and keeps the first POS time.
+- App: `closeOnPos` (`src/lib/staff/actions.ts`) calls the RPC. Fix commit `c16ea2a`.
+- Gate A: typecheck OK, lint OK, unit 230/230, pgTAP 14 files 763/763, build OK.
+- Gate B (E2E, production build): service-flow (the POS close), staff-tools, manager-tools,
+  order-limits (raise limit), shared-tab and checkout.
+  - All passed except one `manager-tools` refund run inside the parallel batch. It passed 2/2 alone,
+    and the same refund through the API works, so it is test data shared between parallel runs, not
+    this change.
+  - Manual walkthrough: still to do by a person.
+- Gate C: the REST re-test as the seeded server (`mesero@`), PATCH `tabs` status/limit, returns
+  `42501`; reading tabs still works.
+- Rollback: `supabase/rollbacks/20261008000400_tab_writes.down.sql`. Tested: down (test 15 fails),
+  then up (passes).
+- Observation, unchanged on purpose: a POS close on a tab that `close_tab` already closed moves
+  `closed_at` to the POS time, exactly as before. Review in Phase 2 whether reports should keep the
+  original close time.
+- Deploy notes: like P0-1, deploy the app and the migration together. Apply the migration, then
+  promote the Vercel deployment right away.
+- Backup / applied / verified / tag: _pending (production owner)._
