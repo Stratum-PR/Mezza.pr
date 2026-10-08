@@ -6,7 +6,7 @@ import { z } from "zod";
 import { requireSection, type StaffContext } from "@/lib/auth/staff";
 import { createAdminClient } from "@/lib/db/admin";
 import { createClient } from "@/lib/db/server";
-import { publicEnv } from "@/lib/env";
+import { addMember } from "@/lib/team/invite";
 
 export type FormResult = { ok: true; code?: string } | { ok: false; error: string } | null;
 
@@ -27,42 +27,22 @@ const inviteSchema = z.object({
   role: z.enum(["manager", "server", "kitchen"]),
 });
 
-/** Supabase admin invite from server code; an existing account just gets the membership. */
+/** Equipo's invite: a new person gets an email; an existing account just gets the membership. */
 export async function inviteMember(slug: string, _: FormResult, form: FormData): Promise<FormResult> {
   const ctx = await requireSection(slug, "team");
   const parsed = inviteSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return fail("validation");
   const { name, email, role } = parsed.data;
-  // Managers add servers and kitchen staff; only the owner adds managers.
-  if (role === "manager" && !owner(ctx)) return fail("forbidden");
-
-  const admin = createAdminClient();
-  let userId: string | undefined;
-  const invited = await admin.auth.admin.inviteUserByEmail(email.toLowerCase(), {
-    redirectTo: `${publicEnv.NEXT_PUBLIC_SITE_URL}/api/auth/callback?next=/app/contrasena`,
-    data: { full_name: name },
+  // Managers add servers and kitchen staff; only the owner adds managers (addMember enforces it).
+  const result = await addMember({
+    restaurantId: ctx.restaurant.id,
+    email,
+    role,
+    name,
+    actorIsOwner: owner(ctx),
   });
-  if (invited.data.user) userId = invited.data.user.id;
-  else {
-    // Already has an account (e.g. works at another restaurant): find it and add the membership.
-    const { data } = await admin.auth.admin.listUsers({ perPage: 1000 });
-    userId = data.users.find((u) => u.email?.toLowerCase() === email.toLowerCase())?.id;
-    if (!userId) return fail("invite_failed");
-  }
-
-  const { data: existing } = await admin
-    .from("memberships")
-    .select("id, role")
-    .eq("restaurant_id", ctx.restaurant.id)
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (existing?.role === "owner") return fail("forbidden");
-  const { error } = existing
-    ? await admin.from("memberships").update({ role, active: true }).eq("id", existing.id)
-    : await admin.from("memberships").insert({ restaurant_id: ctx.restaurant.id, user_id: userId, role });
-  if (error) return fail("failed");
-  await admin.from("profiles").upsert({ user_id: userId, full_name: name }, { onConflict: "user_id" });
-  return done(slug, "equipo", invited.data.user ? "invited" : "added");
+  if (result === "invited" || result === "added") return done(slug, "equipo", result);
+  return fail(result);
 }
 
 const memberSchema = z.object({

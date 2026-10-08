@@ -13,6 +13,7 @@ import { deriveQrToken, hashQrToken } from "@/lib/qr/token";
 import { serverEnv } from "@/lib/server-env";
 import { QR_PRESETS } from "@/config/qr-presets";
 import { menuImageSize } from "@/lib/menu/image";
+import { addMember } from "@/lib/team/invite";
 
 export type WizardState = { status: "idle" | "error" | "ok"; error?: string; message?: string };
 
@@ -192,28 +193,14 @@ export async function wizardInvite(slug: string, _: WizardState, form: FormData)
   const ctx = await owner(slug);
   const parsed = inviteSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { status: "error", error: "invite_invalid" };
-  const admin = createAdminClient();
-  const origin = (await headers()).get("origin") ?? "http://localhost:3000";
-
-  // Invite new people; existing accounts are added directly.
-  let userId: string | undefined;
-  const invited = await admin.auth.admin.inviteUserByEmail(parsed.data.email, {
-    redirectTo: `${origin}/api/auth/callback?next=/app/contrasena`,
+  // Same path as Equipo: never changes an owner's membership (e.g. the owner's own email).
+  const result = await addMember({
+    restaurantId: ctx.restaurant.id,
+    email: parsed.data.email,
+    role: parsed.data.role,
+    actorIsOwner: true,
   });
-  userId = invited.data.user?.id;
-  if (!userId) {
-    const { data } = await admin.auth.admin.listUsers({ perPage: 1000 });
-    userId = data?.users.find((u) => u.email?.toLowerCase() === parsed.data.email.toLowerCase())?.id;
-  }
-  if (!userId) return { status: "error", error: "failed" };
-
-  const { error } = await admin
-    .from("memberships")
-    .upsert(
-      { restaurant_id: ctx.restaurant.id, user_id: userId, role: parsed.data.role, active: true },
-      { onConflict: "user_id,restaurant_id" },
-    );
-  if (error) return { status: "error", error: "failed" };
+  if (result !== "invited" && result !== "added") return { status: "error", error: "failed" };
   return { status: "ok", message: parsed.data.email };
 }
 

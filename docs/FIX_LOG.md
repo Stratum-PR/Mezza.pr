@@ -69,3 +69,37 @@ Nothing in this file has been applied to the hosted database by an agent.
   fails 19/41 as on `main`), then up (passes).
 - Deploy notes: database only; it can go before or after the app.
 - Backup / applied / verified / tag: _pending (production owner)._
+
+## P0-3 — every restaurant keeps an active owner; one invite path (#6)
+
+- Finding: M2 (Medium). The setup wizard's invite upserted the membership, so an owner who typed
+  their own email as staff was demoted, leaving 0 owners. Equipo's invite guarded against this, but
+  the two implementations had drifted. Equipo also let a manager demote another manager by
+  re-inviting their email.
+- Status: **Ready, not applied to production.**
+- Failing tests first (commit `ac8028f`):
+  - `supabase/tests/14_keep_an_owner.test.sql`: 4/9 failed before the fix.
+  - `src/lib/team/invite.test.ts`: the module didn't exist yet.
+- Migration: `supabase/migrations/20261008000300_keep_an_owner.sql`. A deferred constraint trigger
+  refuses any change that leaves a restaurant without an active owner.
+  - Ownership transfer in one transaction works.
+  - Deleting the restaurant works.
+  - Deleting the only owner's auth account is refused (hand over or delete the restaurant first).
+- App: new `src/lib/team/invite.ts` `addMember()`, used by both Equipo (`inviteMember`) and the
+  wizard (`wizardInvite`):
+  - never changes an owner's membership;
+  - only the owner adds or changes managers;
+  - the invite link uses `NEXT_PUBLIC_SITE_URL`, not the request `Origin`. This fixes M6 for these
+    two paths; signup and the payments onboarding link still use `Origin` (Phase 2).
+- Gate A: typecheck OK, lint OK, unit 230/230 (+6), pgTAP 13 files 723/723, build OK.
+- Gate B (E2E, production build): signup (includes the wizard's invite step) and settings (Equipo
+  invite and deactivate). 6 passed, 6 skipped (demo-only). Manual walkthrough: still to do by a
+  person.
+- Gate C: test 14 plus test 13 (no direct membership writes) green.
+- Rollback: `supabase/rollbacks/20261008000300_keep_an_owner.down.sql`. Tested: down (test 14 fails
+  4/9), then up (passes). The app change does not depend on the migration.
+- Deploy notes: before applying, check production has no restaurant without an active owner:
+  `select r.id from restaurants r where not exists (select 1 from memberships m where m.restaurant_id = r.id and m.role = 'owner' and m.active);`
+  It should return 0 rows. The trigger only checks future changes, but any restaurant listed would
+  block its own staff edits.
+- Backup / applied / verified / tag: _pending (production owner)._
