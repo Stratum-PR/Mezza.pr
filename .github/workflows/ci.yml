@@ -64,6 +64,8 @@ jobs:
         run: |
           pnpm exec supabase gen types typescript --local > /tmp/types.ts
           diff -u src/lib/db/types.ts /tmp/types.ts
+      - name: Drift check against the production schema snapshot (skipped until one exists)
+        run: pnpm db:drift
 
   e2e-smoke:
     name: Smoke E2E (production build)
