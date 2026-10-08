@@ -7,7 +7,7 @@ import { clientIp } from "@/lib/client-ip";
 import { createAdminClient } from "@/lib/db/admin";
 import { createClient } from "@/lib/db/server";
 import { publicEnv } from "@/lib/env";
-import { slugify, uniqueSlug } from "@/lib/slug";
+import { finishSignup } from "./finish-signup";
 
 export type SignupState = {
   status: "idle" | "error" | "confirm_email";
@@ -34,8 +34,8 @@ const signupSchema = z.object({
 const origin = () => publicEnv.NEXT_PUBLIC_SITE_URL;
 
 /**
- * Onboarding step 1: creates the user, then the restaurant with its owner membership, default QR
- * design and 30-day trial (create_restaurant_with_owner). No card.
+ * Onboarding step 1: creates the user and saves the restaurant's details. The restaurant itself is
+ * created once the email is confirmed (finishSignup), right away when confirmation is off. No card.
  */
 export async function signUp(_: SignupState, form: FormData): Promise<SignupState> {
   const parsed = signupSchema.safeParse(Object.fromEntries(form));
@@ -71,25 +71,21 @@ export async function signUp(_: SignupState, form: FormData): Promise<SignupStat
   // With email confirmation on, Supabase returns a user with no identities for an existing address.
   if (!userId || data.user?.identities?.length === 0) return { status: "error", error: "email_taken" };
 
-  const admin = createAdminClient();
-  const slug = await uniqueSlug(slugify(d.restaurantName), async (s) => {
-    const { count } = await admin
-      .from("restaurants")
-      .select("id", { count: "exact", head: true })
-      .eq("slug", s);
-    return (count ?? 0) > 0;
+  // The restaurant waits for the email to be confirmed (P2-5): an unconfirmed address never gets a
+  // restaurant, a slug or a trial. finishSignup creates it from these details.
+  const saved = await createAdminClient().from("pending_signups").upsert({
+    user_id: userId,
+    full_name: d.fullName,
+    restaurant_name: d.restaurantName,
+    phone: d.phone,
+    language: d.locale,
   });
-  const created = await admin.rpc("create_restaurant_with_owner", {
-    p_owner_id: userId,
-    p_name: d.restaurantName,
-    p_slug: slug,
-    p_phone: d.phone,
-    p_language: d.locale,
-  });
-  if (created.error) return { status: "error", error: "failed" };
-  await admin.from("profiles").update({ full_name: d.fullName }).eq("user_id", userId);
+  if (saved.error) return { status: "error", error: "failed" };
 
+  // A session means Supabase confirmed the address at signup (email confirmation off).
   if (!data.session) return { status: "confirm_email" };
+  const slug = await finishSignup(userId);
+  if (!slug) return { status: "error", error: "failed" };
   redirect(`/app/${slug}/empezar`);
 }
 

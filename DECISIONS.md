@@ -165,3 +165,11 @@ One line each: the decision, why, and how to reverse it.
 - **No Stripe Tax, no card readers yet.** IVU stays in `src/lib/money`; Terminal is later.
 - **Stripe uses the official SDK in each app, not `@stratum-pr/payments`** (user decision, 2026-10-07). The package is used for ATH Móvil only; its Stripe code isn't used by either app. Supersedes "ATH Móvil + Stripe Connect" in the package entry above.
 - **Payment plans are shared documents** (user decision, 2026-10-07): `docs/ATH_MOVIL_PLAN.md`, `docs/STRIPE_PLAN.md` and `docs/PAYMENTS_SECURITY_REVIEW.md` are identical in Mezza.pr, pet-hub and payment_methods; change all three together. Each platform implements its own section. No code until the user approves.
+
+## Signup after email confirmation (P2-5, agreed 2026-10-08)
+
+- **The restaurant is created when the email is confirmed, not at signup** (issue #17, user decision). An unconfirmed address (a typo, or someone else's email) never gets a restaurant, a slug or a trial.
+- **The signup details wait in `pending_signups`**, service role only (RLS on, no policies). Not in auth user metadata, which ends up in the JWT and which the user could edit before confirming.
+- **`finishSignup` runs in the confirmation callback and on `/app`** for a signed-in user with no restaurant, so confirming on another device (where the PKCE exchange fails) still works after the first sign-in. The pending row is claimed with a delete, so concurrent calls can't create two restaurants.
+- **The slug is chosen at confirmation**, so unconfirmed signups can't hold one; a slug taken meanwhile gets the usual `-2` suffix.
+- **Unconfirmed pending signups are not cleaned up yet.** They're small and server-only. Reverse/next: delete rows older than 7 days from an existing cron.

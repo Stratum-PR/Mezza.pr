@@ -219,6 +219,7 @@ insert into approved values
 ('rls payment_accounts on'),
 ('rls payment_allocations on'),
 ('rls payments on'),
+('rls pending_signups on'),
 ('rls platform_admins on'),
 ('rls print_jobs on'),
 ('rls printers on'),

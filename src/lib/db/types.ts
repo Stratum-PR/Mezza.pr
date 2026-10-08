@@ -685,6 +685,19 @@ isOneToOne: false
       referencedColumns: ["restaurant_id","id"]
     }
                   ]
+                },"pending_signups": {
+                  Row: {
+                    "created_at": string,"full_name": string,"language": Database["public"]['Enums']["app_locale"],"phone": string | null,"restaurant_name": string,"user_id": string
+                  }
+                  Insert: {
+                    "created_at"?: string,"full_name": string,"language"?: Database["public"]['Enums']["app_locale"],"phone"?: string | null,"restaurant_name": string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"full_name"?: string,"language"?: Database["public"]['Enums']["app_locale"],"phone"?: string | null,"restaurant_name"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"platform_admins": {
                   Row: {
                     "created_at": string,"user_id": string
