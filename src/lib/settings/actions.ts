@@ -162,23 +162,25 @@ export async function saveLimits(slug: string, _: FormResult, form: FormData): P
     qr_max_tab_cents: parsed.data.tab,
     max_people_per_table: parsed.data.people,
   };
-  const db = await createClient();
-  const { error } = await db.from("restaurants").update(next).eq("id", r.id);
+  const { error } = await (await createClient()).from("restaurants").update(next).eq("id", r.id);
   if (error) return fail("failed");
-  await db.from("audit_log").insert({
-    restaurant_id: r.id,
-    actor_id: ctx.userId,
-    action: "limit_change",
-    target_table: "restaurants",
-    target_id: r.id,
-    before: {
-      qr_max_order_cents: r.qr_max_order_cents,
-      qr_max_line_qty: r.qr_max_line_qty,
-      qr_max_tab_cents: r.qr_max_tab_cents,
-      max_people_per_table: r.max_people_per_table,
-    },
-    after: next,
-  });
+  // The audit log is written by server code only (signed-in users read it).
+  await createAdminClient()
+    .from("audit_log")
+    .insert({
+      restaurant_id: r.id,
+      actor_id: ctx.userId,
+      action: "limit_change",
+      target_table: "restaurants",
+      target_id: r.id,
+      before: {
+        qr_max_order_cents: r.qr_max_order_cents,
+        qr_max_line_qty: r.qr_max_line_qty,
+        qr_max_tab_cents: r.qr_max_tab_cents,
+        max_people_per_table: r.max_people_per_table,
+      },
+      after: next,
+    });
   return done(slug, "ajustes", "saved");
 }
 
@@ -260,14 +262,16 @@ export async function decideSupport(slug: string, grantId: string, approve: bool
     .select("id")
     .maybeSingle();
   if (error || !data) return fail("failed");
-  await db.from("audit_log").insert({
-    restaurant_id: ctx.restaurant.id,
-    actor_id: ctx.userId,
-    action: "support_access",
-    target_table: "support_access_grants",
-    target_id: grantId,
-    after: { decision: approve ? "approved" : "ended" },
-  });
+  await createAdminClient()
+    .from("audit_log")
+    .insert({
+      restaurant_id: ctx.restaurant.id,
+      actor_id: ctx.userId,
+      action: "support_access",
+      target_table: "support_access_grants",
+      target_id: grantId,
+      after: { decision: approve ? "approved" : "ended" },
+    });
   return done(slug, "ajustes", approve ? "approved" : "ended");
 }
 
