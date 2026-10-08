@@ -14,7 +14,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:prod": "playwright test --config playwright.prod.config.ts",
-    "test:e2e:smoke": "playwright test --config playwright.prod.config.ts --project desktop tests/e2e/signup.spec.ts tests/e2e/service-flow.spec.ts tests/e2e/auth.spec.ts",
+    "test:e2e:smoke": "playwright test --config playwright.prod.config.ts --project=desktop tests/e2e/signup.spec.ts tests/e2e/service-flow.spec.ts tests/e2e/auth.spec.ts",
     "test:db": "supabase test db",
     "screenshots": "playwright test --config playwright.screenshots.config.ts",
     "db:check": "tsx scripts/db-check/run.ts",
