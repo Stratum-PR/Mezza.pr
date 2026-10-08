@@ -200,9 +200,9 @@ Nothing in this file has been applied to the hosted database by an agent.
   - Rollback cycle (7 migrations) OK; after the down script test 19 fails, after up it passes.
   - Access snapshot regenerated: no change (anon and authenticated gain nothing).
   - Gate C, local REST: the RPC as anon returns `42501`; as the service role it answers.
-  - E2E: the CI smoke run on the push. `settings.spec.ts` (Equipo invite) not run locally, because
-    `pnpm seed` needs the user's go-ahead in this session. It invites a new address, so it doesn't
-    exercise this path anyway; the unit test does.
+  - E2E (production build, local stack): signup, settings (Equipo invite), auth and service-flow
+    specs, 14 passed. The Equipo spec invites a new address, so the existing-account path is covered
+    by the unit test and the REST check.
 - Rollback: `supabase/rollbacks/20261008000700_user_lookup.down.sql` (deploy the previous app first).
 - Deploy: apply the migration with or before the app; the new app calls the function.
 - Backup / applied / verified / tag: _pending (production owner)._
@@ -232,9 +232,10 @@ Nothing in this file has been applied to the hosted database by an agent.
   - `pnpm check` green: unit 239/239, pgTAP 19 files 820/820, build OK.
   - Rollback cycle (8 migrations) OK; after the down script test 20 fails, after up it passes.
   - Access snapshot regenerated: one line, `rls pending_signups on`.
-  - E2E: CI smoke (`signup.spec.ts` runs the confirmation-off path). The confirmation-on path
-    (production) is covered by unit tests only, because local auth has confirmation off. Manual check
-    on a preview with confirmation on: still to do by a person.
+  - E2E (production build, local stack): the same 4 specs, 14 passed; `signup.spec.ts` runs the
+    confirmation-off path through `finishSignup`. The confirmation-on path (production) is covered by
+    unit tests only, because local auth has confirmation off. Manual check on a preview with
+    confirmation on (same device and a second device): still to do by a person.
 - Rollback: `supabase/rollbacks/20261008000800_pending_signups.down.sql`. Deploy the previous app
   first. Signups still waiting for confirmation are lost; list them before rolling back.
 - Deploy: apply the migration first, then promote the app (the new signup writes the table).
@@ -259,4 +260,7 @@ Nothing in this file has been applied to the hosted database by an agent.
     This was not seen in CI; investigate if it ever happens there.
   - `pnpm db:drift` resets the local database without `seed.sql`. Run `supabase db reset` before
     `pnpm seed` afterwards.
+  - On Windows, don't `source .env.local` in bash before E2E: it strips the backslashes from
+    `SWC_NATIVE_BINDING_CACHE` and the build fails. Unset that variable after sourcing (Next.js reads
+    `.env.local` itself).
 - **Not done by an agent:** manual walkthroughs (Gate B) and every production step.
