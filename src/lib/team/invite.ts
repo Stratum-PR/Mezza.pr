@@ -33,9 +33,9 @@ export async function addMember(input: AddMemberInput): Promise<AddMemberResult>
   if (invited.data.user) userId = invited.data.user.id;
   else {
     // Already has an account (e.g. works at another restaurant): find it and add the membership.
-    const { data } = await admin.auth.admin.listUsers({ perPage: 1000 });
-    userId = data?.users.find((u) => u.email?.toLowerCase() === email)?.id;
-    if (!userId) return "invite_failed";
+    const { data } = await admin.rpc("auth_user_id_by_email", { p_email: email });
+    if (!data) return "invite_failed";
+    userId = data;
   }
 
   const { data: existing } = await admin

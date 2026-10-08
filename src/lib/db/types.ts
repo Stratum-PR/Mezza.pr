@@ -1186,6 +1186,9 @@ isOneToOne: false
 "attribute_staff_order":
 { Args: { "p_order_id": string,"p_participant_id"?: string }; Returns: undefined
                            },
+"auth_user_id_by_email":
+{ Args: { "p_email": string }; Returns: string
+                           },
 "cancel_pending_payment":
 { Args: { "p_device_hash"?: string,"p_payment_id": string }; Returns: boolean
                            },
