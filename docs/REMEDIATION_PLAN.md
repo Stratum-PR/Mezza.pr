@@ -102,22 +102,36 @@ The full `src/features/` move was dropped. The code is already grouped by featur
 (`components/staff` + `lib/staff`, `lib/menu`, `lib/reports`, ...). Cross-feature imports are mostly
 shared UI and money helpers, and no component imports the service-role client. Moving every file
 would touch the whole codebase and conflict with every open branch, for little regression benefit.
-What stays:
+
+**Now:**
 
 | Unit | Change                                                                                                                                                                                  |
 | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P4-1 | Split `src/components/guest/guest-app.tsx` (979 lines) along its screens (menu, my order, checkout, receipt). No behavior change; E2E guest + checkout specs green before and after.    |
-| P4-2 | Split `src/components/staff/table-detail.tsx` (771 lines) the same way (lines, payments, staff tools).                                                                                  |
 | P4-3 | ESLint `no-restricted-imports`: `@/lib/db/admin` only from `src/lib/**`, `src/connectors/**`, `src/app/**/actions.ts`, route handlers and server pages; never from `src/components/**`. |
 | P4-4 | `README.md` per feature folder (`lib/guest`, `lib/staff`, `lib/menu`, `lib/reports`, `lib/qr`, `connectors/*`): flows, tables, RPCs, tests. Input for Phase 7.                          |
 
-## Phase 5 — Schema normalization (expand → backfill → switch → contract)
+**Deferred (do it the next time someone works on that screen, as its own change unit, before the feature change):**
 
-Each item is four separate deploys:
+| Unit | Change                                                                                                                                                                               |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| P4-1 | Split `src/components/guest/guest-app.tsx` (979 lines) along its screens (menu, my order, checkout, receipt). No behavior change; E2E guest + checkout specs green before and after. |
+| P4-2 | Split `src/components/staff/table-detail.tsx` (771 lines) the same way (lines, payments, staff tools).                                                                               |
 
-1. Indexes for the 38 unindexed FKs (start with `service_requests(tab_id)`, `cart_items(tab_id)`, `print_jobs(order_id)`, `payments(participant_id)`, `order_items(participant_id)`): `create index concurrently`, single step.
-2. Stop redefining whole function bodies across migrations (6 functions: `place_order`, `place_guest_order`, `refresh_sales_summaries`, `set_item_shares`, `tab_charges`, `void_order`): keep the canonical source in `supabase/functions-src/*.sql` and generate migrations from it, so a diff shows exactly what changed.
-3. Move `pin_hash` (if PINs stay) and other secrets out of tenant-readable tables (expand: new table → backfill → switch reads → drop column).
+## Phase 5 — Schema: indexes only (decision 2026-10-08)
+
+**Later (after Phases 2, 6 and 7):** indexes for the 38 unindexed foreign keys, starting with
+`service_requests(tab_id)`, `cart_items(tab_id)`, `print_jobs(order_id)`, `payments(participant_id)`
+and `order_items(participant_id)`. Use `create index concurrently`; it's a single step with no
+backfill.
+
+**Skipped for now:**
+
+- Generating migrations from canonical function sources (`supabase/functions-src`). The risk it
+  addressed, a later migration rewriting a whole function and dropping earlier logic (M5), is
+  covered instead by the Phase 1 access snapshot (who may call what) and a Phase 7 review rule
+  (diff a redefined function against its previous body in the PR).
+- Moving `pin_hash` out of `memberships`: not needed. P0-2 already hides it from every signed-in
+  role with a column-level grant.
 
 ## Phase 6 — Branch promotion
 
@@ -128,9 +142,9 @@ Each item is four separate deploys:
 After Phases 0–6, rewrite AGENTS.md (CLAUDE.md keeps importing it) with what is then true:
 
 - `pnpm check` is the definition of done; CI must be green; never skip or edit a test to pass.
-- Data rules: money tables are written only by SECURITY DEFINER RPCs; every new function revokes from `public, anon` and grants explicitly; every new table ships RLS + a security-matrix entry; new migrations never edit old ones.
-- Architecture map (feature folders, connector registries, where the service-role client may be used).
-- Per-feature docs: `src/features/<f>/README.md` (flows, tables, RPCs, tests).
+- Data rules: money tables are written only by SECURITY DEFINER RPCs; every new function revokes from `public, anon` and grants explicitly; every new table ships RLS + a security-matrix entry; new migrations never edit old ones; a migration that redefines an existing function shows the diff against the previous body in the PR description (M5).
+- Architecture map (layers grouped by feature: `app/`, `components/<f>`, `lib/<f>`, connector registries; where the service-role client may be used, enforced by P4-3).
+- Per-feature docs: the `README.md` files from P4-4 (`src/lib/<feature>/README.md`, `src/connectors/<c>/README.md`).
 - Agent safety: `.claude/settings.json` deny-list (`supabase db push`, `seed:cloud`, `git push origin main`), a PostToolUse hook that runs `pnpm lint` on edited files.
 
 ---
