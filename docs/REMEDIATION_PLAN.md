@@ -96,9 +96,20 @@ test and a tested rollback.
 - One tab-closing path (`close_tab` family) used by Mesas, POS close and idle close.
 - `pnpm format` for the 3 unformatted docs.
 
-## Phase 4 — Feature-folder restructure
+## Phase 4 — Targeted structure fixes (slimmed down, decision 2026-10-08)
 
-Move to `src/features/<feature>/{server,components,db,tests}` for: guest-ordering, split-bill, payments, staff-service, kitchen, menu, qr, reports, team, settings, onboarding. Rules enforced by ESLint `no-restricted-imports`: features import each other only through `index.ts`; only `features/*/server` may import `@/lib/db/admin`. Split `guest-app.tsx` (979 lines) and `table-detail.tsx` (771) along the way. Mechanical moves only: one feature per unit, no behavior change, full Gate A–C each time.
+The full `src/features/` move was dropped. The code is already grouped by feature inside each layer
+(`components/staff` + `lib/staff`, `lib/menu`, `lib/reports`, ...). Cross-feature imports are mostly
+shared UI and money helpers, and no component imports the service-role client. Moving every file
+would touch the whole codebase and conflict with every open branch, for little regression benefit.
+What stays:
+
+| Unit | Change |
+|---|---|
+| P4-1 | Split `src/components/guest/guest-app.tsx` (979 lines) along its screens (menu, my order, checkout, receipt). No behavior change; E2E guest + checkout specs green before and after. |
+| P4-2 | Split `src/components/staff/table-detail.tsx` (771 lines) the same way (lines, payments, staff tools). |
+| P4-3 | ESLint `no-restricted-imports`: `@/lib/db/admin` only from `src/lib/**`, `src/connectors/**`, `src/app/**/actions.ts`, route handlers and server pages; never from `src/components/**`. |
+| P4-4 | `README.md` per feature folder (`lib/guest`, `lib/staff`, `lib/menu`, `lib/reports`, `lib/qr`, `connectors/*`): flows, tables, RPCs, tests. Input for Phase 7. |
 
 ## Phase 5 — Schema normalization (expand → backfill → switch → contract)
 
