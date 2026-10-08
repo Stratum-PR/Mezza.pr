@@ -1,6 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
+import { publicEnv } from "@/lib/env";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/db/server";
@@ -43,8 +43,7 @@ const linkSchema = z.object({ email: z.email(), next: z.string().optional(), loc
 export async function sendMagicLink(_: AuthFormState, form: FormData): Promise<AuthFormState> {
   const parsed = linkSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { status: "error", message: "invalid" };
-  const origin =
-    (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const origin = publicEnv.NEXT_PUBLIC_SITE_URL; // never the request's Origin header
   const next = await safeNext(parsed.data.next);
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({

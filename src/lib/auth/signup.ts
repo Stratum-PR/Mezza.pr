@@ -1,12 +1,12 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { rateLimiter } from "@/connectors/rate-limit";
 import { clientIp } from "@/lib/client-ip";
 import { createAdminClient } from "@/lib/db/admin";
 import { createClient } from "@/lib/db/server";
+import { publicEnv } from "@/lib/env";
 import { slugify, uniqueSlug } from "@/lib/slug";
 
 export type SignupState = {
@@ -30,9 +30,8 @@ const signupSchema = z.object({
   locale: z.enum(["es", "en"]),
 });
 
-async function origin(): Promise<string> {
-  return (await headers()).get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-}
+/** Links in emails point at the site itself, never at the request's Origin header. */
+const origin = () => publicEnv.NEXT_PUBLIC_SITE_URL;
 
 /**
  * Onboarding step 1: creates the user, then the restaurant with its owner membership, default QR
@@ -58,7 +57,7 @@ export async function signUp(_: SignupState, form: FormData): Promise<SignupStat
     password: d.password,
     options: {
       data: { full_name: d.fullName },
-      emailRedirectTo: `${await origin()}/api/auth/callback?next=/app`,
+      emailRedirectTo: `${origin()}/api/auth/callback?next=/app`,
     },
   });
   if (error) {
@@ -104,7 +103,7 @@ export async function requestPasswordReset(_: ResetState, form: FormData): Promi
   if (!parsed.success) return { status: "error" };
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${await origin()}/api/auth/callback?next=/app/contrasena`,
+    redirectTo: `${origin()}/api/auth/callback?next=/app/contrasena`,
   });
   return { status: "sent" };
 }

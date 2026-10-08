@@ -1,6 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
+import { publicEnv } from "@/lib/env";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { menuImporter } from "@/connectors/menu-import";
@@ -173,7 +173,7 @@ export async function wizardConnectPayment(slug: string, method: "card" | "ath")
   try {
     const provider = payments()[method];
     if (!provider.startOnboarding) return { status: "error", error: "coming_soon" };
-    const origin = (await headers()).get("origin") ?? "http://localhost:3000";
+    const origin = publicEnv.NEXT_PUBLIC_SITE_URL; // never the request's Origin header
     const { url } = await provider.startOnboarding(
       { restaurantId: ctx.restaurant.id, actorUserId: ctx.userId, locale: "es" },
       `${origin}/app/${slug}/empezar?paso=4`,
