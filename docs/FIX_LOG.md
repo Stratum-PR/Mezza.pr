@@ -135,3 +135,71 @@ Nothing in this file has been applied to the hosted database by an agent.
 - Deploy notes: like P0-1, deploy the app and the migration together. Apply the migration, then
   promote the Vercel deployment right away.
 - Backup / applied / verified / tag: _pending (production owner)._
+
+## P2-1 — append-only audit log; owners can't edit billing state (#13)
+
+- Finding: M1 (Medium). Owners could delete or edit audit entries, set their own plan, status, trial
+  end, order numbering, onboarding step and fiscal mode, and write subscriptions and usage fees.
+- Status: **Ready, not applied to production.**
+- Failing test first: `supabase/tests/17_owner_limits.test.sql` (commit `954d846`): 13/24 failed.
+- Migration: `20261008000500_owner_limits.sql`.
+  - `audit_log`, `subscriptions` and `usage_fees` are read-only to signed-in users.
+  - `restaurants` UPDATE is limited to the 15 settings columns Ajustes edits.
+- App: `saveLimits` and `decideSupport` write audit entries with the service role.
+- Gates:
+  - pgTAP 789/789 at the time; rollback cycle OK; unit, typecheck, lint, format OK.
+  - E2E settings + order-limits: 5 passed, after fixing a strict-mode locator in `settings.spec.ts`
+    that fails on a fresh database (pre-existing).
+  - Access snapshot regenerated; its diff is exactly these access changes.
+- Rollback: `supabase/rollbacks/20261008000500_owner_limits.down.sql`.
+- Deploy: apply the migration together with the app; the old app writes audit rows as the owner.
+- Backup / applied / verified / tag: _pending (production owner)._
+
+## P2-2 — new functions and tables closed by default (#14)
+
+- Finding: M4 (Medium). Every new function was executable by anon/authenticated, and every new table
+  open to anon, unless its migration remembered to revoke. `report_summary` and
+  `storage_restaurant_id` were executable by anon.
+- Status: **Ready, not applied to production.**
+- Failing test first: `supabase/tests/18_default_privileges.test.sql` (commit `a89531b`).
+- Migration: `20261008000600_default_privileges.sql`.
+  - Revokes the per-schema defaults, plus Postgres's global PUBLIC EXECUTE default for the migration
+    role; a per-schema default can only add to the global one.
+  - Revokes the two functions from anon.
+  - **From now on every migration must `grant execute ... to authenticated, service_role` explicitly**
+    (Phase 7 rule).
+- Tests that create `pg_temp` helpers opt back in inside their own transaction.
+- Gates: pgTAP 17 files 797/797, `db:check` OK, rollback cycle 6/6, types match.
+- Rollback: `supabase/rollbacks/20261008000600_default_privileges.down.sql`.
+- Deploy: database only, any order.
+- Backup / applied / verified / tag: _pending (production owner)._
+
+## P2-4 — links use the site URL, never the Origin header (#16)
+
+- Finding: M6 (Medium).
+- Status: **Ready, not applied to production** (app only, no migration).
+- Failing test first: `tests/unit/no-origin-links.test.ts` (commit `deeab6e`). It flagged
+  `lib/auth/actions.ts`, `lib/auth/signup.ts` and `empezar/actions.ts`.
+- Fix: signup confirmation, magic link, password reset and the payments onboarding return URL use
+  `NEXT_PUBLIC_SITE_URL`. Make sure Vercel sets it to the production URL.
+- Gates: unit 231/231, typecheck, lint, format, E2E signup + auth 8 passed.
+
+## Handoff (2026-10-08) — where the next session starts
+
+- **Production is 6 migrations behind the branch** (`20261008000100`–`000600`). Deploy order: take a
+  backup, apply the migrations, promote the matching Vercel build right away, then re-take the
+  snapshot (`supabase/snapshots/prod-<date>@<version>.sql`) so CI's drift check is current.
+- **Drift:** the first real check (snapshot at `20261007000000`) found **no drift**.
+- **Phase 2 left:**
+  - P2-3 (#15): exact user lookup by email (service-role SQL function) instead of `listUsers({perPage:1000})` in `src/lib/team/invite.ts`.
+  - P2-5 (#17): create the restaurant after email confirmation (`src/lib/auth/signup.ts` and the auth callback).
+- **Then:** Phase 6 (promotion via PR; rulesets are on), Phase 7 (AGENTS.md rules from these entries),
+  Phase 3, Phase 4 (lint rule + READMEs), and Phase 5 (indexes).
+- **Known issues:**
+  - GitHub reports 1 moderate Dependabot alert on the default branch.
+  - `checkout.spec.ts:157` ("even split") is timing-sensitive under parallel load.
+  - In this cloud container the `09_split_engine` property test once stalled after a rollback cycle.
+    This was not seen in CI; investigate if it ever happens there.
+  - `pnpm db:drift` resets the local database without `seed.sql`. Run `supabase db reset` before
+    `pnpm seed` afterwards.
+- **Not done by an agent:** manual walkthroughs (Gate B) and every production step.
