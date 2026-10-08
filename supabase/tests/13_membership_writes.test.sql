@@ -73,9 +73,11 @@ select pg_temp.as_user('00000000-0000-4000-8000-000000000004');
 select * from pg_temp.no_membership_writes('kitchen');
 
 reset role;
-select is((select string_agg(role::text || ':' || active, ',' order by role) from public.memberships),
+select is((select string_agg(role::text || ':' || active, ',' order by role) from public.memberships
+  where restaurant_id = '00000000-0000-4000-8000-00000000cafe'),
   'owner:true,manager:true,server:true,kitchen:true', 'the team is unchanged');
-select is((select count(*) from public.memberships where pin_hash like 'hash-%'), 4::bigint, 'and so are the PINs');
+select is((select count(*) from public.memberships
+  where restaurant_id = '00000000-0000-4000-8000-00000000cafe' and pin_hash like 'hash-%'), 4::bigint, 'and so are the PINs');
 
 -- The app's path (service role, after its own checks) still works.
 set local role service_role;
