@@ -6,6 +6,7 @@ type Existing = { id: string; role: "owner" | "manager" | "server" | "kitchen" }
 const state = {
   invitedUser: null as { id: string } | null,
   users: [] as { id: string; email: string }[],
+  rpcs: [] as { fn: string; args: unknown }[],
   existing: null as Existing,
   writes: [] as { op: string; values: unknown }[],
   inviteArgs: [] as unknown[],
@@ -22,8 +23,14 @@ vi.mock("@/lib/db/admin", () => ({
             error: state.invitedUser ? null : { message: "exists" },
           });
         },
-        listUsers: () => Promise.resolve({ data: { users: state.users }, error: null }),
+        // Would only see the first page of accounts; addMember must not use it (P2-3).
+        listUsers: () => Promise.reject(new Error("listUsers is paged; use auth_user_id_by_email")),
       },
+    },
+    rpc(fn: string, args: { p_email: string }) {
+      state.rpcs.push({ fn, args });
+      const user = state.users.find((u) => u.email === args.p_email.trim().toLowerCase());
+      return Promise.resolve({ data: user?.id ?? null, error: null });
     },
     from(table: string) {
       const chain = {
@@ -56,6 +63,7 @@ const base = { restaurantId: "r1", email: "Ana@Example.com", role: "server" as c
 beforeEach(() => {
   state.invitedUser = null;
   state.users = [{ id: "u-owner", email: "ana@example.com" }];
+  state.rpcs = [];
   state.existing = null;
   state.writes = [];
   state.inviteArgs = [];
@@ -99,6 +107,16 @@ describe("addMember (Equipo and the setup wizard)", () => {
     expect(state.writes).toContainEqual({
       op: "memberships.insert",
       values: { restaurant_id: "r1", user_id: "u-new", role: "server" },
+    });
+  });
+
+  it("finds an existing account by exact email, not by listing users", async () => {
+    state.existing = null;
+    expect(await addMember(base)).toBe("added");
+    expect(state.rpcs).toEqual([{ fn: "auth_user_id_by_email", args: { p_email: "ana@example.com" } }]);
+    expect(state.writes).toContainEqual({
+      op: "memberships.insert",
+      values: { restaurant_id: "r1", user_id: "u-owner", role: "server" },
     });
   });
 
