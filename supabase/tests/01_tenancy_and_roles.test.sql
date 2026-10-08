@@ -28,12 +28,15 @@ begin
   return n;
 end $$;
 
+-- Rows a statement changed; a statement the role may not run at all (no privilege) changed none.
 create function tests.affected(p_sql text) returns bigint
 language plpgsql as $$
 declare n bigint;
 begin
   execute format('with x as (%s returning 1) select count(*) from x', p_sql) into n;
   return n;
+exception when insufficient_privilege then
+  return 0;
 end $$;
 
 create function tests.build_restaurant(p_rid uuid, p_slug text, p_name text) returns void
@@ -243,7 +246,7 @@ select extensions.ok(
   'server reads the menu');
 select extensions.is(
   tests.affected(format('update public.payments set status = ''paid'', paid_at = now() where id = %L', tests.id('00000000-0000-4000-8000-00000000cafe', 'payment'))),
-  1::bigint, 'server can confirm a cash payment');
+  0::bigint, 'server cannot write payments directly (cash is confirmed with confirm_cash_payment, 12_payment_writes)');
 select extensions.throws_ok(
   format('select public.void_order(%L, ''x'')', tests.id('00000000-0000-4000-8000-00000000cafe', 'order')),
   '42501', null, 'server cannot void');

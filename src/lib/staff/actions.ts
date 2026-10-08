@@ -76,7 +76,12 @@ export async function confirmCash(slug: string, paymentId: string): Promise<Staf
   }
   // The check is settled: close any "bring the check" request on that tab.
   const db = createAdminClient();
-  const { data: p } = await db.from("payments").select("tab_id").eq("id", paymentId).single();
+  const { data: p } = await db
+    .from("payments")
+    .select("tab_id")
+    .eq("id", paymentId)
+    .eq("restaurant_id", ctx.restaurant.id)
+    .single();
   if (p) {
     await db
       .from("service_requests")

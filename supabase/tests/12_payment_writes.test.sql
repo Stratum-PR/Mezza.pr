@@ -39,7 +39,7 @@ exception when insufficient_privilege then
   return 0;
 end $$;
 create temporary table ids (k text primary key, v uuid);
-grant all on ids to authenticated, service_role;
+grant all on ids to anon, authenticated, service_role;
 
 -- Two tables order a mofongo; table 1 asks to pay cash, table 2 by card (both pending).
 set local role service_role;
