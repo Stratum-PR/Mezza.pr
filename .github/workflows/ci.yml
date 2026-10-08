@@ -1,0 +1,110 @@
+# Gates A–C from docs/REMEDIATION_PLAN.md on every pull request and push. Branch protection on main
+# should require all three jobs.
+name: CI
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Typecheck, lint, format, unit, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm test
+      - run: pnpm build
+        env:
+          # Placeholders: the build validates their shape but never connects.
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:55321
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-anon-key-0000000000
+          SUPABASE_SERVICE_ROLE_KEY: ci-placeholder-service-role-key-000000
+          QR_TOKEN_SECRET: ci-placeholder-qr-token-secret-00000000000
+          CRON_SECRET: ci-placeholder-cron-secret
+
+  database:
+    name: Database tests and rollback cycle
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Start the database (migrations + seed)
+        run: pnpm exec supabase db start
+      - name: pgTAP (tenancy, payments, roles, tabs, access snapshot)
+        run: pnpm test:db
+      - name: Every rollback script applies, migrations re-apply
+        run: pnpm db:rollback-cycle
+      - name: pgTAP again on the re-applied schema
+        run: pnpm test:db
+      - name: Generated DB types match the migrations
+        run: |
+          pnpm exec supabase gen types typescript --local > /tmp/types.ts
+          diff -u src/lib/db/types.ts /tmp/types.ts
+
+  e2e-smoke:
+    name: Smoke E2E (production build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [checks]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Start Supabase
+        run: pnpm exec supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor
+      - name: Write .env.local for the local stack
+        run: |
+          eval "$(pnpm exec supabase status -o env | grep -E '^(API_URL|ANON_KEY|SERVICE_ROLE_KEY)=')"
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL"
+            echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
+            echo "QR_TOKEN_SECRET=$(openssl rand -hex 32)"
+            echo "CRON_SECRET=$(openssl rand -hex 16)"
+            grep -E '^(NEXT_PUBLIC_SITE_URL|NEXT_PUBLIC_GUEST|MEZZA_|STRATUM)' .env.example | sed 's/ *#.*//'
+          } > .env.local
+      - name: Seed Café Lucía
+        run: |
+          set -a; . ./.env.local; set +a
+          pnpm seed
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Smoke E2E (signup + wizard, guest order to POS close, logins and roles)
+        run: |
+          set -a; . ./.env.local; set +a
+          pnpm test:e2e:smoke
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
