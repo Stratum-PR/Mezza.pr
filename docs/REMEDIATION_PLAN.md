@@ -8,19 +8,19 @@ audit summary; IDs below (H1, M2, ...) refer to it. Nothing in this plan has bee
 One **change unit** = one finding or one tightly related group. Each unit gets its own branch
 `fix/<id>-<slug>`, its own PR, and its own tag.
 
-| Step | What | Done when |
-|---|---|---|
-| 1. Failing test first | Write the test that proves the problem (pgTAP for DB/RLS, Vitest for logic, Playwright for flows). | The test is committed and **fails** on `main`. |
-| 2. Baseline | Run `pnpm check` (see Phase 1) on the branch before the fix; save output to the PR. | Baseline recorded, only the new test is red. |
-| 3. Implement | Smallest change that turns the test green. Migrations are new files, never edits to old ones. | New test green. |
-| 4. Gate A — regression | `pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm test:db && pnpm build && pnpm test:e2e:smoke` | All green, in CI, on the PR. |
-| 5. Gate B — functionality | The unit's own tests + a manual walkthrough of the touched screens (390 / 768 / 1280 px, light + dark, es + en) recorded as a checklist in the PR. | Checklist ticked by a human. |
-| 6. Gate C — security | `supabase/tests/security/*` (access-control matrix + payment integrity + privilege snapshot) all green. | Green in CI. |
-| 7. Rollback script | `supabase/rollbacks/<migration>.down.sql`, **tested**: apply up → down → up on a local DB in CI. | Rollback job green. |
-| 8. Production backup | Confirm Supabase PITR/daily backup timestamp; take `supabase db dump` (schema + data) before applying. | Backup id/time written in FIX_LOG. |
-| 9. Apply | Merge PR → CI "prod-rehearsal" job (see Environments) passes → production (`supabase db push` from CI, not a laptop). | Deployed. |
-| 10. Verify in production | Run the unit's read-only verification query/script against production; check Vercel runtime errors for 30 min. | Verified. |
-| 11. Record | Append to `docs/FIX_LOG.md` (unit id, PR, migration, backup id, verification output, rollback path) and tag `fix-<id>-YYYYMMDD`. | Tag pushed. |
+| Step                      | What                                                                                                                                               | Done when                                      |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1. Failing test first     | Write the test that proves the problem (pgTAP for DB/RLS, Vitest for logic, Playwright for flows).                                                 | The test is committed and **fails** on `main`. |
+| 2. Baseline               | Run `pnpm check` (see Phase 1) on the branch before the fix; save output to the PR.                                                                | Baseline recorded, only the new test is red.   |
+| 3. Implement              | Smallest change that turns the test green. Migrations are new files, never edits to old ones.                                                      | New test green.                                |
+| 4. Gate A — regression    | `pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm test:db && pnpm build && pnpm test:e2e:smoke`                               | All green, in CI, on the PR.                   |
+| 5. Gate B — functionality | The unit's own tests + a manual walkthrough of the touched screens (390 / 768 / 1280 px, light + dark, es + en) recorded as a checklist in the PR. | Checklist ticked by a human.                   |
+| 6. Gate C — security      | `supabase/tests/security/*` (access-control matrix + payment integrity + privilege snapshot) all green.                                            | Green in CI.                                   |
+| 7. Rollback script        | `supabase/rollbacks/<migration>.down.sql`, **tested**: apply up → down → up on a local DB in CI.                                                   | Rollback job green.                            |
+| 8. Production backup      | Confirm Supabase PITR/daily backup timestamp; take `supabase db dump` (schema + data) before applying.                                             | Backup id/time written in FIX_LOG.             |
+| 9. Apply                  | Merge PR → CI "prod-rehearsal" job (see Environments) passes → production (`supabase db push` from CI, not a laptop).                              | Deployed.                                      |
+| 10. Verify in production  | Run the unit's read-only verification query/script against production; check Vercel runtime errors for 30 min.                                     | Verified.                                      |
+| 11. Record                | Append to `docs/FIX_LOG.md` (unit id, PR, migration, backup id, verification output, rollback path) and tag `fix-<id>-YYYYMMDD`.                   | Tag pushed.                                    |
 
 A unit that fails any gate goes back to step 3. Nobody (human or agent) skips a gate or disables a test.
 
@@ -59,13 +59,13 @@ where possible. Because Phase 1 gates don't exist yet, Phase 0 uses a reduced bu
 the existing `pnpm typecheck && pnpm lint && pnpm test && pnpm test:db` plus the new failing pgTAP
 test and a tested rollback.
 
-| Unit | Finding | Change |
-|---|---|---|
+| Unit | Finding                   | Change                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P0-1 | H1 staff rewrite payments | New `confirm_cash_payment(p_payment_id)` SECURITY DEFINER RPC (role check, `status='pending'` only, sets `paid_at`/`confirmed_by`, writes `audit_log`). Switch `connectors/payments/cash.ts` to it. Drop `payments_insert_manager_server` and `payments_update_manager_server`. Revoke table INSERT/UPDATE/DELETE on `payments`, `payment_allocations`, `refunds`, `write_offs*` from `authenticated` (owner included; owners go through RPCs). Update `01_tenancy_and_roles.test.sql:244-246`, which currently asserts the hole. |
-| P0-2 | H2 manager escalation | Replace `memberships_insert_manager` / `memberships_update_manager` with RPC-only membership changes (owner adds managers; manager adds server/kitchen only; nobody edits own row). Revoke direct INSERT/UPDATE on `memberships` from `authenticated`. Move `pin_hash` to a table with no SELECT policy (or a column-level REVOKE). |
-| P0-3 | M2 sole-owner demotion | Constraint trigger: every restaurant keeps ≥1 active owner. Make `wizardInvite` call the same server function as `inviteMember` (no upsert of existing owner). |
-| P0-4 | M3 direct tab writes | Revoke UPDATE on `tabs.status/closed_at/pos_closed_*` from `authenticated`; add `close_tab_on_pos(p_tab_id)` RPC with audit; `closeOnPos` uses it. |
-| P0-5 | M6 / M7 hosted settings | Owner checks (no code): Auth → Confirm email ON, Redirect URLs allowlist only `https://mezza.stratumpr.com/**` (+ preview pattern), min password 8, leaked-password protection ON. Record screenshots in FIX_LOG. |
+| P0-2 | H2 manager escalation     | Replace `memberships_insert_manager` / `memberships_update_manager` with RPC-only membership changes (owner adds managers; manager adds server/kitchen only; nobody edits own row). Revoke direct INSERT/UPDATE on `memberships` from `authenticated`. Move `pin_hash` to a table with no SELECT policy (or a column-level REVOKE).                                                                                                                                                                                               |
+| P0-3 | M2 sole-owner demotion    | Constraint trigger: every restaurant keeps ≥1 active owner. Make `wizardInvite` call the same server function as `inviteMember` (no upsert of existing owner).                                                                                                                                                                                                                                                                                                                                                                    |
+| P0-4 | M3 direct tab writes      | Revoke UPDATE on `tabs.status/closed_at/pos_closed_*` from `authenticated`; add `close_tab_on_pos(p_tab_id)` RPC with audit; `closeOnPos` uses it.                                                                                                                                                                                                                                                                                                                                                                                |
+| P0-5 | M6 / M7 hosted settings   | Owner checks (no code): Auth → Confirm email ON, Redirect URLs allowlist only `https://mezza.stratumpr.com/**` (+ preview pattern), min password 8, leaked-password protection ON. Record screenshots in FIX_LOG.                                                                                                                                                                                                                                                                                                                 |
 
 ## Phase 1 — Build the test gates (week 1)
 
@@ -79,14 +79,14 @@ test and a tested rollback.
 
 ## Phase 2 — Security fixes (week 2)
 
-| Unit | Finding |
-|---|---|
+| Unit | Finding                                                                                                                                                                                                                                               |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | P2-1 | M1 owner can delete `audit_log`/payments and edit billing fields: audit_log append-only (no UPDATE/DELETE for anyone but service role), billing columns (`plan`, `status`, `trial_ends_at`, `next_order_number`) revoked from `authenticated` UPDATE. |
-| P2-2 | M4 default function privileges: `alter default privileges ... revoke execute on functions from public, anon, authenticated`, then explicit grants; revoke `report_summary` / `storage_restaurant_id` from anon. |
-| P2-3 | L4 `confirmCash` follow-up query scoped to `restaurant_id`. |
-| P2-4 | M6 build email redirect URLs from `NEXT_PUBLIC_SITE_URL`, never the request `Origin` header (`empezar/actions.ts:196`, `lib/auth/signup.ts:34`). |
-| P2-5 | M7 create the restaurant after email confirmation (callback), not at signup. |
-| P2-6 | L2 replace `listUsers({perPage:1000})` lookups with an exact lookup (SQL function on `auth.users` by email, service role only). |
+| P2-2 | M4 default function privileges: `alter default privileges ... revoke execute on functions from public, anon, authenticated`, then explicit grants; revoke `report_summary` / `storage_restaurant_id` from anon.                                       |
+| P2-3 | L4 `confirmCash` follow-up query scoped to `restaurant_id`.                                                                                                                                                                                           |
+| P2-4 | M6 build email redirect URLs from `NEXT_PUBLIC_SITE_URL`, never the request `Origin` header (`empezar/actions.ts:196`, `lib/auth/signup.ts:34`).                                                                                                      |
+| P2-5 | M7 create the restaurant after email confirmation (callback), not at signup.                                                                                                                                                                          |
+| P2-6 | L2 replace `listUsers({perPage:1000})` lookups with an exact lookup (SQL function on `auth.users` by email, service role only).                                                                                                                       |
 
 ## Phase 3 — Dead code and duplicate cleanup
 
@@ -104,16 +104,17 @@ shared UI and money helpers, and no component imports the service-role client. M
 would touch the whole codebase and conflict with every open branch, for little regression benefit.
 What stays:
 
-| Unit | Change |
-|---|---|
-| P4-1 | Split `src/components/guest/guest-app.tsx` (979 lines) along its screens (menu, my order, checkout, receipt). No behavior change; E2E guest + checkout specs green before and after. |
-| P4-2 | Split `src/components/staff/table-detail.tsx` (771 lines) the same way (lines, payments, staff tools). |
+| Unit | Change                                                                                                                                                                                  |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P4-1 | Split `src/components/guest/guest-app.tsx` (979 lines) along its screens (menu, my order, checkout, receipt). No behavior change; E2E guest + checkout specs green before and after.    |
+| P4-2 | Split `src/components/staff/table-detail.tsx` (771 lines) the same way (lines, payments, staff tools).                                                                                  |
 | P4-3 | ESLint `no-restricted-imports`: `@/lib/db/admin` only from `src/lib/**`, `src/connectors/**`, `src/app/**/actions.ts`, route handlers and server pages; never from `src/components/**`. |
-| P4-4 | `README.md` per feature folder (`lib/guest`, `lib/staff`, `lib/menu`, `lib/reports`, `lib/qr`, `connectors/*`): flows, tables, RPCs, tests. Input for Phase 7. |
+| P4-4 | `README.md` per feature folder (`lib/guest`, `lib/staff`, `lib/menu`, `lib/reports`, `lib/qr`, `connectors/*`): flows, tables, RPCs, tests. Input for Phase 7.                          |
 
 ## Phase 5 — Schema normalization (expand → backfill → switch → contract)
 
 Each item is four separate deploys:
+
 1. Indexes for the 38 unindexed FKs (start with `service_requests(tab_id)`, `cart_items(tab_id)`, `print_jobs(order_id)`, `payments(participant_id)`, `order_items(participant_id)`): `create index concurrently`, single step.
 2. Stop redefining whole function bodies across migrations (6 functions: `place_order`, `place_guest_order`, `refresh_sales_summaries`, `set_item_shares`, `tab_charges`, `void_order`): keep the canonical source in `supabase/functions-src/*.sql` and generate migrations from it, so a diff shows exactly what changed.
 3. Move `pin_hash` (if PINs stay) and other secrets out of tenant-readable tables (expand: new table → backfill → switch reads → drop column).
@@ -125,6 +126,7 @@ Each item is four separate deploys:
 ## Phase 7 — Write CLAUDE.md + AGENTS.md last
 
 After Phases 0–6, rewrite AGENTS.md (CLAUDE.md keeps importing it) with what is then true:
+
 - `pnpm check` is the definition of done; CI must be green; never skip or edit a test to pass.
 - Data rules: money tables are written only by SECURITY DEFINER RPCs; every new function revokes from `public, anon` and grants explicitly; every new table ships RLS + a security-matrix entry; new migrations never edit old ones.
 - Architecture map (feature folders, connector registries, where the service-role client may be used).

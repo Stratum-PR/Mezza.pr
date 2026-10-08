@@ -20,7 +20,8 @@
     "seed": "tsx scripts/seed/index.ts",
     "seed:cloud": "tsx scripts/seed/index.ts --cloud",
     "seed:e2e": "tsx scripts/seed/e2e-workers.ts",
-    "db:types": "supabase gen types typescript --local > src/lib/db/types.ts"
+    "db:types": "supabase gen types typescript --local > src/lib/db/types.ts",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm test:db && pnpm build"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",
