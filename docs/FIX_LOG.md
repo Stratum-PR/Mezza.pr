@@ -184,17 +184,74 @@ Nothing in this file has been applied to the hosted database by an agent.
   `NEXT_PUBLIC_SITE_URL`. Make sure Vercel sets it to the production URL.
 - Gates: unit 231/231, typecheck, lint, format, E2E signup + auth 8 passed.
 
+## P2-3 — exact account lookup by email (#15)
+
+- Finding: L2 (Low). Adding an existing account to a team (Equipo, setup wizard) listed the first
+  1000 accounts and searched them; an account past the first page was "not found".
+- Status: **Ready, not applied to production.**
+- Failing tests first (commit `171ffb8`): `supabase/tests/19_user_lookup.test.sql` (the function
+  didn't exist) and `src/lib/team/invite.test.ts` (5/7 failed once `listUsers` is off limits).
+- Migration: `20261008000700_user_lookup.sql`. `auth_user_id_by_email(text)`: SECURITY DEFINER,
+  exact match ignoring case and spaces, `service_role` only (anyone else could probe which emails
+  have an account).
+- App: `addMember` (`src/lib/team/invite.ts`) calls it. Fix commit `32ad912`.
+- Gates:
+  - `pnpm check` green: unit 232/232, pgTAP 18 files 807/807, build OK.
+  - Rollback cycle (7 migrations) OK; after the down script test 19 fails, after up it passes.
+  - Access snapshot regenerated: no change (anon and authenticated gain nothing).
+  - Gate C, local REST: the RPC as anon returns `42501`; as the service role it answers.
+  - E2E: the CI smoke run on the push. `settings.spec.ts` (Equipo invite) not run locally, because
+    `pnpm seed` needs the user's go-ahead in this session. It invites a new address, so it doesn't
+    exercise this path anyway; the unit test does.
+- Rollback: `supabase/rollbacks/20261008000700_user_lookup.down.sql` (deploy the previous app first).
+- Deploy: apply the migration with or before the app; the new app calls the function.
+- Backup / applied / verified / tag: _pending (production owner)._
+
+## P2-5 — the restaurant is created after the email is confirmed (#17)
+
+- Finding: M7 (Medium). Signup created the restaurant, slug and trial before the email was
+  confirmed, so a typo or someone else's address got a restaurant.
+- Status: **Ready, not applied to production.** Decisions (user, 2026-10-08) in `DECISIONS.md`
+  under "Signup after email confirmation".
+- Failing tests first (commit `9c2c910`):
+  - `supabase/tests/20_pending_signups.test.sql`: the table didn't exist.
+  - `src/lib/auth/signup.test.ts`: signup called `create_restaurant_with_owner` with no session.
+  - `src/lib/auth/finish-signup.test.ts`: the module didn't exist.
+- Migration: `20261008000800_pending_signups.sql`: `pending_signups` (one row per account, deleted
+  with it), RLS on with no policies, `service_role` only.
+- App (fix commit `7325bd4`):
+  - `signUp` saves the details and returns "confirm your email". With confirmation off (local, E2E)
+    Supabase returns a session and the restaurant is created right away, as before.
+  - `finishSignup` (`src/lib/auth/finish-signup.ts`) checks `email_confirmed_at` with the admin API,
+    claims the pending row with a delete (two calls can't create two restaurants), picks the slug,
+    creates the restaurant, and puts the row back if that fails.
+  - It runs in `/api/auth/callback` (then straight to the wizard) and on `/app` for a signed-in user
+    with no restaurant (confirmed on another device, where the PKCE exchange fails).
+- Old test changed: `00_schema` lists the tables without `restaurant_id`; `pending_signups` joins it.
+- Gates:
+  - `pnpm check` green: unit 239/239, pgTAP 19 files 820/820, build OK.
+  - Rollback cycle (8 migrations) OK; after the down script test 20 fails, after up it passes.
+  - Access snapshot regenerated: one line, `rls pending_signups on`.
+  - E2E: CI smoke (`signup.spec.ts` runs the confirmation-off path). The confirmation-on path
+    (production) is covered by unit tests only, because local auth has confirmation off. Manual check
+    on a preview with confirmation on: still to do by a person.
+- Rollback: `supabase/rollbacks/20261008000800_pending_signups.down.sql`. Deploy the previous app
+  first. Signups still waiting for confirmation are lost; list them before rolling back.
+- Deploy: apply the migration first, then promote the app (the new signup writes the table).
+  Existing restaurants are unaffected.
+- Backup / applied / verified / tag: _pending (production owner)._
+
 ## Handoff (2026-10-08) — where the next session starts
 
-- **Production is 6 migrations behind the branch** (`20261008000100`–`000600`). Deploy order: take a
+- **Production is 8 migrations behind the branch** (`20261008000100`–`000800`). Deploy order: take a
   backup, apply the migrations, promote the matching Vercel build right away, then re-take the
   snapshot (`supabase/snapshots/prod-<date>@<version>.sql`) so CI's drift check is current.
 - **Drift:** the first real check (snapshot at `20261007000000`) found **no drift**.
-- **Phase 2 left:**
-  - P2-3 (#15): exact user lookup by email (service-role SQL function) instead of `listUsers({perPage:1000})` in `src/lib/team/invite.ts`.
-  - P2-5 (#17): create the restaurant after email confirmation (`src/lib/auth/signup.ts` and the auth callback).
-- **Then:** Phase 6 (promotion via PR; rulesets are on), Phase 7 (AGENTS.md rules from these entries),
-  Phase 3, Phase 4 (lint rule + READMEs), and Phase 5 (indexes).
+- **Phase 2 is done in code** (P2-3 and P2-5 added 2026-10-08, second session). Phase 7's rules are in
+  AGENTS.md.
+- **Then:** Phase 6 (the PR into `main`; rulesets are on), Phase 3, Phase 4 (lint rule + READMEs) and
+  Phase 5 (indexes). Phase 7's later items (architecture map, per-feature READMEs, agent deny-list
+  and lint hook) wait for Phases 3–4.
 - **Known issues:**
   - GitHub reports 1 moderate Dependabot alert on the default branch.
   - `checkout.spec.ts:157` ("even split") is timing-sensitive under parallel load.
