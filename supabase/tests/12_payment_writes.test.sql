@@ -3,6 +3,9 @@
 -- confirm cash with confirm_cash_payment, which checks the role and the payment and audits it.
 begin;
 select no_plan();
+-- Test helpers (pg_temp functions) are called as signed-in users; new functions get no EXECUTE by
+-- default since P2-2, so this transaction (rolled back below) opts back in.
+alter default privileges grant execute on functions to public;
 
 insert into public.restaurants (id, slug, name) values
   ('00000000-0000-4000-8000-00000000cafe', 'test-pw', 'Café Lucía'),

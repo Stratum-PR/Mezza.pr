@@ -4,6 +4,9 @@
 -- fiscal mode) or its subscription and usage-fee rows.
 begin;
 select no_plan();
+-- Test helpers (pg_temp functions) are called as signed-in users; new functions get no EXECUTE by
+-- default since P2-2, so this transaction (rolled back below) opts back in.
+alter default privileges grant execute on functions to public;
 
 insert into public.restaurants (id, slug, name, trial_ends_at) values
   ('00000000-0000-4000-8000-00000000cafe', 'test-ol', 'Café Lucía', now() + interval '30 days');
