@@ -333,6 +333,18 @@ indisvalid;` must return 0 rows; drop any it lists and re-run.
   then accepts (it disappears). CI run 37972991704 green (checks, database, smoke E2E).
 - Rollback: `git revert` of the merge commit.
 
+## P4-4 — README per feature folder and connector
+
+- Plan item: Phase 4 (input for the Phase 7 architecture map).
+- Status: **Merged into the remediation branch.** Docs only.
+- Added 18 READMEs: `src/lib/{guest,staff,menu,reports,qr,team,auth,money}` and
+  `src/connectors/{billing,fiscal,menu-import,notifier,orders,payments,printing,rate-limit,realtime,splitter}`.
+  Each: what it does, entry points and callers, tables and RPCs (from the latest defining migration,
+  with security mode and EXECUTE grants), rules, tests. Connector READMEs link to `CONNECTORS.md`.
+- Gate: format, knip, lint green; CI run 37973513258 green.
+- Doc/code mismatches found are listed in `docs/REMEDIATION_QUEUE.md` Notes; `guestCancelPlan` became
+  unit U-2.
+
 ## Handoff (2026-10-08) — where the next session starts
 
 - **Production is 8 migrations behind the branch** (`20261008000100`–`000800`). Deploy order: take a
