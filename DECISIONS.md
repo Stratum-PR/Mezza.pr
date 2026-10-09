@@ -173,3 +173,8 @@ One line each: the decision, why, and how to reverse it.
 - **`finishSignup` runs in the confirmation callback and on `/app`** for a signed-in user with no restaurant, so confirming on another device (where the PKCE exchange fails) still works after the first sign-in. The pending row is claimed with a delete, so concurrent calls can't create two restaurants.
 - **The slug is chosen at confirmation**, so unconfirmed signups can't hold one; a slug taken meanwhile gets the usual `-2` suffix.
 - **Unconfirmed pending signups are not cleaned up yet.** They're small and server-only. Reverse/next: delete rows older than 7 days from an existing cron.
+
+## Remediation Phase 3–4 (2026-10-09)
+
+- **P3-1: the unused staff-session connector and `src/lib/db/browser.ts` were removed, not wired up.** Nothing imported them, and PIN switching is a frozen feature. Staff identity stays `requireStaff()`. The `pinSwitch` flag stays for when PIN switching is built. Reverse: restore from commit `cf88c39`'s parent.
+- **P4-3: the service-role client is denied everywhere under `src/` except `src/lib/**`, `src/connectors/**` and app `actions.ts`, `route.ts`, `page.tsx`, `layout.tsx`.** Wider than "not in components" because the plan says "only from". A server-only helper next to a page goes in `src/lib`. A glob can't see `"use client"`; `tests/unit/client-boundaries.test.ts` and `import "server-only"` cover client pages.

@@ -242,6 +242,27 @@ Nothing in this file has been applied to the hosted database by an agent.
   Existing restaurants are unaffected.
 - Backup / applied / verified / tag: _pending (production owner)._
 
+## P3-1 — unused staff-session connector and browser DB client removed
+
+- Finding: Phase 3 dead code (low).
+- Status: **Merged into the remediation branch.** App only, no migration.
+- Proof it was unused: no file outside `src/connectors/staff-session/` imports it, and nothing imports
+  `src/lib/db/browser.ts`. `@supabase/ssr` stays (used by `lib/db/server.ts` and `proxy-session.ts`).
+- Also: `MEZZA_STAFF_SESSION` removed from `.env.example`; `CONNECTORS.md` updated.
+- Gate A: typecheck, lint, format, unit 239/239, build green locally; CI run 37963346732 green
+  (incl. database tests).
+- Rollback: `git revert` of the merge commit. Deploy notes: none.
+
+## P4-3 — ESLint restricts the service-role client
+
+- Finding: Phase 4 structure (low; defense in depth on top of `import "server-only"`).
+- Status: **Merged into the remediation branch.** Lint config only.
+- Failing test first: `tests/unit/admin-import-rule.test.ts` (10 cases; the 4 "rejects" cases fail on
+  the old config). Probe files importing `@/lib/db/admin` from `src/components` and `src/app/r` failed
+  `pnpm lint` with `no-restricted-imports`; existing code has 0 problems.
+- Gate A: typecheck, lint, format, unit 249/249, build green locally; CI run 37963580055 green.
+- Rollback: `git revert` of the merge commit. Deploy notes: none.
+
 ## Handoff (2026-10-08) — where the next session starts
 
 - **Production is 8 migrations behind the branch** (`20261008000100`–`000800`). Deploy order: take a

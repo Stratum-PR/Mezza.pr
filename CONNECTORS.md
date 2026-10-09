@@ -22,7 +22,7 @@ Rules:
 | printing                   | `MEZZA_PRINTER` (default protocol)          | `browser`                                        | client        |
 | orders                     | `MEZZA_ORDER_QUEUE`                         | `online`                                         | client        |
 | realtime                   | `MEZZA_REALTIME`                            | `polling`                                        | client        |
-| staff session              | `MEZZA_STAFF_SESSION`                       | `personal_account`                               | server        |
+| staff session              | — (not built; removed in P3-1)              | own account per person                           | server        |
 | splitter                   | —                                           | `one` check                                      | both          |
 | notifier                   | `MEZZA_NOTIFIER`                            | `console` (SMS always stub)                      | server        |
 | billing                    | `MEZZA_BILLING`                             | `trial_only`                                     | server        |
@@ -91,7 +91,9 @@ Client-side registries can't read server env vars; the page passes the implement
 
 ## staff session
 
-- **Now:** `personal_account` (everyone signs in with their own account).
+- **Now:** no connector. Everyone signs in with their own account (`requireStaff()` in
+  `src/lib/auth/staff.ts`). The unused `personal_account` / `pin_switch_stub` connector was removed in
+  P3-1; PIN switching gets a new connector when it's built.
 - **Real implementation must (PIN):** switch users on a shared device with a hashed PIN
   (`memberships.pin_hash`), lockout after failures, audit `pin_reset`.
 - **Tests before `pinSwitch`:** wrong PINs lock out; a PIN never crosses restaurants.
