@@ -20,7 +20,7 @@ that needs a change there describes it in its report, and the coordinator applie
 | 2    | P3-2 | Remove unused exports (`knip`); add `knip` to `pnpm check`                                  | whole `src/**` (runs alone)                                                                                                                                                    | none             | wave 1     | merged  |
 | 3    | P4-4 | `README.md` per feature folder                                                              | `src/lib/*/README.md`, `src/connectors/*/README.md`                                                                                                                            | none             | P3-2       | merged  |
 | 3    | U-1  | Owner request: confirmation prompt before "Cerrado en el POS" (Servicio)                    | `src/components/staff/service-screen.tsx`, `tests/e2e/service-flow.spec.ts` (smoke test clicks the button: accept the prompt, add a cancel case); message keys via coordinator | none             | P3-2       | merged  |
-| 3    | U-2  | Only a participant of the tab may cancel its even split (`guestCancelPlan`; owner decision) | `src/app/r/[restaurant]/t/[token]/actions.ts`, `tests/e2e/split-edge-cases.spec.ts`, new `src/lib/guest/*.test.ts` if needed                                                   | none             |            | running |
+| 3    | U-2  | Only a participant of the tab may cancel its even split (`guestCancelPlan`; owner decision) | `src/app/r/[restaurant]/t/[token]/actions.ts`, `tests/e2e/split-edge-cases.spec.ts`, new `src/lib/guest/*.test.ts` if needed                                                   | none             |            | merged  |
 | 3    | P3-5 | `pnpm format` for unformatted docs                                                          | `docs/**` except FIX_LOG                                                                                                                                                       | none             | P3-2       | merged  |
 | 4    | P7-2 | AGENTS.md architecture map; `.claude/settings.json` deny-list and lint hook                 | coordinator only                                                                                                                                                               | none             | waves 1–3  | running |
 
@@ -45,6 +45,8 @@ and a unit waiting on it is `blocked`. Ordered by what unblocks the most work.
 - [ ] Production steps for Phases 0–2: `docs/OWNER_STEPS.md`.
 - [x] P3-4: approved both "Cerrado en el POS" changes (2026-10-09).
 - [x] `guestCancelPlan`: owner chose "require a participant" (2026-10-09) → unit U-2.
+- [ ] Run the full E2E suite once before release (`pnpm test:e2e`, local stack): CI's smoke job
+      skips `split-edge-cases.spec.ts`, which holds the U-2 test.
 - [ ] P5-1 in production: apply outside service hours, then check
       `select indexrelid::regclass from pg_index where not indisvalid;` returns 0 rows.
 

@@ -345,6 +345,24 @@ indisvalid;` must return 0 rows; drop any it lists and re-run.
 - Doc/code mismatches found are listed in `docs/REMEDIATION_QUEUE.md` Notes; `guestCancelPlan` became
   unit U-2.
 
+## U-2 — only a participant of the tab may cancel its even split (owner decision)
+
+- Finding: P4-4 review. Any phone holding the table's QR could cancel an unstarted even split
+  (`guestCancelPlan` only checked for a device cookie). No money at risk: the RPC refuses once a
+  share is paid or pending.
+- Status: **Merged into the remediation branch.** App only.
+- Change: new read-only `src/lib/guest/participant.ts` (`tabParticipant`, tab-scoped device hash,
+  never `ensure_participant`, fails closed); `guestCancelPlan` refuses non-participants with the
+  existing "failed" error. Staff path unchanged.
+- Tests: `src/lib/guest/participant.test.ts` (3, in CI). E2E case in
+  `tests/e2e/split-edge-cases.spec.ts` (non-participant refused, plan stays, no participant created;
+  the starter can still cancel). **CI's smoke job doesn't run this spec, and it wasn't run locally**:
+  run it with the full E2E suite before release.
+- CI run 37974332595 green (checks, database, smoke E2E).
+- Follow-up (not done): the guest app still shows "Cancelar la división" to a phone that isn't a
+  participant (it gets an error); hiding it is a small UI change.
+- Rollback: `git revert` of the merge commit.
+
 ## Handoff (2026-10-08) — where the next session starts
 
 - **Production is 8 migrations behind the branch** (`20261008000100`–`000800`). Deploy order: take a
