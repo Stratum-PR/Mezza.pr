@@ -253,6 +253,19 @@ Nothing in this file has been applied to the hosted database by an agent.
 - **Then:** Phase 6 (the PR into `main`; rulesets are on), Phase 3, Phase 4 (lint rule + READMEs) and
   Phase 5 (indexes). Phase 7's later items (architecture map, per-feature READMEs, agent deny-list
   and lint hook) wait for Phases 3–4.
+- **Vercel settings found 2026-10-08 (read-only check; owner to change):**
+  - **Previews use production.** Every variable targets Production and Preview, including
+    `NEXT_PUBLIC_SUPABASE_URL` (the production project), `SUPABASE_SERVICE_ROLE_KEY`,
+    `QR_TOKEN_SECRET` and `CRON_SECRET`; `MEZZA_DEMO_MODE=false`. So every PR preview (e.g. PR #18)
+    is a second writer to the only database with the service role, against the Environments rule.
+    PR #18's preview runs code that needs the 8 pending migrations, so signup, cash confirmation,
+    POS close and adding an existing account fail there. Don't test on it.
+    Fix: untick Preview on those variables (or point previews at a demo/throwaway database), make
+    sure Deployment Protection covers previews, then redeploy or delete existing previews (they
+    keep the values they were built with).
+  - **Rate limits are off in production:** `MEZZA_RATE_LIMIT=noop` (the code's default is
+    `postgres`). Signup, guest-order and other per-IP/per-phone limits don't apply. Set it to
+    `postgres`, or record in `DECISIONS.md` why `noop` is intended.
 - **Known issues:**
   - GitHub reports 1 moderate Dependabot alert on the default branch.
   - `checkout.spec.ts:157` ("even split") is timing-sensitive under parallel load.
