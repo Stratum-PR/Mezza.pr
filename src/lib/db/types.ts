@@ -1214,6 +1214,9 @@ isOneToOne: false
 "close_tab":
 { Args: { "p_tab_id": string }; Returns: undefined
                            },
+"close_tab_core":
+{ Args: { "p_action": Database["public"]['Enums']["audit_action"],"p_actor": string,"p_before": Json,"p_tab_id": string }; Returns: boolean
+                           },
 "close_tab_on_pos":
 { Args: { "p_tab_id": string }; Returns: undefined
                            },

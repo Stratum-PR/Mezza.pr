@@ -268,7 +268,7 @@ Nothing in this file has been applied to the hosted database by an agent.
 - Finding: Phase 5 performance (low). 56 foreign keys in `public` had no covering index (38 at audit
   time; later migrations added more).
 - Status: **Merged into the remediation branch. Ready, not applied to production.**
-- Failing test first: `supabase/tests/17_fk_indexes.test.sql` (commit `5f5ddc2`, red in CI run
+- Failing test first: `supabase/tests/22_fk_indexes.test.sql` (commit `5f5ddc2`, red in CI run
   37963972350 listing the 56). A generic catalog check, so any future FK without an index fails it.
 - Migration: `supabase/migrations/20261009000200_fk_indexes.sql`. 52 indexes (four composite
   `(restaurant_id, …)` indexes also cover the plain `restaurant_id` FK), `create index concurrently
@@ -281,6 +281,29 @@ if not exists`. Supabase CLI 2.119 runs those statements outside the migration t
 indisvalid;` must return 0 rows; drop any it lists and re-run.
 - Follow-up (not done): `orders(tab_id)`, `payments(tab_id)` and `order_items(order_id)` now have a
   second, composite index on the same key; dropping the old ones is a later decision.
+- Backup / applied / verified / tag: _pending (production owner)._
+
+## P3-4 — one tab-closing path (Mesa libre, POS close, idle close)
+
+- Finding: Phase 3 duplicate code (low). Three copies of the close. "Cerrado en el POS" left the
+  tab's open service requests in Servicio and overwrote `closed_at` on a table already freed.
+- Status: **Merged into the remediation branch. Ready, not applied to production.**
+- Failing test first: `supabase/tests/21_one_tab_close.test.sql` (commits `ca1cf06`, `6b83071`;
+  11/48 failing before the fix, CI run 37963629043). Renamed from `16_` at merge (number taken).
+- Migration: `supabase/migrations/20261009000100_one_tab_close.sql`. New internal
+  `close_tab_core(uuid, uuid, audit_action, jsonb)`: SECURITY DEFINER, execute granted to no role.
+  `close_tab`, `close_tab_on_pos` and `close_idle_tabs` keep names, signatures, grants and checks and
+  close through it. Idle close stays unaudited, as before.
+- Behavior changes (owner approved 2026-10-09): POS close of a still-open tab marks its open
+  requests handled; a table already freed keeps its first `closed_at`.
+- App: no change. `src/lib/db/types.ts` gains the `close_tab_core` entry (generated shape).
+- Gate A–C: CI run 37964214847 — pgTAP 868/868, rollback cycle, unit, build, smoke E2E green; the
+  types step failed only for the missing entry, added at merge.
+- Rollback: `supabase/rollbacks/20261009000100_one_tab_close.down.sql`, tested in that CI run.
+- Deploy notes: no order dependency (RPC names and grants unchanged).
+- Verification (suggested): the three functions' bodies call `public.close_tab_core(`;
+  `has_function_privilege('authenticated','public.close_tab_core(uuid,uuid,public.audit_action,jsonb)','execute')`
+  is false.
 - Backup / applied / verified / tag: _pending (production owner)._
 
 ## Handoff (2026-10-08) — where the next session starts
