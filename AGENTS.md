@@ -15,6 +15,7 @@ These rules apply to every agent (Claude Code, Codex, others). `CLAUDE.md` only 
 - The product is **Mezza** (renamed from "Mesa"). The Spanish word "mesa" (table) stays in table labels: "Mesa 4", the "Mesas" screen, `/mesas`.
 - Build brief: `MEZZA_PASS1.md`. Resume from the first unchecked task in `PLAN.md` (pass 2, bill splitting, is at the end). Log judgment calls in `DECISIONS.md`.
 - Build in `PLAN.md` phase order. Phase gate: `pnpm check`, then commit `pass1(phase N): <summary>` (pass 2: `pass2(phase N): <summary>`).
+- `pnpm check` includes `knip` (config in `knip.json`). Don't export what nothing imports; a deliberate unused export (a connector contract helper) gets a `/** @public <reason> */` tag.
 - Brand follows the Stratum FSQMS landing page; tokens live in `src/app/globals.css`. Use tokens, not raw hex, and not Tailwind's `dark:` variant.
 - Every UI string lives in both `messages/es.json` and `messages/en.json`; Spanish first. No hardcoded UI text, including staff screens.
 - Navigation works at every size: sidebar/rail/drawer, never a scrolling top tab bar. Check 390, 768 and 1280 px, light and dark.

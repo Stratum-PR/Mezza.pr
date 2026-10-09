@@ -949,6 +949,7 @@
       "cashReceived": "Cash received",
       "served": "Served",
       "posClosed": "Closed on the POS",
+      "posCloseConfirm": "Did you close {total} for Table {label} on the POS? The table's open requests will be marked handled.",
       "takeOrder": "Take an order",
       "chooseTable": "Table",
       "chooseTableHint": "Choose the table for the order.",

@@ -306,6 +306,22 @@ indisvalid;` must return 0 rows; drop any it lists and re-run.
   is false.
 - Backup / applied / verified / tag: _pending (production owner)._
 
+## P3-2 — unused exports removed; knip in `pnpm check` and CI
+
+- Finding: Phase 3 dead code (low). knip 6.36.0 reported 23 unused exports and 27 unused exported
+  types.
+- Status: **Merged into the remediation branch.** Code only, no migration.
+- Done: dead code deleted (`Chips`, `Tag`, `MENU_IMAGE_TYPES`, `isDemoMode`, `FlagName`, connectors
+  `Role`, next-intl `redirect`/`getPathname`); symbols used only in their own file un-exported.
+  Kept and tagged `@public`: `needsReview` (menu-import contract) and `defaultPrinterProtocol`
+  (printing registry), both documented in `CONNECTORS.md`.
+- Config: `knip.json`; `pnpm knip` runs in `pnpm check` (after lint) and as a CI step.
+- Gate A: typecheck, lint, knip (0 findings), format, unit 249/249, build green; CI run 37971946157
+  green (incl. database tests and smoke E2E).
+- Rollback: `git revert` of the merge commit.
+- Open: `MEZZA_PRINTER` is documented but nothing reads it at runtime, and `needsReview` isn't called
+  by the import review. Decide later whether to wire up or drop.
+
 ## Handoff (2026-10-08) — where the next session starts
 
 - **Production is 8 migrations behind the branch** (`20261008000100`–`000800`). Deploy order: take a
