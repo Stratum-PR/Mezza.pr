@@ -33,6 +33,19 @@ These rules apply to every agent (Claude Code, Codex, others). `CLAUDE.md` only 
 - **Links in emails and redirects use `NEXT_PUBLIC_SITE_URL`**, never the request's `Origin` header (`tests/unit/no-origin-links.test.ts`).
 - **Production is the owner's.** Agents never write to the hosted Supabase database or change GitHub, Supabase or Vercel settings. Merging to `main` deploys production. Each unit's FIX_LOG entry stays "Ready, not applied" until the owner backs up, applies and verifies it.
 
+## Architecture map
+
+Code is grouped by feature. Read the feature's README before changing it.
+
+- `src/app`: routes, server pages and server actions (`actions.ts`, `route.ts`). Guest pages under `r/[restaurant]/t/[token]`, staff under `app/[restaurant]`, Stratum admin under `admin`, the public site under `[locale]`.
+- `src/components/<feature>`: UI. They write only through server actions and never import the service-role client (a server component may read with the user's RLS client, `@/lib/db/server`).
+- `src/lib/<feature>`: server logic, queries and pure helpers (money, splitting math, tickets).
+- `src/connectors/<c>`: one registry per risky integration (`index.ts` picks the implementation); import only `@/connectors/<c>`. Contracts and current state: `CONNECTORS.md`.
+- `supabase/migrations` (schema, RLS, RPCs) with `supabase/rollbacks` and pgTAP tests in `supabase/tests`; E2E in `tests/e2e`, unit tests next to the code or in `tests/unit`.
+- **Service-role client** (`@/lib/db/admin`, bypasses RLS): only from `src/lib/**`, `src/connectors/**` and, in `src/app/**`, `actions.ts`, `route.ts` and server `page.tsx`/`layout.tsx`, always after the caller's role is checked. ESLint `no-restricted-imports` enforces it (`eslint.config.mjs`); `tests/unit/client-boundaries.test.ts` covers client pages.
+- Feature READMEs: lib [`auth`](src/lib/auth/README.md), [`guest`](src/lib/guest/README.md), [`menu`](src/lib/menu/README.md), [`money`](src/lib/money/README.md), [`qr`](src/lib/qr/README.md), [`reports`](src/lib/reports/README.md), [`staff`](src/lib/staff/README.md), [`team`](src/lib/team/README.md); connectors [`billing`](src/connectors/billing/README.md), [`fiscal`](src/connectors/fiscal/README.md), [`menu-import`](src/connectors/menu-import/README.md), [`notifier`](src/connectors/notifier/README.md), [`orders`](src/connectors/orders/README.md), [`payments`](src/connectors/payments/README.md), [`printing`](src/connectors/printing/README.md), [`rate-limit`](src/connectors/rate-limit/README.md), [`realtime`](src/connectors/realtime/README.md), [`splitter`](src/connectors/splitter/README.md). Update the README in the same change when flows, tables, RPCs or tests move.
+- Agent guardrails (Claude Code, `.claude/settings.json`): `supabase db push`, `pnpm seed:cloud` and pushes to `main` are denied; ESLint runs on every edited JS/TS file. Other agents follow the same rules by hand.
+
 ## Bill splitting (pass 2) — agreed rules, details in DECISIONS.md
 
 - Guest orders go straight to the kitchen through `place_order`/`place_guest_order`. Never add staff approval of orders or staff-opened visits; abuse is handled by limits, rate limits and Servicio flags.
