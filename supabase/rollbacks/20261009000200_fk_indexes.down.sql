@@ -1,0 +1,57 @@
+-- Rollback for 20261009000200_fk_indexes.sql (P5-1). Indexes only: no data changes and no app
+-- deploy needed first. CONCURRENTLY, so no transaction: each drop runs on its own and the script
+-- can be re-run if interrupted. The migration row is removed last.
+
+drop index concurrently if exists public.service_requests_restaurant_id_tab_id_idx;
+drop index concurrently if exists public.cart_items_restaurant_id_tab_id_idx;
+drop index concurrently if exists public.print_jobs_restaurant_id_order_id_idx;
+drop index concurrently if exists public.payments_restaurant_id_participant_id_idx;
+drop index concurrently if exists public.order_items_restaurant_id_participant_id_idx;
+drop index concurrently if exists public.audit_log_actor_id_idx;
+drop index concurrently if exists public.cart_items_restaurant_id_item_id_idx;
+drop index concurrently if exists public.cart_items_restaurant_id_participant_id_idx;
+drop index concurrently if exists public.exports_created_by_idx;
+drop index concurrently if exists public.exports_restaurant_id_idx;
+drop index concurrently if exists public.item_hotspots_restaurant_id_item_id_idx;
+drop index concurrently if exists public.item_hotspots_restaurant_id_page_id_idx;
+drop index concurrently if exists public.item_modifier_groups_restaurant_id_group_id_idx;
+drop index concurrently if exists public.item_modifier_groups_restaurant_id_item_id_idx;
+drop index concurrently if exists public.menu_uploads_reviewed_by_idx;
+drop index concurrently if exists public.modifier_options_restaurant_id_group_id_idx;
+drop index concurrently if exists public.order_item_shares_restaurant_id_participant_id_idx;
+drop index concurrently if exists public.order_items_restaurant_id_order_id_idx;
+drop index concurrently if exists public.order_items_voided_by_idx;
+drop index concurrently if exists public.orders_created_by_idx;
+drop index concurrently if exists public.orders_restaurant_id_device_id_idx;
+drop index concurrently if exists public.orders_restaurant_id_participant_id_idx;
+drop index concurrently if exists public.orders_restaurant_id_tab_id_idx;
+drop index concurrently if exists public.payment_allocations_restaurant_id_idx;
+drop index concurrently if exists public.payment_allocations_share_id_idx;
+drop index concurrently if exists public.payments_confirmed_by_idx;
+drop index concurrently if exists public.payments_restaurant_id_for_participant_id_idx;
+drop index concurrently if exists public.payments_restaurant_id_plan_id_idx;
+drop index concurrently if exists public.payments_restaurant_id_tab_id_idx;
+drop index concurrently if exists public.print_jobs_restaurant_id_printer_id_idx;
+drop index concurrently if exists public.refunds_approved_by_idx;
+drop index concurrently if exists public.refunds_restaurant_id_payment_id_idx;
+drop index concurrently if exists public.service_requests_handled_by_idx;
+drop index concurrently if exists public.split_plan_units_restaurant_id_idx;
+drop index concurrently if exists public.split_plan_units_share_id_idx;
+drop index concurrently if exists public.split_plans_created_by_user_idx;
+drop index concurrently if exists public.split_plans_restaurant_id_created_by_participant_idx;
+drop index concurrently if exists public.split_plans_restaurant_id_tab_id_idx;
+drop index concurrently if exists public.support_access_grants_approved_by_idx;
+drop index concurrently if exists public.support_access_grants_requested_by_idx;
+drop index concurrently if exists public.support_access_grants_restaurant_id_idx;
+drop index concurrently if exists public.tab_participants_auth_user_id_idx;
+drop index concurrently if exists public.tab_participants_restaurant_id_guest_id_idx;
+drop index concurrently if exists public.tab_participants_restaurant_id_tab_id_idx;
+drop index concurrently if exists public.tabs_pos_closed_by_idx;
+drop index concurrently if exists public.tabs_restaurant_id_table_id_idx;
+drop index concurrently if exists public.write_off_allocations_restaurant_id_idx;
+drop index concurrently if exists public.write_off_allocations_share_id_idx;
+drop index concurrently if exists public.write_off_allocations_write_off_id_idx;
+drop index concurrently if exists public.write_offs_created_by_idx;
+drop index concurrently if exists public.write_offs_restaurant_id_participant_id_idx;
+drop index concurrently if exists public.write_offs_restaurant_id_tab_id_idx;
+delete from supabase_migrations.schema_migrations where version = '20261009000200';

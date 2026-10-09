@@ -76,7 +76,12 @@ export async function confirmCash(slug: string, paymentId: string): Promise<Staf
   }
   // The check is settled: close any "bring the check" request on that tab.
   const db = createAdminClient();
-  const { data: p } = await db.from("payments").select("tab_id").eq("id", paymentId).single();
+  const { data: p } = await db
+    .from("payments")
+    .select("tab_id")
+    .eq("id", paymentId)
+    .eq("restaurant_id", ctx.restaurant.id)
+    .single();
   if (p) {
     await db
       .from("service_requests")
@@ -116,18 +121,12 @@ export async function raiseTabLimit(slug: string, tabId: string): Promise<StaffR
   return { ok: true, number: data };
 }
 
-/** "Cerrado en el POS": the sale was entered on the fiscal terminal; the tab closes. */
+/** "Cerrado en el POS": the sale was entered on the fiscal terminal; the tab closes (audited). */
 export async function closeOnPos(slug: string, tabId: string): Promise<StaffResult> {
   if (!uuid.safeParse(tabId).success) return fail("invalid");
-  const ctx = await requireSection(slug, "service");
-  const now = new Date().toISOString();
-  const { error } = await (
-    await createClient()
-  )
-    .from("tabs")
-    .update({ pos_closed_at: now, pos_closed_by: ctx.userId, status: "closed", closed_at: now })
-    .eq("id", tabId);
-  if (error) return fail("failed");
+  await requireSection(slug, "service");
+  const { error } = await (await createClient()).rpc("close_tab_on_pos", { p_tab_id: tabId });
+  if (error) return fail(error.code === "42501" ? "forbidden" : "failed");
   refresh(slug);
   return { ok: true };
 }

@@ -2,7 +2,7 @@ import localFont from "next/font/local";
 
 // Archivo (SIL OFL 1.1), self-hosted like the Stratum FSQMS site. Variable font, weight 400–800.
 // The two files split the Unicode ranges; the browser falls back per glyph from latin to latin-ext.
-export const archivo = localFont({
+const archivo = localFont({
   src: "../../public/fonts/archivo-latin.woff2",
   weight: "400 800",
   display: "swap",
@@ -16,7 +16,7 @@ export const archivo = localFont({
   ],
 });
 
-export const archivoExt = localFont({
+const archivoExt = localFont({
   src: "../../public/fonts/archivo-latin-ext.woff2",
   weight: "400 800",
   display: "swap",

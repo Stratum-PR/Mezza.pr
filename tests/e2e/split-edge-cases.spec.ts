@@ -110,6 +110,48 @@ test.describe("split-bill edge cases", () => {
     await expect(ana.getByText("Tu mesero viene a cobrar $2.23 en efectivo.")).toBeVisible();
   });
 
+  test("only a participant of the tab can cancel its even split", async ({ browser }) => {
+    test.setTimeout(180_000);
+    const ana = await phone(browser, 9);
+    await order(ana, /^Malta/, "Ana");
+    await myOrder(ana);
+    await ana.getByRole("button", { name: "Pagar la cuenta" }).click();
+    await ana.getByRole("radio", { name: /Dividir en partes iguales/ }).check();
+    await ana.getByRole("button", { name: "Dividir en 2" }).click();
+    const active = /La cuenta se dividió en 2\. Partes que quedan: 2/;
+    await expect(ana.getByText(active)).toBeVisible({ timeout: 20_000 });
+
+    // A phone that only scanned the QR (never ordered or paid) sees the split and can pay a share,
+    // but isn't offered to cancel it (the server refuses that too).
+    const carl = await phone(browser, 9);
+    await myOrder(carl);
+    await carl.getByRole("button", { name: "Pagar la cuenta" }).click();
+    await carl.getByRole("radio", { name: /Dividir en partes iguales/ }).check();
+    await expect(carl.getByText(active)).toBeVisible();
+    await expect(carl.getByRole("button", { name: /^Pagar \$/ })).toBeVisible();
+    await expect(carl.getByRole("button", { name: /^Pagar \$/ })).toBeEnabled();
+    await expect(carl.getByRole("button", { name: "Cancelar la división" })).toHaveCount(0);
+
+    // Looking at the split didn't make Carl a participant: Ana is still the only person at the table.
+    const { url, headers } = localRest();
+    const [tab] = (await (
+      await fetch(`${url}/rest/v1/tabs?table_id=eq.${tableId(9)}&status=neq.closed&select=id`, { headers })
+    ).json()) as { id: string }[];
+    const people = (await (
+      await fetch(`${url}/rest/v1/tab_participants?tab_id=eq.${tab.id}&select=id`, { headers })
+    ).json()) as { id: string }[];
+    expect(people).toHaveLength(1);
+
+    // The plan is still there for Ana, who started it; she can cancel it.
+    await myOrder(ana);
+    await ana.getByRole("button", { name: "Pagar la cuenta" }).click();
+    await ana.getByRole("radio", { name: /Dividir en partes iguales/ }).check();
+    await expect(ana.getByText(active)).toBeVisible();
+    await ana.getByRole("button", { name: "Cancelar la división" }).click();
+    await expect(ana.getByText("Se canceló la división.")).toBeVisible({ timeout: 20_000 });
+    await expect(ana.getByRole("button", { name: "Dividir en 2" })).toBeVisible();
+  });
+
   test("leaving early, a late order in an even split, and a pending payment that expires", async ({
     browser,
   }) => {

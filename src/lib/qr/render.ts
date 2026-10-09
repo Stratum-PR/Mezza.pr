@@ -22,7 +22,7 @@ export interface QrDesign {
   logoHref?: string;
 }
 
-export type QrShape =
+type QrShape =
   | { kind: "rect"; x: number; y: number; w: number; h: number; rx: number; fill: string }
   | { kind: "circle"; cx: number; cy: number; r: number; fill: string }
   /** A square or rounded ring: outer box minus inner box, drawn as an even-odd path. */
@@ -185,7 +185,7 @@ function luminance(hex: string): number {
   return 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
 }
 
-export function contrastRatio(a: string, b: string): number {
+function contrastRatio(a: string, b: string): number {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (hi! + 0.05) / (lo! + 0.05);
 }

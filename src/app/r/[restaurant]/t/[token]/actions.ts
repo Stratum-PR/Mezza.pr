@@ -10,6 +10,7 @@ import { clientIp } from "@/lib/client-ip";
 import { createAdminClient } from "@/lib/db/admin";
 import { deviceHash, ensureDeviceHash } from "@/lib/guest/device";
 import { cleanName } from "@/lib/guest/names";
+import { tabParticipant } from "@/lib/guest/participant";
 import { ensureTab, liveTab, resolveTable, type GuestTable } from "@/lib/guest/resolve";
 import { guestStatus as loadStatus, type GuestStatus } from "@/lib/guest/status";
 import type { Cents } from "@/lib/money";
@@ -175,7 +176,7 @@ const paySchema = z.object({
   locale: z.enum(["es", "en"]),
 });
 
-export type PayError =
+type PayError =
   | "nothing_to_pay"
   | "unavailable"
   | "coming_soon"
@@ -323,13 +324,19 @@ export async function guestStartPlan(slug: string, token: string, parts: number)
   };
 }
 
-/** Cancels the table's even split, only before any share is paid or pending. */
+/**
+ * Cancels the table's even split, only before any share is paid or pending, and only from a phone
+ * that is already a participant of the tab (it ordered or paid there); a phone that just scanned the
+ * QR can't. The check never creates a participant.
+ */
 export async function guestCancelPlan(slug: string, token: string): Promise<PlanResult> {
   const g = await guest(slug, token);
   const tab = await liveTab(g.table.id);
-  if (!tab || !(await deviceHash())) return { ok: false, error: "failed" };
+  if (!tab) return { ok: false, error: "failed" };
+  const db = createAdminClient();
+  if (!(await tabParticipant(db, tab.id, await deviceHash()))) return { ok: false, error: "failed" };
   if (!(await allowed([`plan:table:${g.table.id}`, 10]))) return { ok: false, error: "failed" };
-  const { data, error } = await createAdminClient().rpc("cancel_split_plan", { p_tab_id: tab.id });
+  const { data, error } = await db.rpc("cancel_split_plan", { p_tab_id: tab.id });
   if (error || !data) return { ok: false, error: "failed" };
   const r = data as { status: string; reason?: string };
   return r.status === "accepted"

@@ -71,6 +71,9 @@ exception when others then
 end;
 $$;
 
+-- pgTAP's diag(): a comment line in the output, never a result.
+create function extensions.diag(text) returns text language sql as $$ select '# ' || $1 $$;
+
 create function extensions.finish() returns setof text language plpgsql as $$
 declare
   n integer := coalesce(nullif(current_setting('tap.n', true), ''), '0')::integer;

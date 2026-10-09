@@ -10,5 +10,3 @@ export const serverEnv = z
     MEZZA_DEMO_MODE: z.enum(["true", "false"]).default("false"),
   })
   .parse(process.env);
-
-export const isDemoMode = () => serverEnv.MEZZA_DEMO_MODE === "true" && process.env.NODE_ENV !== "production";

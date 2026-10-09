@@ -1,7 +1,7 @@
 import type { Cents, Ctx } from "../shared";
 
 export type PaymentMethod = "card" | "ath" | "cash";
-export type ProviderStatus = "not_connected" | "pending" | "connected" | "unavailable";
+type ProviderStatus = "not_connected" | "pending" | "connected" | "unavailable";
 
 export interface CreatePaymentInput {
   tabId: string;
@@ -14,7 +14,7 @@ export interface CreatePaymentInput {
   returnUrl: string;
 }
 
-export type PaymentNext =
+type PaymentNext =
   | { kind: "done" }
   | { kind: "staff_confirmation" } // cash
   | { kind: "client_secret"; secret: string } // card form (future)

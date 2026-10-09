@@ -109,7 +109,25 @@ test("Mesa 4 orders, the kitchen serves it, the guest pays cash and the table cl
   expect(after.home).toBeCloseTo(before.home + 2.5, 2);
   expect(after.ivu).toBeCloseTo(before.ivu + 2.5, 2);
 
+  // "Cerrado en el POS" asks first; cancelling leaves the table in the POS list.
+  const dismissed = server.waitForEvent("dialog").then(async (d) => {
+    const message = d.message();
+    await d.dismiss();
+    return message;
+  });
   await pos.getByRole("button", { name: "Cerrado en el POS" }).click();
+  expect(await dismissed).toMatch(/Mesa 4/);
+  await server.waitForTimeout(1_000);
+  await expect(pos).toBeVisible();
+
+  // Accepting closes it on the POS.
+  const accepted = server.waitForEvent("dialog").then(async (d) => {
+    const message = d.message();
+    await d.accept();
+    return message;
+  });
+  await pos.getByRole("button", { name: "Cerrado en el POS" }).click();
+  expect(await accepted).toMatch(/Mesa 4.*en el POS/);
   await expect(pos).toBeHidden({ timeout: 20_000 });
 
   // Mesas shows Mesa 4 free again.

@@ -22,7 +22,7 @@ type Design = CardDesign & { preset: string };
 type Table = CardTable & { tokenVersion: number };
 
 /** The printed card, drawn in HTML with the same proportions as the PDF card. */
-export function QrCardPreview({
+function QrCardPreview({
   design,
   table,
   width = 280,

@@ -2,7 +2,7 @@
  * The only font families a restaurant menu theme may use. Mezza's own interface never uses these
  * (it uses Archivo). They are loaded with next/font/google, which self-hosts them at build time.
  */
-export type MenuFontRole = "display" | "body" | "both";
+type MenuFontRole = "display" | "body" | "both";
 
 export interface MenuFont {
   family: string;

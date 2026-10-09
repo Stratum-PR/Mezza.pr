@@ -949,6 +949,7 @@
       "cashReceived": "Efectivo recibido",
       "served": "Servido",
       "posClosed": "Cerrado en el POS",
+      "posCloseConfirm": "¿Ya cerraste {total} de la Mesa {label} en el POS? Las solicitudes abiertas de la mesa se marcarán como atendidas.",
       "takeOrder": "Tomar orden",
       "chooseTable": "Mesa",
       "chooseTableHint": "Elige la mesa para la orden.",

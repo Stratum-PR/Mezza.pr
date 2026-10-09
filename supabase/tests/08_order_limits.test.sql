@@ -2,6 +2,9 @@
 -- "Ampliar límite", the Servicio flags, and the shared rate limiter.
 begin;
 select no_plan();
+-- Test helpers (pg_temp functions) are called as signed-in users; new functions get no EXECUTE by
+-- default since P2-2, so this transaction (rolled back below) opts back in.
+alter default privileges grant execute on functions to public;
 
 insert into public.restaurants (id, slug, name, qr_max_order_cents, qr_max_line_qty, qr_max_tab_cents, max_people_per_table)
   values ('00000000-0000-4000-8000-00000000cafe', 'test-ol', 'Café Lucía', 1000, 3, 1500, 2);

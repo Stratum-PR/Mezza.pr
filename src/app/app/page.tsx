@@ -1,11 +1,22 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { MezzaWordmark } from "@/components/ui/brand";
-import { homeFor, myRestaurants } from "@/lib/auth/staff";
+import { finishSignup } from "@/lib/auth/finish-signup";
+import { currentUserId, homeFor, myRestaurants } from "@/lib/auth/staff";
 
-/** /app sends a member straight to their restaurant; people with several pick one. */
+/**
+ * /app sends a member straight to their restaurant; people with several pick one. A new owner whose
+ * restaurant is still waiting on email confirmation gets it created here.
+ */
 export default async function AppIndexPage() {
   const restaurants = await myRestaurants();
+  if (restaurants.length === 0) {
+    // Confirmed the signup email on another device (the callback couldn't sign in there): the
+    // restaurant is created on first sign-in instead (P2-5).
+    const userId = await currentUserId();
+    const slug = userId ? await finishSignup(userId) : null;
+    if (slug) redirect(`/app/${slug}/empezar`);
+  }
   if (restaurants.length === 1) redirect(homeFor(restaurants[0]!.slug, restaurants[0]!.role));
   const t = await getTranslations();
   return (

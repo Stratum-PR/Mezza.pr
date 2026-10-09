@@ -2,7 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/db/admin";
 import { trialDaysLeft } from "@/lib/trial";
 
-export interface AdminRestaurant {
+interface AdminRestaurant {
   id: string;
   name: string;
   slug: string;

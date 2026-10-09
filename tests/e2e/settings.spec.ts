@@ -70,7 +70,8 @@ test.describe("team, settings, plan and admin", () => {
       page.getByRole("cell", { name: `${restaurantName()} /${worker().slug}`, exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "Alertas" }).or(page.getByText("Todo bien")),
+      // The heading is always there; "Todo bien" shows under it when nothing needs attention.
+      page.getByRole("heading", { name: "Alertas" }).or(page.getByText("Todo bien")).first(),
     ).toBeVisible();
     await page.getByLabel("Restaurante").selectOption({ label: restaurantName() });
     const reason = `Revisar impresora ${Date.now()}`;

@@ -5,7 +5,7 @@
 import { addDays, daysBetween, monthRange, type Ymd } from "@/lib/reports/time";
 import { dollars, toCsv, type Cell } from "./csv";
 
-export interface IvuDay {
+interface IvuDay {
   date: Ymd;
   taxable: number;
   state: number;

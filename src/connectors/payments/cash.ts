@@ -15,19 +15,16 @@ export const cashProvider: PaymentProvider = {
     const paymentId = await insertPayment(ctx, "cash", input);
     return { paymentId, next: { kind: "staff_confirmation" } };
   },
-  /** Staff confirms cash received (signed-in server/manager/owner; RLS checks the role). */
+  /**
+   * Staff confirms cash received, as the signed-in server/manager/owner. confirm_cash_payment checks
+   * the role and the payment and audits it; staff never write payments directly.
+   */
   async confirm(ctx, paymentId) {
     const supabase = await createClient();
-    const { data: payment, error } = await supabase
-      .from("payments")
-      .update({ status: "paid", paid_at: new Date().toISOString(), confirmed_by: ctx.actorUserId ?? null })
-      .eq("id", paymentId)
-      .eq("status", "pending")
-      .select("tab_id")
-      .maybeSingle();
+    const { data: tabId, error } = await supabase.rpc("confirm_cash_payment", { p_payment_id: paymentId });
     if (error) throw new Error(`cash confirmation failed: ${error.message}`);
-    if (!payment) return; // already confirmed, or not visible to this user
-    await fiscal().recordSale(ctx, payment.tab_id);
+    if (!tabId) return; // already confirmed or lapsed
+    await fiscal().recordSale(ctx, tabId);
     await refreshRecentSales(ctx.restaurantId);
   },
   async refund(ctx, paymentId, amountCents, reason) {

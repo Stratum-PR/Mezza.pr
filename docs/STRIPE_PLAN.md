@@ -54,13 +54,13 @@ Defaults taken (change any by saying so):
 
 Each repo tests in its own environment, so Mezza and Grumi never share a database, ports, containers or Stripe sandbox. Each runs with one command, and CI runs the same setup.
 
-| | Mezza | Grumi |
-|---|---|---|
-| Supabase | `project_id = "mezza"`, 55320–55329 (exists) | its own local stack, 55420–55429 |
-| Stripe | Mezza's own sandbox (test mode) | Grumi's own sandbox (test mode) |
-| Webhooks | `stripe/stripe-cli` container running `stripe listen` → `http://host.docker.internal:<app port>/api/webhooks/stripe/…` (E2E: 3100 prod build, 3000 dev) | `stripe/stripe-cli` container → `http://host.docker.internal:55421/functions/v1/stripe-webhook` |
-| Offline unit tests | `stripe-mock` on 55331 | `stripe-mock` on 55431 |
-| ATH fake (from the ATH plan) | 55330 | 55430 |
+|                              | Mezza                                                                                                                                                   | Grumi                                                                                           |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Supabase                     | `project_id = "mezza"`, 55320–55329 (exists)                                                                                                            | its own local stack, 55420–55429                                                                |
+| Stripe                       | Mezza's own sandbox (test mode)                                                                                                                         | Grumi's own sandbox (test mode)                                                                 |
+| Webhooks                     | `stripe/stripe-cli` container running `stripe listen` → `http://host.docker.internal:<app port>/api/webhooks/stripe/…` (E2E: 3100 prod build, 3000 dev) | `stripe/stripe-cli` container → `http://host.docker.internal:55421/functions/v1/stripe-webhook` |
+| Offline unit tests           | `stripe-mock` on 55331                                                                                                                                  | `stripe-mock` on 55431                                                                          |
+| ATH fake (from the ATH plan) | 55330                                                                                                                                                   | 55430                                                                                           |
 
 - The Stripe CLI only makes outgoing connections, so it publishes no ports. It prints the sandbox's webhook signing secret, which the test run passes to the app.
 - Integration and E2E tests use real Stripe test mode: the test cards for success, decline, 3-D Secure and dispute, test connected accounts onboarded with Stripe's test data, and `stripe trigger` for events. Unit tests run offline against `stripe-mock` or an injected HTTP client.
@@ -87,6 +87,7 @@ If any v2 item fails, use Accounts v1 with controller properties for that part a
 Fits the existing connector: `PaymentProvider` for `card` in `src/connectors/payments` (`startOnboarding`, `PaymentNext` with `client_secret`, `handleWebhook` already exist), `MEZZA_PAYMENTS_CARD=stripe`, flag `cardPayments`; billing in `src/connectors/billing`, `MEZZA_BILLING=stripe`. Every pass 2 rule stays: amounts come from `create_tab_payment`, every payment records what it covered, IVU per payment is the difference in cumulative IVU, tip is a percent of the pre-tax subtotal, one pending payment per phone.
 
 ### Phase 1: Data
+
 - [ ] Migration: `payment_accounts` gets the account's state (charges enabled, requirements due, dashboard, connected_at, last checked); `payments` gets `application_fee_cents` and the PaymentIntent id in `provider_ref` (indexed); `refunds` gets `provider_refund_id` (unique); a `payment_disputes` table (payment, Stripe dispute id, amount, status, reason, opened/closed), listed apart in Reportes like write-offs
 - [ ] `subscriptions` gets the Stripe subscription id, price, status and period end; `restaurants.status` follows it
 - [ ] **Holds:** the 15-minute expiry in `create_tab_payment` and `close_idle_tabs` skips pending card payments that have a PaymentIntent. Those end only through `settle()` (rule 5), which cancels at Stripe and then releases. Without this, the database could free lines while the card payment still succeeds.
@@ -96,11 +97,13 @@ Fits the existing connector: `PaymentProvider` for `card` in `src/connectors/pay
 - [ ] Database tests: an owner, manager and server each fail to mark a card payment paid, change its amount or `provider_ref`, insert a refund, change `payment_accounts.stripe_account_id`, or change plan, status or trial
 
 ### Phase 2: Connecting a restaurant
+
 - [ ] Ajustes → Pagos → Tarjeta (owner only): connect, resume onboarding, status, what Stripe still needs, "Abrir panel de Stripe" (Express Dashboard login link); audited
 - [ ] Account events and the onboarding return refresh the stored status; payment-method domain registered on connect
 - [ ] Strings in `es.json` and `en.json`; 390/768/1280, light and dark
 
 ### Phase 3: Provider and server routes
+
 - [ ] `createPayment`: the pending payment from `create_tab_payment` → PaymentIntent on the restaurant's account (amount = subtotal + IVU + tip; `application_fee_amount` = 0.5% half-up via `src/lib/money`; metadata: payment id, restaurant, tab; idempotency key = the payment's) → `{ kind: "client_secret" }`
 - [ ] `settle(paymentId)` per rule 2; on success it reuses cash's "mark paid" path (extract it from `cash.ts` so cash, mocks and Stripe share it: fiscal `recordSale`, `refreshRecentSales`)
 - [ ] Routes: the settle route the phone calls on return or while waiting; `/api/webhooks/stripe/connect` (payment, refund and dispute events of connected accounts); `/api/webhooks/stripe/platform` (billing, plus v2 account events as phase 0 decides); a sweeper for pending card payments, run as screens load (like `close_idle_tabs`) and from the cron
@@ -109,6 +112,7 @@ Fits the existing connector: `PaymentProvider` for `card` in `src/connectors/pay
 - [ ] **Card testing:** at most 3 failed confirmations per PaymentIntent (counted from `payment_intent.payment_failed`; then the PaymentIntent is cancelled and the phone must start over), at most 5 card declines per table and per IP per hour; a challenge (Cloudflare Turnstile or similar) after the first decline; card offered only when the tab has orders; an alert to the owner and Stratum on a decline spike. Radar on direct charges runs on each restaurant's account, so these limits are ours
 
 ### Phase 4: Guest screens
+
 - [ ] Card on the pay screen: Express Checkout Element (Apple Pay, Google Pay) above the Payment Element, loaded with the restaurant's account id; amount shown from the server; Stripe's locale follows the guest's language
 - [ ] 3-D Secure and the return URL land back on the table, which calls settle; then the receipt, as today
 - [ ] Declined → try again or another method; the table's live balance shows "Pago en proceso" while a card payment is pending (exists)
@@ -116,18 +120,21 @@ Fits the existing connector: `PaymentProvider` for `card` in `src/connectors/pay
 - [ ] Content-Security-Policy on guest pages (none today: `next.config.ts`, `src/proxy.ts` and `vercel.json` set no CSP): `script-src` and `frame-src` limited to self and Stripe's documented hosts, so an injected script can't skim the payment page
 
 ### Phase 5: Staff, refunds and disputes
+
 - [ ] Refunds and voids of card-paid lines follow rule 7: a pre-check of role and refundable amount, then Stripe, then `record_refund` with the Stripe refund id. A webhook-side variant, server-only and idempotent on `provider_refund_id`, records refunds that arrive only by webhook
 - [ ] Overpayments flagged in Servicio and the table detail; a manager refunds them or keeps them with a reason (shared with the ATH plan's phase 5; whichever ships first builds it). An open overpayment older than 7 days is escalated to the owner and Stratum, and listed in Reportes until resolved
 - [ ] Disputes: Servicio and Ajustes flag them with a link to the Express Dashboard; Reportes lists them apart
 - [ ] Payments list and table detail show card payments with brand and last 4
 
 ### Phase 6: Billing (Stratum plans)
+
 - [ ] `billing` connector `stripe`: Stripe Products and Prices per pricing model, by lookup key, from `src/config/pricing.ts`; model A's monthly base is the subscription, its card percentage is the application fee
 - [ ] Plan page "Elegir plan": Checkout in subscription mode for the restaurant's Account (customer configuration), `trial_end` = `restaurants.trial_ends_at`; "Gestionar" opens the Customer Portal (card, invoices, cancel)
 - [ ] Webhooks (`customer.subscription.*`, `invoice.paid`, `invoice.payment_failed`) update `subscriptions` and `restaurants.status` (`trial`, `active`, `paused` while past due, `cancelled`); `current()` reads them
 - [ ] Model C's ATH percentage can't be an application fee (ATH isn't Stripe): if model C is ever active, it goes on the monthly invoice from `usage_fees`
 
 ### Phase 7: Verification
+
 - [ ] CONNECTORS.md tests in the Docker environment: webhook replay is idempotent; amounts equal subtotal + IVU + tip to the cent; a failed provider call leaves no `paid` row; refunds never exceed what was paid; onboarding status survives restarts. Add: the application fee to the cent, a hold that ends while Stripe succeeds (overpayment flag), and a refund recorded only by webhook
 - [ ] E2E with test cards and the Stripe CLI (prod build on 3100): one guest pays by card; two phones pay at once (card + cash); 3-D Secure; decline then success; switch method; refund after a void; a dispute shows up
 - [ ] Billing E2E: trial → subscribe → `invoice.payment_failed` → paused → paid → active; the Customer Portal opens
@@ -139,6 +146,7 @@ Fits the existing connector: `PaymentProvider` for `card` in `src/connectors/pay
 Expected to be built by Genesis. Grumi's detailed phases go in this section. In short: the same rules; card payments through hosted Checkout shown as a QR code or link at the counter (clients pay on their own phone, Apple Pay included); built on Grumi's existing `payments` table, `payments` Edge Function and Settings → Pagos page (one row per card or ATH charge, so split tenders record what each paid); Edge Functions that read totals from the database; plan subscriptions for existing businesses; no platform fee on payments. Grumi uses its own Stripe platform account and sandbox.
 
 Grumi's security items for Stripe (from `docs/PAYMENTS_SECURITY_REVIEW.md`):
+
 - [ ] Rules 1–12 above, including server-only money writes (rule 10) and daily reconciliation (rule 11)
 - [ ] G-20: any Stripe "Test mode" only outside production, or test transactions flagged and excluded from sales
 - [ ] G-3 and G-13 first: the server computes the charge from a pending transaction, and billing columns on `businesses` are locked

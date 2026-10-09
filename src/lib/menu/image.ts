@@ -1,7 +1,6 @@
 import sharp from "sharp";
 
-export const MENU_IMAGE_TYPES = { "image/jpeg": "jpg", "image/png": "png" } as const;
-export const MAX_MENU_BYTES = 15 * 1024 * 1024;
+const MAX_MENU_BYTES = 15 * 1024 * 1024;
 
 /** Read the uploaded picture, never a generated fixture. Account for phone EXIF rotation. */
 export async function menuImageSize(bytes: Buffer, mimeType: string) {
