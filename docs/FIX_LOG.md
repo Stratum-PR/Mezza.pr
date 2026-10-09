@@ -380,6 +380,21 @@ indisvalid;` must return 0 rows; drop any it lists and re-run.
 - Gate: format, lint, knip, typecheck, unit green; CI run 37975154057 green.
 - Rollback: `git revert` of the merge commit.
 
+## U-3 — hide "Cancelar la división" from phones that aren't participants (follow-up to U-2)
+
+- Finding: U-2 follow-up. The guest app showed the cancel button to a phone that isn't a participant
+  of the tab; pressing it only produced an error.
+- Status: **Merged into the remediation branch.** App only, no message changes.
+- Change: `guest-app.tsx` renders the cancel button only when `status.me` is set. `status.me` uses the
+  same tab-scoped device hash and live tab as U-2's `tabParticipant`; the server stays the authority
+  (a stale screen still gets the "failed" refusal). Plan display and paying a share are unchanged.
+- Tests: the E2E case in `tests/e2e/split-edge-cases.spec.ts` now asserts the non-participant sees the
+  plan and an enabled pay button but no cancel button, no participant is created, and the starter can
+  still cancel. The server refusal is covered by `src/lib/guest/participant.test.ts`. **CI's smoke job
+  doesn't run this spec**: run the full E2E suite before release (`docs/OWNER_STEPS.md` step 3).
+- CI run 37976795038 green (checks, database, smoke E2E).
+- Rollback: `git revert` of the merge commit.
+
 ## Handoff (2026-10-08) — where the next session starts
 
 - **Production is 8 migrations behind the branch** (`20261008000100`–`000800`). Deploy order: take a
