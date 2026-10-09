@@ -25,4 +25,21 @@ that needs a change there describes it in its report, and the coordinator applie
 Not queued: P3-3 (one invite path, already done in P0-3), P4-1 and P4-2 (deferred until someone
 works on those screens), Phase 6 and every production step (owner only).
 
+## Done when
+
+- **Agent work is done** when every row above is `merged`, CI is green on the latest commit of
+  the remediation branch, and each merged unit has a `docs/FIX_LOG.md` entry.
+- **The remediation is done** when, after that, every box in "Needs you" and in
+  `docs/OWNER_STEPS.md` is ticked: PR into `main` merged (Phase 6), migrations applied to
+  production, verified and tagged (protocol steps 8–11).
+
+## Needs you
+
+Anything an agent can't do or decide. The coordinator adds a line here as soon as it finds one,
+and a unit waiting on it is `blocked`. Ordered by what unblocks the most work.
+
+- [ ] Gate B manual walkthrough for each merged unit that changes a screen (390 / 768 / 1280 px,
+      light + dark, es + en).
+- [ ] Production steps for Phases 0–2: `docs/OWNER_STEPS.md`.
+
 ## Notes

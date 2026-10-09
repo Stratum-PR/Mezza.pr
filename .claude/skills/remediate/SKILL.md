@@ -68,8 +68,20 @@ Merge in the order workers finish. For each report:
 
 ## 4. Next wave
 
-When every unit of the wave is `merged` or `blocked`, go back to step 1. Report to the user after
-each wave: what merged, what's blocked and why, and the CI link for R.
+When every unit of the wave is `merged` or `blocked`, go back to step 1.
+
+## Keeping the user informed
+
+- The queue on R is the record: update a unit's status in the same push that changes it, so the
+  file on GitHub always matches reality.
+- Anything that needs a person (a decision, a manual walkthrough, a production or settings step,
+  missing access) goes under **Needs you** in the queue right away, with what to do and what to
+  send back. Production steps also go in `docs/OWNER_STEPS.md`. Never wait on it silently, and
+  never do it yourself.
+- After each wave, report to the user in four lines: merged, blocked (and why), needs you, CI link
+  for R.
+- When every row is `merged` and CI is green, say clearly that the agent work is done and list
+  what is left under **Needs you**.
 
 ## Rules that prevent conflicts
 
