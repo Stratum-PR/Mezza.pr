@@ -20,7 +20,7 @@ that needs a change there describes it in its report, and the coordinator applie
 | 2    | P3-2 | Remove unused exports (`knip`); add `knip` to `pnpm check`                     | whole `src/**` (runs alone)                                                                                                                                                    | none             | wave 1     | merged  |
 | 3    | P4-4 | `README.md` per feature folder                                                 | `src/lib/*/README.md`, `src/connectors/*/README.md`                                                                                                                            | none             | P3-2       | running |
 | 3    | U-1  | Owner request: confirmation prompt before "Cerrado en el POS" (Servicio)       | `src/components/staff/service-screen.tsx`, `tests/e2e/service-flow.spec.ts` (smoke test clicks the button: accept the prompt, add a cancel case); message keys via coordinator | none             | P3-2       | running |
-| 3    | P3-5 | `pnpm format` for unformatted docs                                             | `docs/**` except FIX_LOG                                                                                                                                                       | none             | P3-2       | running |
+| 3    | P3-5 | `pnpm format` for unformatted docs                                             | `docs/**` except FIX_LOG                                                                                                                                                       | none             | P3-2       | merged  |
 | 4    | P7-2 | AGENTS.md architecture map; `.claude/settings.json` deny-list and lint hook    | coordinator only                                                                                                                                                               | none             | waves 1–3  | todo    |
 
 Not queued: P3-3 (one invite path, already done in P0-3), P4-1 and P4-2 (deferred until someone
@@ -47,3 +47,6 @@ and a unit waiting on it is `blocked`. Ordered by what unblocks the most work.
       `select indexrelid::regclass from pg_index where not indisvalid;` returns 0 rows.
 
 ## Notes
+
+- P3-5: nothing to do. `pnpm format:check` was already clean on the whole repo at `fc94879`
+  (earlier phases formatted the docs).
