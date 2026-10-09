@@ -48,6 +48,8 @@ Workers don't talk to each other. Anything that crosses units comes back to you.
 
 Merge in the order workers finish. For each report:
 
+0. Wait for CI on the worker's branch (CI runs on every push). Merge only when it's green: it is
+   the only place the database tests run when Docker isn't available.
 1. Read the diff (`git diff origin/R...origin/fix/...`). Reject it if it touches a path outside
    its **Owns**, changes an existing test's meaning, or edits an old migration. Send it back to
    the worker (SendMessage) with what to change.
