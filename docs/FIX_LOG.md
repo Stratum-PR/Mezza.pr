@@ -322,6 +322,17 @@ indisvalid;` must return 0 rows; drop any it lists and re-run.
 - Open: `MEZZA_PRINTER` is documented but nothing reads it at runtime, and `needsReview` isn't called
   by the import review. Decide later whether to wire up or drop.
 
+## U-1 — confirm before "Cerrado en el POS" (owner request)
+
+- Request: owner, 2026-10-09. The Servicio button closed the table on the first tap.
+- Status: **Merged into the remediation branch.** UI only.
+- Change: `src/components/staff/service-screen.tsx` asks with `window.confirm`
+  (`service.posCloseConfirm`, names the table and POS total, says open requests will be marked
+  handled); cancel does nothing.
+- Test: `tests/e2e/service-flow.spec.ts` (smoke) dismisses once (the table stays in the POS list),
+  then accepts (it disappears). CI run 37972991704 green (checks, database, smoke E2E).
+- Rollback: `git revert` of the merge commit.
+
 ## Handoff (2026-10-08) — where the next session starts
 
 - **Production is 8 migrations behind the branch** (`20261008000100`–`000800`). Deploy order: take a
