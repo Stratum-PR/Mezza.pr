@@ -263,6 +263,26 @@ Nothing in this file has been applied to the hosted database by an agent.
 - Gate A: typecheck, lint, format, unit 249/249, build green locally; CI run 37963580055 green.
 - Rollback: `git revert` of the merge commit. Deploy notes: none.
 
+## P5-1 — indexes for the unindexed foreign keys
+
+- Finding: Phase 5 performance (low). 56 foreign keys in `public` had no covering index (38 at audit
+  time; later migrations added more).
+- Status: **Merged into the remediation branch. Ready, not applied to production.**
+- Failing test first: `supabase/tests/17_fk_indexes.test.sql` (commit `5f5ddc2`, red in CI run
+  37963972350 listing the 56). A generic catalog check, so any future FK without an index fails it.
+- Migration: `supabase/migrations/20261009000200_fk_indexes.sql`. 52 indexes (four composite
+  `(restaurant_id, …)` indexes also cover the plain `restaurant_id` FK), `create index concurrently
+if not exists`. Supabase CLI 2.119 runs those statements outside the migration transaction.
+- Gate A–C: CI run 37964537591 green (pgTAP, rollback cycle, types diff, drift, smoke E2E).
+- Rollback: `supabase/rollbacks/20261009000200_fk_indexes.down.sql` (drops concurrently), tested in
+  that CI run.
+- Deploy notes: indexes only, no app dependency. Apply outside service hours (each build waits for
+  long transactions on its table). Afterwards `select indexrelid::regclass from pg_index where not
+indisvalid;` must return 0 rows; drop any it lists and re-run.
+- Follow-up (not done): `orders(tab_id)`, `payments(tab_id)` and `order_items(order_id)` now have a
+  second, composite index on the same key; dropping the old ones is a later decision.
+- Backup / applied / verified / tag: _pending (production owner)._
+
 ## Handoff (2026-10-08) — where the next session starts
 
 - **Production is 8 migrations behind the branch** (`20261008000100`–`000800`). Deploy order: take a
