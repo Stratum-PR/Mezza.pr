@@ -245,7 +245,18 @@ export function ServiceScreen({
                   <b>
                     {t("service.pos", { label: p.tableLabel, total: formatCents(p.posTotalCents, locale) })}
                   </b>
-                  <Button size="sm" disabled={pending} onClick={() => run(() => closeOnPos(slug, p.tabId))}>
+                  <Button
+                    size="sm"
+                    disabled={pending}
+                    onClick={() => {
+                      const confirmText = t("service.posCloseConfirm", {
+                        label: p.tableLabel,
+                        total: formatCents(p.posTotalCents, locale),
+                      });
+                      if (!window.confirm(confirmText)) return;
+                      run(() => closeOnPos(slug, p.tabId));
+                    }}
+                  >
                     {t("service.posClosed")}
                   </Button>
                 </li>
