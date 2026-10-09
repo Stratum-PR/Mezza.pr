@@ -22,19 +22,6 @@ export function Panel({
   );
 }
 
-/** Sand tag, as in the prototype header. */
-export function Tag({ className, ...props }: ComponentProps<"span">) {
-  return (
-    <span
-      className={cn(
-        "inline-flex rounded-full bg-sand px-3.5 py-1.5 text-sm font-extrabold text-navy",
-        className,
-      )}
-      {...props}
-    />
-  );
-}
-
 export type PillTone = "sand" | "navy" | "ok" | "warn" | "bad" | "idle";
 
 const pillTones: Record<PillTone, string> = {

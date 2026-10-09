@@ -34,7 +34,7 @@ export function defaultSpot(index: number): { x: number; y: number } {
   return { x: 12 + col * 19, y: 16 + row * 26 };
 }
 
-export function areasOf(tables: PlanTable[], fallback: string): string[] {
+function areasOf(tables: PlanTable[], fallback: string): string[] {
   return [...new Set(tables.map((t) => t.area || fallback))];
 }
 

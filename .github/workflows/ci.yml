@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   checks:
-    name: Typecheck, lint, format, unit, build
+    name: Typecheck, lint, knip, format, unit, build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -29,6 +29,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm lint
+      - run: pnpm knip
       - run: pnpm format:check
       - run: pnpm test
       - run: pnpm build

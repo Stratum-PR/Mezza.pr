@@ -56,7 +56,7 @@ export function ChartCard({
   );
 }
 
-export function DataTable({ head, rows, numeric, caption }: TableView & { caption?: string }) {
+function DataTable({ head, rows, numeric, caption }: TableView & { caption?: string }) {
   const t = useTranslations("reports");
   const isNum = (i: number) => (numeric ? numeric.includes(i) : i > 0);
   if (rows.length === 0) return <p className="py-6 text-center text-sm text-muted">{t("empty")}</p>;

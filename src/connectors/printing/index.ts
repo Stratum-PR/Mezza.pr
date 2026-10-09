@@ -18,6 +18,10 @@ export function printerDriver(protocol: PrinterProtocol): PrinterDriver {
   return DRIVERS[protocol];
 }
 
+/**
+ * @public Reads `MEZZA_PRINTER`, the documented default in CONNECTORS.md. Not wired yet: the
+ * printer form in Ajustes defaults to "browser" itself. Kept until that is decided.
+ */
 export function defaultPrinterProtocol(): PrinterProtocol {
   const value = process.env.MEZZA_PRINTER ?? "browser";
   const map: Record<string, PrinterProtocol> = {

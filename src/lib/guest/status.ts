@@ -4,9 +4,9 @@ import { computeIvu, type Cents } from "@/lib/money";
 import type { CheckPersonRef } from "./group-check";
 import type { GuestTable } from "./resolve";
 
-export type OrderStatus = "new" | "in_kitchen" | "ready" | "served" | "void";
+type OrderStatus = "new" | "in_kitchen" | "ready" | "served" | "void";
 
-export interface GuestLine {
+interface GuestLine {
   id: string;
   qty: number;
   nameEs: string;
@@ -36,7 +36,7 @@ export interface GuestStatus {
   payments: GuestPayment[];
 }
 
-export interface GuestCheckout {
+interface GuestCheckout {
   owed: Record<string, Cents>;
   tableCents: Cents;
   balanceCents: Cents;
@@ -50,7 +50,7 @@ export interface GuestCheckout {
   } | null;
 }
 
-export interface GuestPayment {
+interface GuestPayment {
   id: string;
   status: string;
   method: "card" | "ath" | "cash";

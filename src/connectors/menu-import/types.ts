@@ -1,6 +1,6 @@
 import type { Cents, Ctx } from "../shared";
 
-export interface ImportedItem {
+interface ImportedItem {
   sectionKey: string;
   nameEs: string;
   nameEn: string;
@@ -46,7 +46,11 @@ export interface MenuImporter {
   >;
 }
 
-/** An item needs a person to confirm it before publishing. */
+/**
+ * An item needs a person to confirm it before publishing.
+ * @public Part of the menu-import connector contract described in CONNECTORS.md. Nothing
+ * imports it yet; kept for the import review step.
+ */
 export function needsReview(item: ImportedItem): boolean {
   return item.priceCents === null || item.confidence < 0.8;
 }

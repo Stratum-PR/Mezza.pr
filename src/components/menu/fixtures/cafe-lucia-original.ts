@@ -5,7 +5,7 @@
  */
 import { formatPlain } from "@/lib/money";
 
-export interface PrintedItem {
+interface PrintedItem {
   id: string;
   nameEs: string;
   descriptionEs: string;

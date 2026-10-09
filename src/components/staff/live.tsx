@@ -15,7 +15,7 @@ const ALL: MezzaEventType[] = [
 ];
 
 /** This browser's device id for the restaurant, registered on first load (devices table). */
-export function useDevice(slug: string, kind: "server" | "kitchen" | "register"): string | null {
+function useDevice(slug: string, kind: "server" | "kitchen" | "register"): string | null {
   const [id, setId] = useState<string | null>(null);
   useEffect(() => {
     const key = `mezza-device:${slug}`;

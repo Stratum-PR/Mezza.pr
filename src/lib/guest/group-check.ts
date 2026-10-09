@@ -17,7 +17,7 @@ export interface CheckLineInput {
   shares: { participantId: string; cents: Cents }[];
 }
 
-export interface CheckEntry {
+interface CheckEntry {
   lineId: string;
   qty: number;
   nameEs: string;

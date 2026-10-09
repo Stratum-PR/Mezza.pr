@@ -3,7 +3,7 @@
  * never identity: the #n always shows next to them, and words that read as staff or as another
  * guest's default label are refused so nobody can pose as the server or as "Invitado #2".
  */
-export const NAME_MAX = 24;
+const NAME_MAX = 24;
 
 const BLOCKED = new Set([
   "mesero",

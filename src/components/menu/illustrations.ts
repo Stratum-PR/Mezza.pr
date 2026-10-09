@@ -2,7 +2,7 @@
  * Placeholder dish illustrations from the prototype (PH). Static, trusted markup.
  * The seed renders these to PNG as placeholder photos.
  */
-export const ILLUSTRATIONS: Record<string, string> = {
+const ILLUSTRATIONS: Record<string, string> = {
   cup: '<ellipse cx="50" cy="76" rx="34" ry="8" fill="#fff" stroke="#B08D57" stroke-width="2"/><path d="M28 44h44v12a22 22 0 0 1-44 0z" fill="#fff" stroke="#B08D57" stroke-width="2"/><ellipse cx="50" cy="44" rx="22" ry="5" fill="#7A4A2A"/><path d="M72 48a8 8 0 0 1 0 14" fill="none" stroke="#B08D57" stroke-width="3"/><path d="M42 32q4-6 0-12M54 32q4-6 0-12" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
   pastry:
     '<circle cx="50" cy="55" r="30" fill="#D9A55B"/><path d="M50 55m-4 0a4 4 0 1 1 8 0a10 10 0 1 1-18 0a16 16 0 1 1 30 0a22 22 0 1 1-40 2" fill="none" stroke="#B8823A" stroke-width="3"/><g fill="#fff" opacity=".9"><circle cx="40" cy="45" r="2"/><circle cx="58" cy="40" r="2"/><circle cx="62" cy="60" r="2"/><circle cx="45" cy="66" r="2"/><circle cx="52" cy="52" r="1.6"/></g>',

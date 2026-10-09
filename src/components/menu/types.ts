@@ -3,7 +3,7 @@ import type { Cents } from "@/lib/money";
 export type MenuLocale = "es" | "en";
 export type MenuStyle = "house" | "original" | "simple";
 
-export interface MenuTheme {
+interface MenuTheme {
   palette: { ink: string; paper: string; accent: string; muted: string };
   displayFont: string; // from src/config/menu-fonts.ts
   bodyFont: string;
@@ -11,7 +11,7 @@ export interface MenuTheme {
   paperTexture: "none" | "linen" | "kraft" | "parchment";
 }
 
-export interface ModifierOption {
+interface ModifierOption {
   id: string;
   nameEs: string;
   nameEn: string;
@@ -27,7 +27,7 @@ export interface ModifierGroup {
   options: ModifierOption[];
 }
 
-export type MenuPhoto = { kind: "illustration"; key: string } | { kind: "url"; src: string };
+type MenuPhoto = { kind: "illustration"; key: string } | { kind: "url"; src: string };
 
 export const DISH_TAGS = ["vegetariano", "sin_gluten", "picante"] as const;
 export type DishTag = (typeof DISH_TAGS)[number];
@@ -53,7 +53,7 @@ export interface MenuSection {
 }
 
 /** A printed page; hotspot coordinates are fractions (0–1) of the page. */
-export interface OriginalPage {
+interface OriginalPage {
   src: string;
   width: number;
   height: number;
