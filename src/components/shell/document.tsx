@@ -6,7 +6,7 @@ import { fontVariables } from "@/lib/fonts";
 import { cn } from "@/lib/cn";
 
 /** Optional theme override; without it, dark mode follows prefers-color-scheme. */
-export const THEME_COOKIE = "mezza-theme";
+const THEME_COOKIE = "mezza-theme";
 
 /** The saved theme choice for the switch: "light" | "dark", or "auto" (follow the device). */
 export async function readThemeChoice(): Promise<"auto" | "light" | "dark"> {

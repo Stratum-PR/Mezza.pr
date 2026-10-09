@@ -2,8 +2,8 @@ import Link from "next/link";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/cn";
 
-export type ButtonVariant = "primary" | "sand" | "soft" | "ath" | "ok" | "danger" | "ghost";
-export type ButtonSize = "md" | "lg" | "sm";
+type ButtonVariant = "primary" | "sand" | "soft" | "ath" | "ok" | "danger" | "ghost";
+type ButtonSize = "md" | "lg" | "sm";
 
 const base =
   "inline-flex min-h-11 items-center justify-center gap-2 text-center font-bold transition-[transform,box-shadow,background-color] duration-150 hover:-translate-y-px active:translate-y-0 disabled:pointer-events-none disabled:opacity-50";

@@ -175,7 +175,7 @@ const paySchema = z.object({
   locale: z.enum(["es", "en"]),
 });
 
-export type PayError =
+type PayError =
   | "nothing_to_pay"
   | "unavailable"
   | "coming_soon"

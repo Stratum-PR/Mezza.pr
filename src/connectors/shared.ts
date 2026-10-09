@@ -1,6 +1,5 @@
 export type Cents = number; // always an integer
 export type Locale = "es" | "en";
-export type Role = "owner" | "manager" | "server" | "kitchen";
 
 export interface Ctx {
   restaurantId: string;

@@ -8,6 +8,7 @@
     "start": "next start",
     "typecheck": "next typegen && tsc --noEmit",
     "lint": "eslint",
+    "knip": "knip",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
@@ -25,7 +26,7 @@
     "db:drift": "tsx scripts/db/drift-check.ts",
     "db:rollback-cycle": "tsx scripts/db/rollback-cycle.ts",
     "db:access-snapshot": "tsx scripts/db/access-snapshot.ts",
-    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm test:db && pnpm build"
+    "check": "pnpm typecheck && pnpm lint && pnpm knip && pnpm format:check && pnpm test && pnpm test:db && pnpm build"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.9.0",
@@ -39,8 +40,8 @@
     "react-dom": "19.2.8",
     "recharts": "^3.10.1",
     "server-only": "^0.0.1",
-    "zod": "^4.6.5",
-    "sharp": "0.35.5"
+    "sharp": "0.35.5",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
@@ -56,6 +57,7 @@
     "eslint-config-next": "16.3.8",
     "eslint-config-prettier": "^10.1.8",
     "jsqr": "^1.4.0",
+    "knip": "6.36.0",
     "prettier": "^3.9.9",
     "supabase": "^2.119.0",
     "tailwindcss": "^4",

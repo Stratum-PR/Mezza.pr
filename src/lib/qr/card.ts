@@ -26,7 +26,7 @@ export interface CardTable {
 export type PdfFormat = "sheet" | "tent" | "sticker";
 
 /** Monogram from the restaurant name: "Café Lucía" → "CL". */
-export function monogram(name: string): string {
+function monogram(name: string): string {
   return name
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")

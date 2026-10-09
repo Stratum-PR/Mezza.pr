@@ -7,9 +7,9 @@ export interface IvuRates {
   municipalBps: number; // 100 = 1%
 }
 
-export const DEFAULT_IVU: IvuRates = { stateBps: 1050, municipalBps: 100 };
+const DEFAULT_IVU: IvuRates = { stateBps: 1050, municipalBps: 100 };
 
-export function assertCents(value: number, label = "amount"): Cents {
+function assertCents(value: number, label = "amount"): Cents {
   if (!Number.isSafeInteger(value) || value < 0)
     throw new RangeError(`${label} must be a non-negative integer of cents`);
   return value;

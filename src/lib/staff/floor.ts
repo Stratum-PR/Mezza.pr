@@ -6,9 +6,9 @@ import { computeIvu, type Cents } from "@/lib/money";
 type Db = SupabaseClient<Database>;
 type Snapshot = { name_es?: string; name_en?: string }[];
 
-export type OrderStatus = "new" | "in_kitchen" | "ready" | "served" | "void";
+type OrderStatus = "new" | "in_kitchen" | "ready" | "served" | "void";
 
-export interface FloorLine {
+interface FloorLine {
   id: string;
   qty: number;
   nameEs: string;
@@ -34,7 +34,7 @@ export interface FloorOrder {
   afterPayment: boolean;
 }
 
-export interface FloorTab {
+interface FloorTab {
   id: string;
   tableId: string;
   tableLabel: string;

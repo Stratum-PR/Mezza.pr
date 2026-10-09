@@ -66,38 +66,6 @@ export function Segmented<T extends string>({
   );
 }
 
-/** Horizontal filter chips (menu sections, original-menu tools). */
-export function Chips<T extends string>({
-  label,
-  options,
-  value,
-  onChange,
-}: {
-  label: string;
-  options: Option<T>[];
-  value: T;
-  onChange: (value: T) => void;
-}) {
-  return (
-    <div role="group" aria-label={label} className="flex gap-1.5 overflow-x-auto pb-2">
-      {options.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          aria-pressed={o.value === value}
-          onClick={() => onChange(o.value)}
-          className={cn(
-            "min-h-9 whitespace-nowrap rounded-full border px-3 text-sm font-semibold",
-            o.value === value ? "border-blue bg-soft text-blue" : "border-line text-ink",
-          )}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 /** Toggle with a visible switch track (sound, auto-print, sold out). */
 export function Switch({
   checked,

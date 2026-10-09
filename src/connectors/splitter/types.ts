@@ -1,6 +1,6 @@
 import type { Cents } from "../shared";
 
-export type SplitMode = "one" | "even" | "items";
+type SplitMode = "one" | "even" | "items";
 
 export interface SplitPart {
   participantId: string | null;

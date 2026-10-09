@@ -1,8 +1,8 @@
 import { addDays, daysBetween, isYmd, monthRange, type Ymd } from "./time";
 
 export const PRESETS = ["7d", "30d", "90d", "month", "lastMonth"] as const;
-export type Preset = (typeof PRESETS)[number];
-export const MAX_DAYS = 366;
+type Preset = (typeof PRESETS)[number];
+const MAX_DAYS = 366;
 
 export interface Range {
   from: Ymd;
