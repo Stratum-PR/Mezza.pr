@@ -88,7 +88,7 @@ insert into public.service_requests (restaurant_id, tab_id, kind)
   select '00000000-0000-4000-8000-00000000cafe', pg_temp.tab(l), 'bring_check' from unnest(array['m1', 'm2', 'm3', 'm4']) as l;
 
 create temporary table ids (k text primary key, v uuid);
-grant all on ids to authenticated, service_role;
+grant all on ids to anon, authenticated, service_role;
 insert into ids select l, pg_temp.tab(l) from unnest(array['m1', 'm2', 'm3', 'm4']) as l;
 
 -- Nobody signed in can call the internal function.
