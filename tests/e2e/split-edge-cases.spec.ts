@@ -121,19 +121,18 @@ test.describe("split-bill edge cases", () => {
     const active = /La cuenta se dividió en 2\. Partes que quedan: 2/;
     await expect(ana.getByText(active)).toBeVisible({ timeout: 20_000 });
 
-    // A phone that only scanned the QR (never ordered or paid) sees the split but can't cancel it.
+    // A phone that only scanned the QR (never ordered or paid) sees the split and can pay a share,
+    // but isn't offered to cancel it (the server refuses that too).
     const carl = await phone(browser, 9);
     await myOrder(carl);
     await carl.getByRole("button", { name: "Pagar la cuenta" }).click();
     await carl.getByRole("radio", { name: /Dividir en partes iguales/ }).check();
     await expect(carl.getByText(active)).toBeVisible();
-    await carl.getByRole("button", { name: "Cancelar la división" }).click();
-    await expect(carl.getByRole("alert").filter({ hasText: "No se pudo. Inténtalo otra vez." })).toBeVisible({
-      timeout: 20_000,
-    });
-    await expect(carl.getByText(active)).toBeVisible();
+    await expect(carl.getByRole("button", { name: /^Pagar \$/ })).toBeVisible();
+    await expect(carl.getByRole("button", { name: /^Pagar \$/ })).toBeEnabled();
+    await expect(carl.getByRole("button", { name: "Cancelar la división" })).toHaveCount(0);
 
-    // The refusal didn't make Carl a participant: Ana is still the only person at the table.
+    // Looking at the split didn't make Carl a participant: Ana is still the only person at the table.
     const { url, headers } = localRest();
     const [tab] = (await (
       await fetch(`${url}/rest/v1/tabs?table_id=eq.${tableId(9)}&status=neq.closed&select=id`, { headers })

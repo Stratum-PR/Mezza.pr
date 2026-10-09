@@ -677,7 +677,8 @@ export function GuestApp({
                           max={plan.partsLeft}
                           onChange={setParts}
                         />
-                        {plan.partsLeft === plan.parts && (
+                        {/* Only a participant of the tab may cancel (the server checks too). */}
+                        {me && plan.partsLeft === plan.parts && (
                           <button
                             type="button"
                             onClick={() => cancelPlan(t)}
