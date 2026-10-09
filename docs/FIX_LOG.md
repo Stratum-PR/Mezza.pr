@@ -363,6 +363,23 @@ indisvalid;` must return 0 rows; drop any it lists and re-run.
   participant (it gets an error); hiding it is a small UI change.
 - Rollback: `git revert` of the merge commit.
 
+## P7-2 — AGENTS.md architecture map, CONNECTORS.md matches code, agent guardrails
+
+- Plan item: Phase 7 (later items), plus the doc/code mismatches found by P4-4.
+- Status: **Merged into the remediation branch.** Docs and repo agent config only.
+- `AGENTS.md`: architecture map (layers, service-role client rule enforced by ESLint, links to the 18
+  feature READMEs, guardrails); access-snapshot rule added at merge.
+- `CONNECTORS.md`: now states current behavior — rate limit default `postgres` (production sets
+  `noop`, owner decision pending), `pay:*`/`plan:table` keys, splitter unused by screens,
+  `MEZZA_PRINTER` unread, fiscal result ignored and skipped by mock card/ATH, menu import
+  `claude_stub` outside demo, realtime stub with no "coming soon" state, unused notifier templates.
+- `.claude/settings.json` (new): `permissions.deny` for `supabase db push`, `seed:cloud` and pushes /
+  force pushes to `main` (prefix match: a guardrail, not a security boundary); PostToolUse
+  `Edit|Write` hook `.claude/hooks/lint-edited-file.sh` runs ESLint on the edited JS/TS file and
+  reports errors (never blocks or undoes the edit). Tested with piped payloads; loads in new sessions.
+- Gate: format, lint, knip, typecheck, unit green; CI run 37975154057 green.
+- Rollback: `git revert` of the merge commit.
+
 ## Handoff (2026-10-08) — where the next session starts
 
 - **Production is 8 migrations behind the branch** (`20261008000100`–`000800`). Deploy order: take a
